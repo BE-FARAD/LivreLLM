@@ -1,0 +1,136 @@
+# *Python*
+
+
+```
+from langchain_openai import OpenAIEmbeddings
+model = OpenAIEmbeddings()
+embeddings = model.embed_documents([
+ "Hi there!",
+ "Oh, hello!",
+ "What's your name?",
+ "My friends call me World",
+ "Hello World!"
+])
+```
+
+```
+import { OpenAIEmbeddings } from "@langchain/open
+```
+
+```
+const model = new OpenAIEmbeddings();
+const embeddings = await embeddings.embedDocument
+ "Hi there!",
+ "Oh, hello!",
+ "What' s your name?",
+ "My friends call me World",
+ "Hello World!"
+]);
+```
+
+### *The output:*
+
+```
+[
+ [
+ -0.004845875, 0.004899438, -0.016358767, -0.0
+ 0.012571548, -0.019156644, 0.009036391, -0
+ 0.022861943, 0.010321903, -0.023479493, -0
+ 0.0026371893, 0.025206111, -0.012048521, 0.01
+ -0.010580265, -0.003509951, 0.004070787, 0.00
+ ... 1511 more items
+ ]
+ [
+ -0.009446913, -0.013253193, 0.013174579, 0
+ 0.0077763423, -0.0260478, -0.0114384955, -0
+ 0.041797023, 0.01787183, 0.00552271, -0.004
+     -0 01542166 0 033752076 0 006112323 0 02
+```
+
+```
+ -0.01542166, 0.033752076, 0.006112323, 0.02
+ -0.006623321, 0.016116094, -0.0061090477, -
+ ... 1511 more items
+ ]
+ ... 3 more items
+]
+```
+
+Notice that you can embed multiple documents at the same time; you should prefer this to embedding them one at a time, as it will be more efficient (due to how these models are constructed). You get back a list containing multiple lists of numbers—each inner list is a vector or embedding, as explained in an earlier section.
+
+Now let's see an end-to-end example using the three capabilities we've seen so far:
+
+- Document loaders, to convert any document to plain text
+- Text splitters, to split each large document into many smaller ones
+- Embeddings models, to create a numeric representation of the meaning of each split
+
+Here's the code:
+
+```
+from langchain_community.document_loaders import
+from langchain_text_splitters import RecursiveCha
+from langchain_openai import OpenAIEmbeddings
+## Load the document 
+loader = TextLoader("./test.txt")
+doc = loader.load()
+"""
+[
+ Document(page_content='Document loaders\n\nUs
+ from a source as `Document`\'s. A `Docume
+ associated metadata. For example, there a
+ loading a simple `.txt` file, for loading
+ page, or even for loading a transcript of
+ document loader exposes two methods:\n1. 
+ the configured source\n2. "Load and split
+ configured source and split them using th
+ splitter\n\nThey optionally implement:\n\
+ documents into memory lazily\n', metadata
+]
+"""
+## Split the document
+text_splitter = RecursiveCharacterTextSplitter(
+    h k i 1000
+```
+
+```
+ chunk_size=1000,
+ chunk_overlap=20,
+)
+chunks = text_splitter.split_documents(doc)
+## Generate embeddings
+embeddings_model = OpenAIEmbeddings()
+embeddings = embeddings_model.embed_documents(
+ [chunk.page_content for chunk in chunks]
+)
+"""
+[[0.0053587136790156364,
+ -0.0004999046213924885,
+ 0.038883671164512634,
+ -0.003001077566295862,
+ -0.00900818221271038, ...], ...]
+"""
+```
+
+```
+import { TextLoader } from "langchain/document_lo
+import { RecursiveCharacterTextSplitter } from "@
+import { OpenAIEmbeddings } from "@langchain/open
+// Load the document
+```
+
+```
+const loader = new TextLoader("./test.txt");
+const docs = await loader.load();
+// Split the document
+const splitter = new RecursiveCharacterTextSplitt
+ chunkSize: 1000,
+ chunkOverlap: 200,
+});
+const chunks = await splitter.splitDocuments(docs
+// Generate embeddings
+const model = new OpenAIEmbeddings();
+await embeddings.embedDocuments(chunks.map(c => c
+```
+
+Once you've generated embeddings from your documents, the next step is to store them in a special database known as a vector store.
+

@@ -1,0 +1,16 @@
+# **Logical Routing**
+
+
+In *logical routing*, we give the LLM knowledge of the various data sources at our disposal and then let the LLM reason which data source to apply based on the user's query, as shown in [Figure](#page-12-0) 3-8.
+
+<span id="page-12-0"></span>![](_page_12_Figure_3.jpeg)
+
+Figure 3-8. Query routing to relevant data sources
+
+In order to achieve this, we make use of function-calling models like GPT-3.5 Turbo to help classify each query into one of the available routes. A *function call* involves defining a schema that the model can use to generate arguments of a function based on the query. This enables us to generate structured outputs that can be used to run other functions. The following Python code defines the schema for our router based on three docs for different languages:
+
+```
+from typing import Literal
+from langchain_core.prompts import ChatPromptTemp
+from langchain_core.pydantic_v1 import BaseModel,
+from langchain_openai import ChatOpenAI

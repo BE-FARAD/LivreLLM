@@ -1,0 +1,79 @@
+# Learning LangChain
+
+
+Building AI and LLM Applications with LangChain and LangGraph
+
+![](_page_0_Picture_3.jpeg)
+
+Mayo Oshin & Nuno Campos
+
+## Praise for *Learning LangChain*
+
+*With clear explanations and actionable techniques, this is the go-to resource for anyone looking to harness LangChain's power for production-ready generative AI and agents. A must-read for developers aiming to push the boundaries of this platform.*
+
+—Tom Taulli, IT consultant and author of *AI-Assisted Programming*
+
+*This comprehensive guide on LangChain covers everything from document retrieval and indexing to deploying and monitoring AI agents in production. With engaging examples, intuitive illustrations, and hands-on code, this book made learning LangChain interesting and fun!*
+
+—Rajat K. Goel, senior software engineer, IBM
+
+*This book is a comprehensive LLM guide covering fundamentals to production, packed with technical insights, practical strategies, and robust AI patterns.*
+
+—Gourav Singh Bais, senior data scientist and senior technical content writer, Allianz Services
+
+*Prototyping generative AI apps is easy—shipping them is hard. The strategies and tools in Learning LangChain make it possible to turn ideas into modern, production-ready applications.*
+
+> —James Spiteri, director of product management for security, Elastic
+
+*Learning LangChain provides a clear path for transforming how you build AI-powered applications. By breaking down flexible architectures and robust checkpointing, it offers a strong foundation for creating reliable, production-ready AI agents at scale.*
+
+—David O'Regan, engineering manager for AI/ML, GitLab
+
+*Learning LangChain helped us skip the boilerplate for debugging and monitoring. The many helpful patterns and tooling insights allowed us to move fast and deploy AI apps with confidence.*
+
+—Chris Focke, chief AI scientist, AppFolio
+
+*Teaching LangChain through clear, actionable examples, this book is a gateway to agentic applications that are as inspiring as Asimov's sci-fi novels.*
+
+— Ilya Meyzin, SVP head of data science, Dun & Bradstreet
+
+#### Learning LangChain
+
+Building AI and LLM Applications with LangChain and LangGraph
+
+Mayo Oshin and Nuno Campos
+
+![](_page_4_Picture_3.jpeg)
+
+## Learning LangChain
+
+by Mayo Oshin and Nuno Campos
+
+Copyright © 2025 Olumayowa "Mayo" Olufemi Oshin. All rights reserved.
+
+Printed in the United States of America.
+
+Published by O'Reilly Media, Inc., 1005 Gravenstein Highway North, Sebastopol, CA 95472.
+
+O'Reilly books may be purchased for educational, business, or sales promotional use. Online editions are also available for most titles (*[http://oreilly.com](http://oreilly.com/)*). For more information, contact our corporate/institutional sales department: 800-998-9938 or *corporate@oreilly.com*.
+
+Acquisitions Editor: Nicole Butterfield
+
+Development Editor: Corbin Collins
+
+Production Editor: Clare Laylock
+
+Copyeditor: nSight, Inc.
+
+Proofreader: Helena Stirling
+
+Indexer: Judith McConville
+
+Interior Designer: David Futato
+
+Cover Designer: Karen Montgomery
+
+Illustrator: Kate Dullea
+
+February 2025: First Edition
+

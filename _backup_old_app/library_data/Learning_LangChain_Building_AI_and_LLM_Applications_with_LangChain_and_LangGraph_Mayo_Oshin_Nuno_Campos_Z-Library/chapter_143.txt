@@ -1,0 +1,18 @@
+# Call the function
+
+hello_world()
+"""
+```
+
+```
+python_splitter = RecursiveCharacterTextSplitter
+ language=Language.PYTHON, chunk_size=50, chun
+)
+python_docs = python_splitter.create_documents([P
+```
+
+```
+import { RecursiveCharacterTextSplitter } from "@
+const PYTHON_CODE = `
+def hello_world():
+ print("Hello, World!")

@@ -1,0 +1,51 @@
+# Splitting Your Text into Chunks
+
+
+At first glance it may seem straightforward to split a large body of text into chunks, but keeping *semantically* related (related by meaning) chunks of text together is a complex process. To make it easier to split large documents into small, but still meaningful, pieces of text, LangChain provides RecursiveCharacterTextSplitter , which does the following:
+
+- 1. Take a list of separators, in order of importance. By default these are:
+  - a. The paragraph separator: \n\n
+  - b. The line separator: \n
+  - c. The word separator: space character
+
+- 2. To respect the given chunk size, for instance, 1,000 characters, start by splitting up paragraphs.
+- 3. For any paragraph longer than the desired chunk size, split by the next separator: lines. Continue until all chunks are smaller than the desired length, or there are no additional separators to try.
+- 4. Emit each chunk as a Document , with the metadata of the original document passed in and additional information about the position in the original document.
+
+Let's see an example:
+
+```
+from langchain_text_splitters import RecursiveCha
+loader = TextLoader("./test.txt") # or any other 
+docs = loader.load()
+splitter = RecursiveCharacterTextSplitter(
+ chunk_size=1000,
+ chunk_overlap=200,
+)
+splitted_docs = splitter.split_documents(docs)
+```
+
+```
+import { TextLoader } from "langchain/document_lo
+import { RecursiveCharacterTextSplitter } from "@
+const loader = new TextLoader("./test.txt"); // o
+const docs = await loader.load();
+const splitter = new RecursiveCharacterTextSplitt
+ chunkSize: 1000,
+ chunkOverlap: 200,
+});
+const splittedDocs = await splitter.splitDocument
+```
+
+In the preceding code, the documents created by the document loader are split into chunks of 1,000 characters each, with some overlap between chunks of 200 characters to maintain some context. The result is also a list of documents, where each document is up to 1,000 characters in length, split along the natural divisions of written text—paragraphs, new lines and finally, words. This uses the structure of the text to keep each chunk a consistent, readable snippet of text.
+
+RecursiveCharacterTextSplitter can also be used to split code languages and Markdown into semantic chunks. This is done by using keywords specific to each language as the separators, which ensures, for instance, the body of each function is kept in the same chunk, instead of split between several. Usually, as programming languages have more structure than written text, there's less need to use overlap between the chunks. LangChain contains separators for a number of popular languages, such as Python, JS, Markdown, HTML, and many more. Here's an example:
+
+```
+from langchain_text_splitters import (
+ Language,
+ RecursiveCharacterTextSplitter,
+)
+PYTHON_CODE = """
+def hello_world():
+ print("Hello, World!")

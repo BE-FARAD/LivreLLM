@@ -1,0 +1,53 @@
+# **Create a LangGraph API Config**
+
+
+Prior to deployment, you need to configure your application with a LangGraph API configuration file called *[langgraph.json](https://oreil.ly/aVDhd)*. Here's an example of what the file looks like in a Python repository:
+
+*Python*
+
+{
+
+```
+ "dependencies": ["./my_agent"],
+ "graphs": {
+ "agent": "./my_agent/agent.py:graph"
+ },
+ "env": ".env"
+}
+```
+
+And here's an example repository structure:
+
+```
+my-app/
+├── my_agent # all project code lies within here
+│ ├── utils # utilities for your graph
+│ │ ├── __init__.py
+│ │ ├── tools.py # tools for your graph
+│ │ ├── nodes.py # node functions for you gra
+│ │ └── state.py # state definition of your g
+│ ├── requirements.txt # package dependencies
+│ ├── __init__.py
+│ └── agent.py # code for constructing your gra
+├── .env # environment variables
+└── langgraph.json # configuration file for LangG
+```
+
+Note that the *langgraph.json* file is placed on the same level or higher than the files that contain compiled graphs and associated dependencies.
+
+In addition, the dependencies are specified in a *requirements.txt* file. But they can also be specified in *pyproject.toml*, *setup.py*, or *package.json* files.
+
+Here's what each of the properties mean:
+
+#### *Dependencies*
+
+Array of dependencies for LangGraph Platform API server
+
+#### *Graphs*
+
+Mapping from graph ID to path where the compiled graph or a function that makes a graph is defined
+
+#### *Env*
+
+Path to your *.env* file or a mapping from environment variable to its value (you can learn more about configurations for the langgraph.json file [here](https://oreil.ly/bPA0W))
+

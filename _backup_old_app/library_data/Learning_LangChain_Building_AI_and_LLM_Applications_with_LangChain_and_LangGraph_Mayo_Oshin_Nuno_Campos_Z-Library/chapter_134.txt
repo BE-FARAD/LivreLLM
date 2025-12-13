@@ -1,0 +1,16 @@
+# > AIMessage(content="""Hugging Face's `transfor
+
+ the `openai` library, and Cohere using the `c
+```
+
+This one applies to Python only, as asynchronous execution is the only option in JavaScript.
+
+## **Declarative Composition**
+
+LCEL is a *declarative language* for composing LangChain components. LangChain compiles LCEL compositions to an *optimized execution plan*, with automatic parallelization, streaming, tracing, and async support.
+
+Let's see the same example using LCEL:
+
+```
+from langchain_openai.chat_models import ChatOpen
+from langchain_core.prompts import ChatPromptTemp

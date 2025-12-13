@@ -1,0 +1,115 @@
+# embed each chunk and insert it into the vector
+
+embeddings_model = OpenAIEmbeddings()
+connection = 'postgresql+psycopg://langchain:lang
+db = PGVector.from_documents(documents, embedding
+```
+
+```
+import { TextLoader } from "langchain/document_lo
+import { RecursiveCharacterTextSplitter } from "@
+import { OpenAIEmbeddings } from "@langchain/open
+import { PGVectorStore } from "@langchain/communi
+import { v4 as uuidv4 } from 'uuid';
+// Load the document, split it into chunks
+const loader = new TextLoader("./test.txt");
+const raw_docs = await loader.load();
+const splitter = new RecursiveCharacterTextSplitt
+ chunkSize: 1000,
+ chunkOverlap: 200,
+});
+const docs = await splitter.splitDocuments(docs)
+// embed each chunk and insert it into the vector
+const embeddings_model = new OpenAIEmbeddings();
+const db = await PGVectorStore.fromDocuments(docs
+ postgresConnectionOptions: {
+ connectionString: 'postgresql://langchain:lan
+ }
+})
+```
+
+Notice how we reuse the code from the previous sections to first load the documents with the loader and then split them into smaller chunks. Then, we instantiate the embeddings model we want to use—in this case, OpenAI's. Note that you could use any other embeddings model supported by LangChain here.
+
+Next, we have a new line of code, which creates a vector store given documents, the embeddings model, and a connection string. This will do a few things:
+
+- Establish a connection to the Postgres instance running in your computer (see "Getting Set Up with [PGVector"](#page-10-0).)
+- Run any setup necessary, such as creating tables to hold your documents and vectors, if this is the first time you're running it.
+- Create embeddings for each document you passed in, using the model you chose.
+- Store the embeddings, the document's metadata, and the document's text content in Postgres, ready to be searched.
+
+Let's see what it looks like to search documents:
+
+```
+db.similarity_search("query", k=4)
+```
+
+```
+await pgvectorStore.similaritySearch("query", 4);
+```
+
+This method will find the most relevant documents (which you previously indexed), by following this process:
+
+- The search query—in this case, the word query —will be sent to the embeddings model to retrieve its embedding.
+- Then, it will run a query on Postgres to find the N (in this case 4) previously stored embeddings that are most similar to your query.
+- Finally, it will fetch the text content and metadata that relates to each of those embeddings.
+- The model can now return a list of Document sorted by how similar they are to the query—the most similar first, the second most similar after, and so on.
+
+You can also add more documents to an existing database. Let's see an example:
+
+```
+ids = [str(uuid.uuid4()), str(uuid.uuid4())]
+db.add_documents(
+ [
+ Document(
+ page_content="there are cats in the p
+ metadata={"location": "pond", "topic"
+ ),
+ Document(
+ page_content="ducks are also found in
+ metadata={"location": "pond", "topic"
+ ),
+ ],
+ ids=ids,
+)
+```
+
+```
+const ids = [uuidv4(), uuidv4()];
+await db.addDocuments(
+ [
+ {
+ pageContent: "there are cats in the pond",
+ metadata: {location: "pond", topic: "animal
+ },
+ {
+```
+
+```
+{
+ pageContent: "ducks are also found in the p
+ metadata: {location: "pond", topic: "animal
+ },
+ ],
+ {ids}
+);
+```
+
+The add\_documents method we're using here will follow a similar process to fromDocuments :
+
+- Create embeddings for each document you passed in, using the model you chose.
+- Store the embeddings, the document's metadata, and the document's text content in Postgres, ready to be searched.
+
+In this example, we are using the optional ids argument to assign identifiers to each document, which allows us to update or delete them later.
+
+Here's an example of the delete operation:
+
+```
+db.delete(ids=[1])
+```
+
+```
+await db.delete({ ids: [ids[1]] })
+```
+
+This removes the second document inserted by using its Universally Unique Identifier (UUID). Now let's see how to do this in a more systematic way.
+

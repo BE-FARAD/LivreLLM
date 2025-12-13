@@ -1,0 +1,25 @@
+# Call the function
+
+hello_world()
+`;
+const pythonSplitter = RecursiveCharacterTextSpli
+ chunkSize: 50,
+ chunkOverlap: 0,
+});
+const pythonDocs = await pythonSplitter.createDoc
+```
+
+#### *The output:*
+
+[Document(page\_content='def hello\_world():\n p Document(page\_content='# Call the function\nh
+
+Notice how we're still using
+
+RecursiveCharacterTextSplitter as before, but now we're creating an instance of it for a specific language, using the from\_language method. This one accepts the name of the language, and the usual parameters for chunk size, and so on. Also notice we are now using the method create\_documents , which accepts a list of strings, rather than the list of documents we had before. This method is useful when the text you want to split doesn't come from a document loader, so you have only the raw text strings.
+
+You can also use the optional second argument to create\_documents in order to pass a list of metadata to associate with each text string. This metadata list should have the same length as the list of strings and will be used to populate the metadata field of each Document returned.
+
+Let's see an example for Markdown text, using the metadata argument as well:
+
+```
+markdown_text = """

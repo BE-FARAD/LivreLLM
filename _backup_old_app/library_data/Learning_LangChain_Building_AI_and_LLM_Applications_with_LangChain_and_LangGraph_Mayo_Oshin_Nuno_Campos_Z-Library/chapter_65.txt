@@ -1,0 +1,8 @@
+# Define subgraph
+
+def subgraph_node(state: SubgraphState):
+ return {"bar": state["bar"] + "baz"}
+subgraph_builder = StateGraph(SubgraphState)
+subgraph_builder.add_node(subgraph_node)
+...
+subgraph = subgraph_builder.compile()

@@ -1,0 +1,13 @@
+# **Testing a single step of an agent**
+
+
+Testing an agent's individual action or decision enables you to identify and analyze specifically where your application is underperforming. Testing for a single step of an agent involves the following:
+
+## *Inputs*
+
+User input to a single step (for example, user prompt, set of tools). This can also include previously completed steps.
+
+## *Output*
+
+LLM response from the inputs step, which often contains tool calls indicating what action the agent should take next.
+

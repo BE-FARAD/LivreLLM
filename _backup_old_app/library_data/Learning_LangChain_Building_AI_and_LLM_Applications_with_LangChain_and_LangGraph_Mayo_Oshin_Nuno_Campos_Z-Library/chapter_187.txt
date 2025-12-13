@@ -1,0 +1,47 @@
+# embed each chunk and insert it into the vector
+
+model = OpenAIEmbeddings()
+connection = 'postgresql+psycopg://langchain:lang
+db = PGVector.from_documents(documents, model, co
+```
+
+```
+import { TextLoader } from "langchain/document_lo
+import { RecursiveCharacterTextSplitter } from "@
+import { OpenAIEmbeddings } from "@langchain/open
+import { PGVectorStore } from "@langchain/communi
+// Load the document, split it into chunks
+const loader = new TextLoader("./test.txt");
+const raw_docs = await loader.load();
+const splitter = new RecursiveCharacterTextSplitt
+ chunkSize: 1000,
+ chunkOverlap: 200,
+});
+const docs = await splitter.splitDocuments(docs)
+// embed each chunk and insert it into the vector
+const model = new OpenAIEmbeddings();
+const db = await PGVectorStore.fromDocuments(docs
+ postgresConnectionOptions: {
+ connectionString: 'postgresql://langchain:lan
+ }
+})
+```
+
+[Chapter](#page--1-4) 2 has more details on the indexing stage.
+
+The indexing stage is now complete. In order to execute the retrieval stage, we need to perform similarity search calculations—such as cosine similarity—between the user's
+
+query and our stored embeddings, so relevant chunks of our indexed document are retrieved (see [Figure](#page-11-0) 3-2).
+
+<span id="page-11-0"></span>![](_page_11_Figure_0.jpeg)
+
+Figure 3-2. An example flow of indexing documents alongside retrieval of relevant documents from a vector store; the Hierarchical Navigable Small World (HNSW) box depicts calculating similarity of documents against the user's query
+
+## [Figure](#page-11-0) 3-2 illustrates the steps in the retrieval process:
+
+- 1. Convert the user's query into embeddings.
+- 2. Calculate the embeddings in the vector store that are most similar to the user's query.
+- 3. Retrieve the relevant document embeddings and their corresponding text chunk.
+
+We can represent these steps programmatically using LangChain as follows:
+

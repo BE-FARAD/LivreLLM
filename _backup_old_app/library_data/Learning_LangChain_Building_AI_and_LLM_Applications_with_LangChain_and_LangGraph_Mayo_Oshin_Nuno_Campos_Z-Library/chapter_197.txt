@@ -1,0 +1,66 @@
+# run
+
+h i i k ({" t t" d " ti " """Wh
+```
+
+```
+chain.invoke({"context": docs,"question": """Who 
+ ancient greek history of philosophy?"""})
+```
+
+```
+import {ChatOpenAI} from '@langchain/openai'
+import {ChatPromptTemplate} from '@langchain/core
+const retriever = db.asRetriever()
+const prompt = ChatPromptTemplate.fromTemplate(`A
+ on the following context:
+{context}
+Question: {question}
+`)
+const llm = new ChatOpenAI({temperature: 0, model
+const chain = prompt.pipe(llm)
+// fetch relevant documents
+const docs = await retriever.invoke(`Who are the 
+ greek history of philosophy?`)
+await chain.invoke({context: docs, question: `Who
+ ancient greek history of philosophy?`})
+```
+
+Note the following changes:
+
+We implement dynamic context and question variables into our prompt, which allows us to define a ChatPromptTemplate the model can use to generate a response.
+
+a c e t g ee sto y o p osop y })
+
+- We define a ChatOpenAI interface to act as our LLM. Temperature is set to 0 to eliminate the creativity in outputs from the model.
+- We create a chain to compose the prompt and LLM. A reminder: the | operator (or pipe method in JS) takes the output of prompt and uses it as the input to llm .
+- We invoke the chain passing in the context variable (our retrieved relevant docs) and the user's question to generate a final output.
+
+We can encapsulate this retrieval logic in a single function:
+
+#### *Python*
+
+```
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemp
+from langchain_core.runnables import chain
+```
+
+```
+retriever = db.as_retriever()
+prompt = ChatPromptTemplate.from_template("""Answ
+ the following context:
+{context}
+Question: {question}
+""")
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperatu
+@chain
+def qa(input):
+ # fetch relevant documents 
+ docs = retriever.get_relevant_documents(input
+ # format prompt
+ formatted = prompt.invoke({"context": docs,
+                                              "
+ # generate answer
+ answer = llm.invoke(formatted)
+ return answer

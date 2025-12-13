@@ -1,0 +1,166 @@
+# The Preproduction Stage
+
+
+The purpose of the preproduction stage of testing is to measure and evaluate the performance of your application prior to production. This will enable you to efficiently assess the accuracy, latency, and cost of utilizing the LLM.
+
+## **Creating Datasets**
+
+Prior to testing, you need to define a set of scenarios you'd like to test and evaluate. A *dataset* is a collection of examples that provide inputs and expected outputs used to evaluate your LLM app.
+
+These are three common methods to build datasets for valuation:
+
+#### *Manually curated examples*
+
+These are handwritten examples based on expected user inputs and ideal generated outputs. A small dataset consists of between 10 and 50 quality examples. Over
+
+time, more examples can be added to the dataset based on edge cases that emerge in production.
+
+#### *Application logs*
+
+Once the application is in production, you can store realtime user inputs and later add them to the dataset. This will help ensure the dataset is realistic and covers the most common user questions.
+
+#### *Synthetic data*
+
+These are artificially generated examples that simulate various scenarios and edge cases. This enables you to generate new inputs by sampling existing inputs, which is useful when you don't have enough real data to test on.
+
+In LangSmith, you can create a new dataset by selecting Datasets and Testing in the sidebar and clicking the "+ New Dataset" button on the top right of the app, as shown in [Figure](#page-8-0) 10-5.
+
+In the opened window, enter the relevant dataset details, including a name, description, and dataset type. If you'd like to use your own dataset, click the "Upload a CSV dataset" button.
+
+<span id="page-8-0"></span>![](_page_8_Picture_0.jpeg)
+
+Figure 10-5. Creating a new dataset in the LangSmith UI
+
+#### LangSmith offers three different dataset types:
+
+## *kv (key-value) dataset*
+
+- *Inputs* and *outputs* are represented as arbitrary keyvalue pairs.
+- The kv dataset is the most versatile, and it is the default type. The kv dataset is suitable for a wide range of evaluation scenarios.
+- This dataset type is ideal for evaluating chains and agents that require multiple inputs or generate multiple outputs.
+
+#### *llm (large language model) dataset*
+
+- The llm dataset is designed for evaluating completion style language models.
+- The inputs dictionary contains a single input key mapped to the prompt string.
+- The outputs dictionary contains a single output key mapped to the corresponding response string.
+- This dataset type simplifies evaluation for LLMs by providing a standardized format for inputs and outputs.
+
+#### *chat dataset*
+
+- The chat dataset is designed for evaluating LLM structured chat messages as inputs and outputs.
+- The *inputs* dictionary contains a single *input* key mapped to a list of serialized chat messages.
+- The *outputs* dictionary contains a single *output* key mapped to a list of serialized chat messages.
+- This dataset type is useful for evaluating conversational AI systems or chatbots.
+
+The most flexible option is the key-value data type (see [Figure](#page-10-0) 10-6).
+
+<span id="page-10-0"></span>![](_page_10_Picture_1.jpeg)
+
+Figure 10-6. Selecting a dataset type in the LangSmith UI
+
+Next, add examples to the dataset by clicking Add Example. Provide the input and output examples as JSON objects, as shown in [Figure](#page-11-0) 10-7.
+
+<span id="page-11-0"></span>![](_page_11_Picture_0.jpeg)
+
+Figure 10-7. Add key-value dataset examples in the LangSmith UI
+
+You can also define a schema for your dataset in the "Dataset schema" section, as shown in [Figure](#page-12-0) 10-8.
+
+<span id="page-12-0"></span>
+
+![](_page_12_Picture_2.jpeg)
+
+Figure 10-8. Adding a dataset schema in the LangSmith UI
+
+## **Defining Your Evaluation Criteria**
+
+After creating your dataset, you need to define evaluation metrics to assess your application's outputs before deploying into production. This batch evaluation on a predetermined test suite is often referred to as *offline evaluation***.**
+
+For offline evaluation, you can optionally label expected outputs (that is, ground truth references) for the data points you are testing on. This enables you to compare your application's response with the ground truth references, as shown in [Figure](#page-13-0) 10-9.
+
+<span id="page-13-0"></span>![](_page_13_Figure_1.jpeg)
+
+Figure 10-9. AI evaluation diagram
+
+There are three main evaluators to score your LLM app performance:
+
+#### *Human evaluators*
+
+If you can't express your testing requirements as code, you can use human feedback to express qualitative characteristics and label app responses with scores. LangSmith speeds up the process of collecting and incorporating human feedback with annotation queues.
+
+#### *Heuristic evaluators*
+
+These are hardcoded functions and assertions that perform computations to determine a score. You can use reference-free heuristics (for example, checking whether output is valid JSON) or reference-based heuristics such as accuracy. Reference-based evaluation compares an output to a predefined ground truth, whereas reference-free evaluation assesses qualitative characteristics without a ground truth. Custom heuristic evaluators are useful for code-generation tasks such as schema checking and unit testing with hardcoded evaluation logic.
+
+#### *LLM-as-a-judge evaluators*
+
+This evaluator integrates human grading rules into an LLM prompt to evaluate whether the output is correct relative to the reference answer supplied from the dataset output. As you iterate in preproduction, you'll need to audit the scores and tune the LLM-as-a-judge to produce reliable scores.
+
+To get started with evaluation, start simple with heuristic evaluators. Then implement human evaluators before moving on to LLM-as-a-judge to automate your human review. This enables you to add depth and scale once your criteria are welldefined.
+
+When using LLM-as-a-judge evaluators, use straightforward prompts that can easily be replicated and understood by a human. For example, avoid asking an LLM to produce scores on a range of 0 to 10 with vague distinctions between scores.
+
+[Figure](#page-15-0) 10-10 illustrates LLM-as-a-judge evaluator in the context of a RAG use case. Note that the reference answer is the ground truth.
+
+<span id="page-15-0"></span>![](_page_15_Figure_3.jpeg)
+
+Figure 10-10. LLM-as-a-judge evaluator used in a RAG use case
+
+### **Improving LLM-as-a-judge evaluators performance**
+
+Using an LLM-as-a-judge is an effective method to grade natural language outputs from LLM applications. This involves passing
+
+the generated output to a separate LLM for judgment and evaluation. But how can you trust the results of LLM-as-a-judge evaluation?
+
+Often, rounds of prompt engineering are required to improve accuracy, which is cumbersome and time-consuming. Fortunately, LangSmith provides a *few-shot* prompt solution whereby human corrections to LLM-as-a-judge outputs are stored as few-shot examples, which are then fed back into the prompt in future iterations.
+
+By utilizing few-shot learning, the LLM can improve accuracy and align outputs with human preferences by providing examples of correct behavior. This is especially useful when it's difficult to construct instructions on how the LLM should behave or be formatted.
+
+The few-shot evaluator follows these steps:
+
+- 1. The LLM evaluator provides feedback on generated outputs, assessing factors such as correctness, relevance, or other criteria.
+- 2. It adds human corrections to modify or correct the LLM evaluator's feedback in LangSmith. This is where human preferences and judgment are captured.
+
+- 3. These corrections are stored as few-shot examples in LangSmith, with an option to leave explanations for corrections.
+- 4. The few-shot examples are incorporated into future prompts as subsequent evaluation runs.
+
+Over time, the few-shot evaluator will become increasingly aligned with human preferences. This self-improving mechanism reduces the need for time-consuming prompt engineering, while improving the accuracy and relevance of LLM-as-a-judge evaluations.
+
+Here's how to easily set up the LLM-as-a-judge evaluator in LangSmith for offline evaluation. First, navigate to the "Datasets and Testing" section in the sidebar and select the dataset you want to configure the evaluator for. Click the Add Auto-Evaluator button at the top right of the dashboard to add an evaluator to the dataset. This will open a modal you can use to configure the evaluator.
+
+Select the LLM-as-a-judge option and give your evaluator a name. You will now have the option to set an inline prompt or load a prompt from the prompt hub that will be used to evaluate the results of the runs in the experiment. For the sake of this example, choose the Create Few-Shot Evaluator option, as shown in [Figure](#page-19-0) 10-11.
+
+<span id="page-19-0"></span>![](_page_19_Figure_0.jpeg)
+
+Figure 10-11. LangSmith UI options for the LLM-as-a-judge evaluator
+
+This option will create a dataset that holds few-shot examples that will autopopulate when you make corrections on the evaluator feedback. The examples in this dataset will be inserted in the system prompt message.
+
+You can also specify the scoring criteria in the Schema field and toggle between primitive types—for example, integer and Boolean (see [Figure](#page-1-0) 10-12).
+
+<span id="page-1-0"></span>![](_page_1_Figure_0.jpeg)
+
+Figure 10-12. LLM-as-a-judge evaluator scoring criteria
+
+Save the evaluator and navigate back to the dataset details page. Moving forward, each subsequent experiment run from the dataset will be evaluated by the evaluator you configured.
+
+## **Pairwise evaluation**
+
+Ranking LLM outputs by preference can be less cognitively demanding for human or LLM-as-a-judge evaluators. For example, assessing which output is more informative, specific, or safe. Pairwise evaluation compares two outputs simultaneously from different versions of an application to determine which version better meets evaluation criteria.
+
+LangSmith natively supports running and visualizing pairwise LLM app generations, highlighting preference for one generation over another based on guidelines set by the pairwise evaluator. LangSmith's pairwise evaluation enables you to do the following:
+
+- Define a custom pairwise LLM-as-a-judge evaluator using any desired criteria
+- Compare two LLM generations using this evaluator
+
+As per the LangSmith [docs](https://oreil.ly/ruFvy), you can use custom pairwise evaluators in the LangSmith SDK and visualize the results of pairwise evaluations in the LangSmith UI.
+
+After creating an evaluation experiment, you can navigate to the Pairwise Experiments tab in the Datasets & Experiments section. The UI enables you to dive into each pairwise
+
+experiment, showing which LLM generation is preferred based upon our criteria. If you click the RANKED\_PREFERENCE score under each answer, you can dive deeper into each evaluation trace (see [Figure](#page-3-0) 10-13).
+
+<span id="page-3-0"></span>![](_page_3_Figure_1.jpeg)
+
+Figure 10-13. Pairwise experiment UI evaluation trace
+

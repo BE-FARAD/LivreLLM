@@ -1,0 +1,220 @@
+# *Python*
+
+
+```
+from typing import Annotated, TypedDict
+from langchain_core.messages import (
+ AIMessage,
+ BaseMessage,
+ HumanMessage,
+ SystemMessage,
+)
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, START, StateGrap
+from langgraph.graph.message import add_messages
+model = ChatOpenAI()
+class State(TypedDict):
+ messages: Annotated[list[BaseMessage], add_me
+generate_prompt = SystemMessage(
+ """You are an essay assistant tasked with wri
+ essays."""
+ "Generate the best essay possible for the use
+```
+
+```
+ """If the user provides critique, respond wit
+ previous attempts."""
+)
+def generate(state: State) -> State:
+ answer = model.invoke([generate_prompt] + sta
+ return {"messages": [answer]}
+reflection_prompt = SystemMessage(
+ """You are a teacher grading an essay submiss
+ recommendations for the user's submission
+ """Provide detailed recommendations, includin
+ style, etc."""
+)
+def reflect(state: State) -> State:
+ # Invert the messages to get the LLM to refle
+ cls_map = {AIMessage: HumanMessage, HumanMess
+ # First message is the original user request
+ # We hold it the same for all nodes
+ translated = [reflection_prompt, state["messa
+ cls_map[msg.__class__](content=msg.conten
+ for msg in state["messages"][1:]
+ ]
+ answer = model.invoke(translated)
+ # We treat the output of this as human feedba
+ return {"messages": [HumanMessage(content=ans
+```
+
+```
+def should_continue(state: State):
+ if len(state["messages"]) > 6:
+ # End after 3 iterations, each with 2 mes
+ return END
+ else:
+ return "reflect"
+builder = StateGraph(State)
+builder.add_node("generate", generate)
+builder.add_node("reflect", reflect)
+builder.add_edge(START, "generate")
+builder.add_conditional_edges("generate", should_
+builder.add_edge("reflect", "generate")
+graph = builder.compile()
+```
+
+#### *JavaScript*
+
+```
+import {
+ AIMessage,
+ BaseMessage,
+ SystemMessage,
+ HumanMessage,
+} from "@langchain/core/messages";
+import { ChatOpenAI } from "@langchain/openai";
+import {
+```
+
+```
+ StateGraph,
+ Annotation,
+ messagesStateReducer,
+ START,
+ END,
+} from "@langchain/langgraph";
+const model = new ChatOpenAI();
+const annotation = Annotation.Root({
+ messages: Annotation({ reducer: messagesStateRe
+});
+// fix multiline string
+const generatePrompt = new SystemMessage(
+ `You are an essay assistant tasked with writing
+ Generate the best essay possible for the user's
+ If the user provides critique, respond with a r
+ previous attempts.`
+);
+async function generate(state) {
+ const answer = await model.invoke([generateProm
+ return { messages: [answer] };
+}
+const reflectionPrompt = new SystemMessage(
+ `You are a teacher grading an essay submission
+```
+
+```
+ recommendations for the user's submission.
+ Provide detailed recommendations, including req
+ style, etc.`
+);
+async function reflect(state) {
+ // Invert the messages to get the LLM to reflec
+ const clsMap: { [key: string]: new (content: st
+ ai: HumanMessage,
+ human: AIMessage,
+ };
+ // First message is the original user request. 
+ // We hold it the same for all nodes
+ const translated = [
+ reflectionPrompt,
+ state.messages[0],
+ ...state.messages
+ .slice(1)
+ .map((msg) => new clsMap[msg._getType()](ms
+ ];
+ const answer = await model.invoke(translated);
+ // We treat the output of this as human feedbac
+ return { messages: [new HumanMessage({ content
+}
+function shouldContinue(state) {
+ if (state.messages.length > 6) {
+ // End after 3 iterations, each with 2 messag
+```
+
+```
+ return END;
+ } else {
+ return "reflect";
+ }
+}
+const builder = new StateGraph(annotation)
+ .addNode("generate", generate)
+ .addNode("reflect", reflect)
+ .addEdge(START, "generate")
+ .addConditionalEdges("generate", shouldContinue
+ .addEdge("reflect", "generate");
+const graph = builder.compile();
+```
+
+The visual representation of the graph is shown in [Figure](#page-2-0) 7-2.
+
+<span id="page-2-0"></span>![](_page_2_Picture_0.jpeg)
+
+Figure 7-2. The reflection architecture
+
+Notice how the reflect node tricks the LLM into thinking it is critiquing essays written by the user. And in tandem, the generate node is made to think that the critique comes from the user. This subterfuge is required because dialogue-tuned LLMs are trained on pairs of human-AI messages, so a sequence of many messages from the same participant would result in poor performance.
+
+One more thing to note: you might, at first glance, expect the end to come after a revise step, but in this architecture we have a fixed number of iterations of the generate-reflect loop; therefore we terminate after generate (so that the last set of revisions requested are dealt with). A variation on this architecture would instead have the reflect step make the decision to end the process (once it had no more comments).
+
+Let's see what one of the critiques looks like:
+
+```
+{
+ 'messages': [
+ HumanMessage(content='Your essay on the t
+ and its message in modern life is wel
+ have effectively highlighted the endu
+ themes and its importance in today\'s
+ few areas where you could enhance you
+ While you touch upon the themes of ch
+ nurturing connections, and understand
+ consider delving deeper into each of 
+ examples from the book to support you
+ themes manifest in contemporary life
+ analyzing how the book\'s messages ca
+ societal issues or personal experienc
+ discuss how the Little Prince\'s pers
+ to consumer culture or explore how hi
+ can inform interpersonal dynamics in 
+ **Length**: Expand on your ideas by a
+```
+
+ discussing counterarguments, or explo "The Little Prince" in different part enrich the depth of your analysis and understanding of the book\'s relevanc is clear and well-structured. To enha readers, consider incorporating quote key points or including anecdotes to \n\n5. \*\*Conclusion\*\*: Conclude your enduring significance of "The Little can inspire positive change in modern broader implications of the book\'s t with a lasting impression.\n\nBy expa incorporating more examples, and deep book\'s messages, you can create a mo compelling essay on the topicality of life. Well done on your thoughtful an work!', id='70c22b1d-ec96-4dc3-9fd0-d
+
+ ], }
+
+#### And the final output:
+
+```
+{
+ 'messages': [
+ AIMessage(content='"The Little Prince" by
+ stands as a timeless masterpiece that
+```
+
+```
+ insights into human relationships and
+ readers across generations. The narra
+ travels and encounters with a myriad 
+ tapestry of allegorical representatio
+ {'token_usage': {'completion_tokens'
+ 'total_tokens': 2921}, 'model_name': 
+ 'system_fingerprint': None, 'finish_r
+ None}, id='run-2e8f9f13-f625-4820-9c8
+ usage_metadata={'input_tokens': 2501,
+ 'total_tokens': 2921}),
+ ],
+}
+```
+
+This simple type of reflection can sometimes improve performance by giving the LLM multiple attempts at refining its output and by letting the reflection node adopt a different persona while critiquing the output.
+
+There are several possible variations of this architecture. For one, we could combine the reflection step with the agent architecture of [Chapter](#page--1-0) 6, adding it as the last node right before sending output to the user. This would make the critique appear to come from the user, and give the application a chance to improve its final output without direct user intervention. Obviously this approach would come at the expense of higher latency.
+
+In certain use cases, it could be helpful to ground the critique with external information. For instance, if you were writing a code-generation agent, you could have a step before reflect that would run the code through a linter or compiler and report any errors as input to reflect .
+
+#### **TIP**
+
+Whenever this approach is possible, we strongly recommend giving it a try, as it's likely to increase the quality of the final output.
+

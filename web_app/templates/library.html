@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque - LivreLLM</title>
+    <!-- Add Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/library.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📚 Ma Bibliothèque</h1>
+            <p class="subtitle">Votre collection de livres enrichis par IA</p>
+        </header>
+
+        <main class="books-grid">
+            {% for book in books %}
+            <div class="book-card">
+                <a href="/reader/{{ book }}" class="book-cover"
+                    style="background-image: url('{{ url_for('static', filename='covers/' + book + '.png') }}'); background-size: cover; background-position: center;">
+                    <div class="cover-overlay"></div>
+                    <div class="cover-art">
+                        <!-- Icon hidden if cover exists, but we keep structure -->
+                        <h2 class="book-title">{{ book.replace('_', ' ') }}</h2>
+                    </div>
+                </a>
+                <a href="/reader/{{ book }}" class="cta-button">Commencer la lecture</a>
+            </div>
+            {% endfor %}
+
+            {% if books|length == 0 %}
+            <div class="empty-state">
+                <p>Aucun livre disponible</p>
+                <p class="hint">Importez des livres depuis l'application Streamlit</p>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</body>
+
+</html>

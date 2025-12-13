@@ -1,0 +1,13 @@
+# --- Create an index of documents ---
+
+urls = [
+ "https://blog.langchain.dev/top-5-langgraph-a
+ "https://blog.langchain.dev/langchain-state-o
+ "https://blog.langchain.dev/introducing-ambie
+]
+docs = [WebBaseLoader(url).load() for url in urls
+docs_list = [item for sublist in docs for item in
+text_splitter = RecursiveCharacterTextSplitter.fr
+ chunk_size=250, chunk_overlap=0
+)
+doc_splits = text_splitter.split_documents(docs_l

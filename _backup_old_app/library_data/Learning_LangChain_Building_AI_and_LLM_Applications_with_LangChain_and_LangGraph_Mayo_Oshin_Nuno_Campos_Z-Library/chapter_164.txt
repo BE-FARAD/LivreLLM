@@ -1,0 +1,4 @@
+# Split the document
+
+splitter = RecursiveCharacterTextSplitter(chunk_s
+chunks = splitter.split_documents(docs)

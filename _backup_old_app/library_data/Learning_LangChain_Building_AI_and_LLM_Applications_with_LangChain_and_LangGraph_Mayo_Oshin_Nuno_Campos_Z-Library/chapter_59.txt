@@ -1,0 +1,15 @@
+# Reflection
+
+
+One prompting technique we haven't covered yet is *reflection* (also known as *self-critique*). *Reflection* is the creation of a loop between a creator prompt and a reviser prompt. This mirrors the creation process for many human-created artifacts, such as this chapter you're reading now, which is the result of a back and forth between the authors, reviewers, and editor until all are happy with the final product.
+
+As with many of the prompting techniques we have seen so far, reflection can be combined with other techniques, such as chain-of-thought and tool calling. In this section, we'll look at reflection in isolation.
+
+A parallel can be drawn to the modes of human thinking known as *System 1* (reactive or instinctive) and *System 2* (methodical and reflective), first introduced by Daniel Kahneman in the book *Thinking, Fast and Slow* (Farrar, Straus and Giroux, 2011). When applied correctly, self-critique can help LLM applications get closer to something that resembles System 2 behavior [\(Figure](#page-15-0) 7-1).
+
+<span id="page-15-0"></span>![](_page_15_Picture_0.jpeg)
+
+Figure 7-1. System 1 and System 2 thinking
+
+We'll implement reflection as a graph with two nodes: generate and reflect . This graph will be tasked with writing three-paragraph essays, with the generate node writing or revising drafts of the essay, and reflect writing a critique to inform the next revision. We'll run the loop a fixed number of times, but a variation on this technique would be to have the reflect node decide when to finish. Let's see what it looks like:
+

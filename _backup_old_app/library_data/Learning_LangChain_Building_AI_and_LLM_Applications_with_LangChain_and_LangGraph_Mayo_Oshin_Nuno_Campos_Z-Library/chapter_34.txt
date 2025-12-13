@@ -1,0 +1,9 @@
+# *Python*
+
+
+```
+input = {"messages": [HumanMessage('hi!)]}
+for chunk in graph.stream(input):
+ print(chunk)
+```
+

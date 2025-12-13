@@ -1,0 +1,50 @@
+# note that we are using `node` function instead
+
+builder.add_node(node)
+...
+graph = builder.compile()
+```
+
+*JavaScript*
+
+```
+import { StateGraph, START, Annotation } from "@l
+const StateAnnotation = Annotation.Root({
+ foo: Annotation(),
+});
+const SubgraphStateAnnotation = Annotation.Root({
+ // note that none of these keys are shared with
+ bar: Annotation(),
+ baz: Annotation(),
+});
+// Define subgraph
+const subgraphNode = async (state) => {
+ return { bar: state.bar + "baz" };
+};
+```
+
+```
+const subgraph = new StateGraph(SubgraphStateAnno
+ .addNode("subgraph", subgraphNode);
+ ...
+ .compile();
+// Define parent graph
+const subgraphWrapperNode = async (state) => {
+ // transform the state to the subgraph state
+ const response = await subgraph.invoke({
+ bar: state.foo,
+ });
+ // transform response back to the parent state
+ return {
+ foo: response.bar,
+ };
+}
+const parentGraph = new StateGraph(StateAnnotatio
+ .addNode("subgraph", subgraphWrapperNode)
+ .addEdge(START, "subgraph")
+ // Additional parent graph setup would go here
+ .compile();
+```
+
+Now that we know how to use subgraphs, let's take a look at one of the big use cases for them: multi-agent architectures.
+

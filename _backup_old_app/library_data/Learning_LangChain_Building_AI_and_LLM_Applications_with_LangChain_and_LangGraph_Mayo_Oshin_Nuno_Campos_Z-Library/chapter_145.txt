@@ -1,0 +1,19 @@
+# LangChain
+
+⚡ Building applications with LLMs through compos
+## Quick Install
+```bash
+pip install langchain
+```
+As an open source project in a rapidly developing
+ to contributions.
+"""
+md_splitter = RecursiveCharacterTextSplitter.from
+ language=Language.MARKDOWN, chunk_size=60, ch
+)
+md_docs = md_splitter.create_documents([markdown_
+ [{"source": "https://www.langchain.com"}])
+```
+
+```
+const markdownText = `

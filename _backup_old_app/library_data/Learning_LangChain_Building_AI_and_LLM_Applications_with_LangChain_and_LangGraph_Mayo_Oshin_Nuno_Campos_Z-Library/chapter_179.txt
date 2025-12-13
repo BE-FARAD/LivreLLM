@@ -1,0 +1,133 @@
+# Whereas the retriever will return the larger so
+
+retrieved_docs = retriever.invoke("chapter on phi
+```
+
+Here's the full implementation in JavaScript:
+
+*JavaScript*
+
+```
+import * as uuid from 'uuid';
+import { MultiVectorRetriever } from 'langchain/r
+import { OpenAIEmbeddings } from '@langchain/open
+import { RecursiveCharacterTextSplitter } from '@
+```
+
+```
+import { InMemoryStore } from '@langchain/core/st
+import { TextLoader } from 'langchain/document_lo
+import { Document } from '@langchain/core/documen
+import { PGVectorStore } from '@langchain/communi
+import { ChatOpenAI } from '@langchain/openai';
+import { PromptTemplate } from '@langchain/core/p
+import { RunnableSequence } from '@langchain/core
+import { StringOutputParser } from '@langchain/co
+const connectionString =
+ 'postgresql://langchain:langchain@localhost:602
+const collectionName = 'summaries';
+const textLoader = new TextLoader('./test.txt');
+const parentDocuments = await textLoader.load();
+const splitter = new RecursiveCharacterTextSplitt
+ chunkSize: 10000,
+ chunkOverlap: 20,
+});
+const docs = await splitter.splitDocuments(parent
+const prompt = PromptTemplate.fromTemplate(
+ `Summarize the following document:\n\n{doc}`
+);
+const llm = new ChatOpenAI({ modelName: 'gpt-3.5-
+const chain = RunnableSequence.from([
+```
+
+```
+ { doc: (doc) => doc.pageContent },
+ prompt,
+ llm,
+ new StringOutputParser(),
+]);
+// batch summarization chain across the chunks
+const summaries = await chain.batch(docs, {
+ maxConcurrency: 5,
+});
+const idKey = 'doc_id';
+const docIds = docs.map((_) => uuid.v4());
+// create summary docs with metadata linking to t
+const summaryDocs = summaries.map((summary, i) =>
+ const summaryDoc = new Document({
+ pageContent: summary,
+ metadata: {
+ [idKey]: docIds[i],
+ },
+ });
+ return summaryDoc;
+});
+// The byteStore to use to store the original chu
+const byteStore = new InMemoryStore();
+// vector store for the summaries
+```
+
+```
+const vectorStore = await PGVectorStore.fromDocum
+ docs,
+ new OpenAIEmbeddings(),
+ {
+ postgresConnectionOptions: {
+ connectionString,
+ },
+ }
+);
+const retriever = new MultiVectorRetriever({
+ vectorstore: vectorStore,
+ byteStore,
+ idKey,
+});
+const keyValuePairs = docs.map((originalDoc, i) =
+// Use the retriever to add the original chunks t
+await retriever.docstore.mset(keyValuePairs);
+// Vectorstore alone retrieves the small chunks
+const vectorstoreResult = await retriever.vectors
+ 'chapter on philosophy',
+ 2
+);
+console.log(`summary: ${vectorstoreResult[0].page
+console.log(
+```
+
+```
+ `summary retrieved length: ${vectorstoreResult[
+);
+// Retriever returns larger chunk result
+const retrieverResult = await retriever.invoke('c
+console.log(
+ `multi-vector retrieved chunk length: ${retriev
+);
+```
+
+## **RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval**
+
+RAG systems need to handle lower-level questions that reference specific facts found in a single document or higherlevel questions that distill ideas that span many documents. Handling both types of questions can be a challenge with typical k-nearest neighbors (k-NN) retrieval over document chunks.
+
+*Recursive abstractive processing for tree-organized retrieval* (RAPTOR) is an effective strategy that involves creating document summaries that capture higher-level concepts, embedding and clustering those documents, and then [summarizing](https://oreil.ly/VdIpJ) each cluster. This is done recursively, producing a tree of summaries with increasingly high-level concepts. The **[2](#page--1-0)**
+
+summaries and initial documents are then indexed together, giving coverage across lower-to-higher-level user questions. [Figure](#page-17-0) 2-6 illustrates.
+
+<span id="page-17-0"></span>![](_page_17_Figure_1.jpeg)
+
+Figure 2-6. Recursively summarizing documents
+
+## **ColBERT: Optimizing Embeddings**
+
+One of the challenges of using embeddings models during the indexing stage is that they compress text into fixed-length (vector) representations that capture the semantic content of the document. Although this compression is useful for retrieval, embedding irrelevant or redundant content may lead to hallucinations in the final LLM output.
+
+One solution to this problem is to do the following:
+
+- 1. Generate contextual embeddings for each token in the document and query.
+- 2. Calculate and score similarity between each query token and all document tokens.
+- 3. Sum the maximum similarity score of each query embedding to any of the document embeddings to get a score for each document.
+
+This results in a granular and effective embedding approach for better retrieval. Fortunately, the embedding model called ColBERT embodies the solution to this problem. **[3](#page--1-1)**
+
+Here's how we can utilize ColBERT for optimal embedding of our data:
+
+```

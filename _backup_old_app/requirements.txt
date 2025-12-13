@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+openai
+pydantic
+python-dotenv
+qdrant-client
+neo4j
+anthropic
+marker-pdf
+fastembed
+livekit-agents
+livekit-plugins-openai
+livekit-plugins-silero

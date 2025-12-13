@@ -1,0 +1,77 @@
+# <span id="page-9-0"></span>Chapter 10. Testing: Evaluation, Monitoring, and Continuous Improvement
+
+
+In [Chapter](#page--1-0) 9, you learned how to deploy your AI application into production and utilize LangGraph Platform to host and debug your app.
+
+Although your app can respond to user inputs and execute complex tasks, its underlying LLM is nondeterministic and prone to hallucination. As discussed in previous chapters, LLMs can generate inaccurate and outdated outputs due to a variety of reasons including the prompt, format of user's input, and retrieved context. In addition, harmful or misleading LLM outputs can significantly damage a company's brand and customer loyalty.
+
+To combat this tendency toward hallucination, you need to build an efficient system to test, evaluate, monitor, and continuously improve your LLM applications' performance. This robust testing process will enable you to quickly debug and fix AI-related issues before and after your app is in production.
+
+In this chapter, you'll learn how to build an iterative testing system across the key stages of the LLM app development lifecycle and maintain high performance of your application.
+
+## Testing Techniques Across the LLM App Development Cycle
+
+Before we construct the testing system, let's briefly review how testing can be applied across the three key stages of LLM app development:
+
+### *Design*
+
+In this stage, LLM tests are applied directly to your application. These tests can be assertions executed at runtime that feed failures back to the LLM for selfcorrection. The purpose of testing at this stage is error handling within your app before it affects users.
+
+### *Preproduction*
+
+In this stage, tests are run right before deployment into production. The purpose of testing at this stage is to catch and fix any regressions before the app is released to real users.
+
+### *Production*
+
+In this stage, tests are run while your application is in production to help monitor and catch errors affecting real users. The purpose is to identify issues and feed them back into the design or preproduction phases.
+
+The combination of testing across these stages creates a continuous improvement cycle where these steps are repeated: design, test, deploy, monitor, fix, and redesign. See [Figure](#page-11-0) 10-1.
+
+<span id="page-11-0"></span>![](_page_11_Figure_3.jpeg)
+
+Figure 10-1. The three key stages of the LLM app development cycle
+
+In essence, this cycle helps you to identify and fix production issues in an efficient and quick manner.
+
+Let's dive deeper into testing techniques across each of these stages.
+
+### The Design Stage: Self-Corrective RAG
+
+As discussed previously, your application can incorporate error handling at runtime that feeds errors to the LLM for selfcorrection. Let's explore a RAG use case using LangGraph as the framework to orchestrate error handling.
+
+Basic RAG-driven AI applications are prone to hallucination due to inaccurate or incomplete retrieval of relevant context to generate outputs. But you can utilize an LLM to grade retrieval relevance and fix hallucination issues.
+
+LangGraph enables you to effectively implement the control flow of this process, as shown in [Figure](#page-13-0) 10-2.
+
+<span id="page-13-0"></span>![](_page_13_Figure_0.jpeg)
+
+Figure 10-2. Self-corrective RAG control flow
+
+### The control flow steps are as follows:
+
+- 1. In the routing step, each question is routed to the relevant retrieval method, that is, vector store and web search.
+- 2. If, for example, the question is routed to a vector store for retrieval, the LLM in the control flow will retrieve and grade the documents for relevancy.
+- 3. If the document is relevant, the LLM proceeds to generate an answer.
+- 4. The LLM will check the answer for hallucinations and only proceed to display the answer to the user if the output is accurate and relevant.
+
+5. As a fallback, if the retrieved document is irrelevant or the generated answer doesn't answer the user's question, the flow utilizes web search to retrieve relevant information as context.
+
+This process enables your app to iteratively generate answers, self-correct errors and hallucinations, and improve the quality of outputs.
+
+Let's run through an example code implementation of this control flow. First, download the required packages and initialize relevant API keys. For these examples, you'll need to set your OpenAI and LangSmith API keys as environment variables.
+
+First, we'll create an index of three blog posts:
+
+### *Python*
+
+```
+from langchain.text_splitter import RecursiveChar
+from langchain_community.document_loaders import
+from langchain_community.vectorstores import InMe
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.prompts import ChatPromptTemp
+from pydantic import BaseModel, Field
+from langchain_openai import ChatOpenAI
+```
+
+```

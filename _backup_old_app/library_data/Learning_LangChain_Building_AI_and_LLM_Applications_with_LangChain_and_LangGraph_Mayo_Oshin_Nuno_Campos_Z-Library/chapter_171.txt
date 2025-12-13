@@ -1,0 +1,3 @@
+# Changed from summaries to chunks since we need
+
+doc_ids = [str(uuid.uuid4()) for _ in chunks]

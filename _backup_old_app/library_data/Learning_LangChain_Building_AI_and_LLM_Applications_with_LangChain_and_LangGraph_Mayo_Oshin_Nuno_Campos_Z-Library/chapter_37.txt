@@ -1,0 +1,314 @@
+# Modifying Chat History
+
+
+In many cases, the chat history messages aren't in the best state or format to generate an accurate response from the model. To overcome this problem, we can modify the chat history in three main ways: trimming, filtering, and merging messages.
+
+### **Trimming Messages**
+
+LLMs have limited *context windows*; in other words, there is a maximum number of tokens that LLMs can receive as a prompt. As such, the final prompt sent to the model shouldn't exceed that limit (particular to each mode), as models will either refuse an overly long prompt or truncate it. In addition, excessive prompt information can distract the model and lead to hallucination.
+
+An effective solution to this problem is to limit the number of messages that are retrieved from chat history and appended to the prompt. In practice, we need only to load and store the most recent messages. Let's use an example chat history with some preloaded messages.
+
+Fortunately, LangChain provides the built-in trim\_messages helper that incorporates various strategies to meet these requirements. For example, the trimmer helper enables specifying how many tokens we want to keep or remove from chat history.
+
+Here's an example that retrieves the last max\_tokens in the list of messages by setting a strategy parameter to "last" :
+
+```
+from langchain_core.messages import SystemMessage
+from langchain_openai import ChatOpenAI
+trimmer = trim_messages(
+ max_tokens=65,
+ strategy="last",
+ token_counter=ChatOpenAI(model="gpt-4o"),
+ include_system=True,
+```
+
+```
+ allow_partial=False,
+ start_on="human",
+)
+messages = [
+ SystemMessage(content="you're a good assistan
+ HumanMessage(content="hi! I'm bob"),
+ AIMessage(content="hi!"),
+ HumanMessage(content="I like vanilla ice crea
+ AIMessage(content="nice"),
+ HumanMessage(content="what's 2 + 2"),
+ AIMessage(content="4"),
+ HumanMessage(content="thanks"),
+ AIMessage(content="no problem!"),
+ HumanMessage(content="having fun?"),
+ AIMessage(content="yes!"),
+]
+trimmer.invoke(messages)
+```
+
+```
+import {
+ AIMessage,
+ HumanMessage,
+```
+
+```
+ SystemMessage,
+ trimMessages,
+} from "@langchain/core/messages";
+import { ChatOpenAI } from "@langchain/openai";
+const trimmer = trimMessages({
+ maxTokens: 65,
+ strategy: "last",
+ tokenCounter: new ChatOpenAI({ modelName: "gpt-
+ includeSystem: true,
+ allowPartial: false,
+ startOn: "human",
+});
+const messages = [
+ new SystemMessage("you're a good assistant"),
+ new HumanMessage("hi! I'm bob"),
+ new AIMessage("hi!"),
+ new HumanMessage("I like vanilla ice cream"),
+ new AIMessage("nice"),
+ new HumanMessage("what's 2 + 2"),
+ new AIMessage("4"),
+ new HumanMessage("thanks"),
+ new AIMessage("no problem!"),
+ new HumanMessage("having fun?"),
+ new AIMessage("yes!"),
+]
+```
+
+```
+const trimmed = await trimmer.invoke(messages);
+```
+
+#### *The output:*
+
+```
+[SystemMessage(content="you're a good assistant")
+ HumanMessage(content='what's 2 + 2'),
+ AIMessage(content='4'),
+ HumanMessage(content='thanks'),
+ AIMessage(content='no problem!'),
+ HumanMessage(content='having fun?'),
+ AIMessage(content='yes!')]
+```
+
+#### Note the following:
+
+- The parameter strategy controls whether to start from the beginning or the end of the list. Usually, you'll want to prioritize the most recent messages and cut older messages if they don't fit. That is, start from the end of the list. For this behavior, choose the value last . The other available option is first , which would prioritize the oldest messages and cut more recent messages if they don't fit.
+- The token\_counter is an LLM or chat model, which will be used to count tokens using the tokenizer appropriate to that
+
+model.
+
+- We can add the parameter include\_system=True to ensure that the trimmer keeps the system message.
+- The parameter allow\_partial determines whether to cut the last message's content to fit within the limit. In our example, we set this to false , which completely removes the message that would send the total over the limit.
+- The parameter start\_on="human" ensures that we never remove an AIMessage (that is, a response from the model) without also removing a corresponding HumanMessage (the question for that response).
+
+### **Filtering Messages**
+
+As the list of chat history messages grows, a wider variety of types, subchains, and models may be utilized. LangChain's filter\_messages helper makes it easier to filter the chat history messages by type, ID, or name.
+
+Here's an example where we filter for human messages:
+
+```
+from langchain_core.messages import (
+ AIMessage,
+```
+
+```
+ HumanMessage,
+ SystemMessage,
+ filter_messages,
+)
+messages = [
+ SystemMessage("you are a good assistant", id=
+ HumanMessage("example input", id="2", name="e
+ AIMessage("example output", id="3", name="exa
+ HumanMessage("real input", id="4", name="bob"
+ AIMessage("real output", id="5", name="alice"
+]
+filter_messages(messages, include_types="human")
+```
+
+```
+import {
+ HumanMessage,
+ SystemMessage,
+ AIMessage,
+ filterMessages,
+} from "@langchain/core/messages";
+const messages = [
+ new SystemMessage({content: "you are a good ass
+```
+
+```
+ new HumanMessage({content: "example input", id
+ new AIMessage({content: "example output", id: "
+ new HumanMessage({content: "real input", id: "4
+ new AIMessage({content: "real output", id: "5",
+];
+filterMessages(messages, { includeTypes: ["human"
+```
+
+#### *The output:*
+
+```
+[HumanMessage(content='example input', name='exam
+ HumanMessage(content='real input', name='bob', i
+```
+
+Let's try another example where we filter to exclude users and IDs, and include message types:
+
+```
+filter_messages(messages, exclude_names=["example
+"""
+[SystemMessage(content='you are a good assistant
+HumanMessage(content='real input', name='bob', id
+```
+
+```
+AIMessage(content='real output', name='alice', id
+"""
+filter_messages(
+ messages,
+ include_types=[HumanMessage, AIMessage],
+ exclude_ids=["3"]
+)
+"""
+[HumanMessage(content='example input', name='exam
+ HumanMessage(content='real input', name='bob', i
+ AIMessage(content='real output', name='alice', i
+"""
+```
+
+```
+filterMessages(
+ messages,
+ { excludeNames: ["example_user",
+ "example_assistant"] }
+);
+/*
+[SystemMessage(content='you are a good assistant
+HumanMessage(content='real input', name='bob', id
+```
+
+```
+AIMessage(content='real output', name='alice', id
+*/
+filterMessages(messages, { includeTypes: ["human"
+/*
+[HumanMessage(content='example input', name='exam
+ HumanMessage(content='real input', name='bob', i
+ AIMessage(content='real output', name='alice', i
+*/
+```
+
+The filter\_messages helper can also be used imperatively or declaratively, making it easy to compose with other components in a chain:
+
+```
+model = ChatOpenAI()
+filter_ = filter_messages(exclude_names=["example
+chain = filter_ | model
+```
+
+```
+const model = new ChatOpenAI()
+const filter = filterMessages({
+ excludeNames: ["example_user", "example_assista
+})
+const chain = filter.pipe(model)
+```
+
+## **Merging Consecutive Messages**
+
+Certain models don't support inputs, including consecutive messages of the same type (for instance, Anthropic chat models). LangChain's merge\_message\_runs utility makes it easy to merge consecutive messages of the same type:
+
+```
+from langchain_core.messages import (
+ AIMessage,
+ HumanMessage,
+ SystemMessage,
+ merge_message_runs,
+```
+
+```
+)
+messages = [
+ SystemMessage("you're a good assistant."),
+ SystemMessage("you always respond with a joke
+ HumanMessage(
+ [{"type": "text", "text": "i wonder why i
+ ),
+ HumanMessage("and who is harrison chasing any
+ AIMessage(
+ '''Well, I guess they thought "WordRope" 
+ didn\'t have the same ring to it!'''
+ ),
+ AIMessage("""Why, he's probably chasing after
+ office!"""),
+]
+merge_message_runs(messages)
+```
+
+```
+import {
+ HumanMessage,
+ SystemMessage,
+ AIMessage,
+ mergeMessageRuns,
+} from "@langchain/core/messages";
+```
+
+```
+} o @ a gc a /co e/ essages ;
+const messages = [
+ new SystemMessage("you're a good assistant."),
+ new SystemMessage("you always respond with a jo
+ new HumanMessage({
+ content: [{ type: "text", text: "i wonder why
+ }),
+ new HumanMessage("and who is harrison chasing a
+ new AIMessage(
+ `Well, I guess they thought "WordRope" and "S
+ have the same ring to it!`
+ ),
+ new AIMessage(
+ "Why, he's probably chasing after the last cu
+ ),
+];
+mergeMessageRuns(messages);
+```
+
+#### *The output:*
+
+```
+[SystemMessage(content="you're a good assistant.\
+ joke."),
+ HumanMessage(content=[{'type': 'text', 'text': "
+ langchain"}, 'and who is harrison chasing any
+ AIMessage(content='Well, I guess they thought "W
+```
+
+```
+ just didn\'t have the same ring to it!\nWhy, 
+ the last cup of coffee in the office!')]
+```
+
+Notice that if the contents of one of the messages to merge is a list of content blocks, then the merged message will have a list of content blocks. And if both messages to merge have string contents, then those are concatenated with a newline character.
+
+The merge\_message\_runs helper can be used imperatively or declaratively, making it easy to compose with other components in a chain:
+
+#### *Python*
+
+```
+model = ChatOpenAI()
+merger = merge_message_runs()
+chain = merger | model
+```
+
+```
+const model = new ChatOpenAI()
+const merger = mergeMessageRuns()
+const chain = merger.pipe(model)
+```
+

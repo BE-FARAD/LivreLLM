@@ -1,0 +1,82 @@
+# run
+
+qa.invoke("Who are the key figures in the ancient
+```
+
+```
+import {ChatOpenAI} from '@langchain/openai'
+import {ChatPromptTemplate} from '@langchain/core
+import {RunnableLambda} from '@langchain/core/run
+const retriever = db.asRetriever()
+const prompt = ChatPromptTemplate.fromTemplate(`A
+ on the following context:
+{context}
+Question: {question}
+`)
+const llm = new ChatOpenAI({temperature: 0, model
+const qa = RunnableLambda.from(async input => {
+ // fetch relevant documents
+ const docs = await retriever.invoke(input)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return answer
+})
+await qa.invoke(`Who are the key figures in the a
+ philosophy?`)
+```
+
+Notice how we now have a new runnable qa function that can be called with just a question and takes care to first fetch the relevant docs for context, format them into the prompt, and finally generate the answer. In the Python code, the @chain decorator turns the function into a runnable chain. This notion of encapsulating multiple steps into a single function will be key to building interesting apps with LLMs.
+
+You can also return the retrieved documents for further inspection:
+
+### *Python*
+
+p p y )
+
+```
+@chain
+def qa(input):
+ # fetch relevant documents 
+ docs = retriever.get_relevant_documents(input
+ # format prompt
+ formatted = prompt.invoke({"context": docs,
+                                             "
+ # generate answer
+ answer = llm.invoke(formatted)
+ return {"answer": answer, "docs": docs}
+```
+
+```
+const qa = RunnableLambda.from(async input => {
+ // fetch relevant documents
+ const docs = await retriever.invoke(input)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return {answer, docs}
+})
+```
+
+Congratulations! You've now built a basic RAG system to power an AI app for personal use.
+
+However, a production-ready AI app used by multiple users requires a more advanced RAG system. In order to build a robust RAG system, we need to answer the following questions effectively:
+
+- How do we handle the variability in the quality of a user's input?
+- How do we route queries to retrieve relevant data from a variety of data sources?
+
+- How do we transform natural language to the query language of the target data source?
+- How do we optimize our indexing process, i.e., embedding, text splitting?
+
+Next we'll discuss the latest research-backed strategies to answer these questions and build a production-ready RAG system. These strategies can be summarized in [Figure](#page-3-0) 3-4.
+
+<span id="page-3-0"></span>![](_page_3_Figure_3.jpeg)
+
+Figure 3-4. Effective strategies to optimize the accuracy of your RAG system
+
+#### **NOTE**
+
+All code blocks in the rest of this chapter use the vector store we set up at the beginning of the chapter.
+

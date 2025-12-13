@@ -1,0 +1,85 @@
+# The Plan-Do Loop
+
+
+What makes the agent architecture different from the architectures discussed in [Chapter](#page--1-2) 5 is a concept we haven't covered yet: the LLM-driven loop.
+
+Every programmer has encountered loops in their code before. By *loop*, we mean running the same code multiple times until a stop condition is hit. The key to the agent architecture is to have an LLM control the stop condition—that is, decide when to stop looping.
+
+What we'll run in this loop will be some variation of the following:
+
+- Planning an action or actions
+- Executing said action(s)
+
+Picking up on the example in the previous section, we'll next run the search tool with the input 30th president of the United States , which produces this output:
+
+Calvin Coolidge (born John Calvin Coolidge Jr.; / 5, 1933) was an American attorney and politician of the United States from 1923 to 1929. John Calv
+
+And then we'll rerun the prompt, with a small addition:
+
+#### Tools:
+
+search: this tool accepts a web search query and calculator: this tool accepts math expressions an output: this tool ends the interaction. Use it wh
+
+If you want to use tools to arrive at the answer, inputs in CSV format, with this header row: tool,
+
+Think step by step; if you need to make multiple the answer, return only the first one.
+
+How old was the 30th president of the United Stat
+
+tool,input
+
+search,30th president of the United States
+
+search: Calvin Coolidge (born John Calvin Coolidg January 5, 1933) was an American attorney and pol president of the United States from 1923 to 1929
+
+tool,input
+
+And the output:
+
+calculator,1933 - 1872
+
+## Notice we added two things:
+
+- An "output" tool—which the LLM should use when it has found the final answer, and which we'd use as the signal to stop the loop.
+- The result of the tool call from the preceding iteration, simply with the name of the tool and its (text) output. This is included in order to allow the LLM to move on to the next step in the interaction. In other words, we're telling the LLM, "Hey, we got the results you asked for, what do you want to do next?"
+
+## Let's continue with a third iteration:
+
+#### Tools:
+
+search: this tool accepts a web search query and calculator: this tool accepts math expressions an
+
+If you want to use tools to arrive at the answer, inputs in CSV format, with this header row: tool, output: this tool ends the interaction. Use it wh
+
+Think step by step; if you need to make multiple the answer, return only the first one.
+
+How old was the 30th president of the United Stat
+
+tool,input
+
+search,30th president of the United States
+
+search: Calvin Coolidge (born John Calvin Coolidg January 5, 1933) was an American attorney and pol president of the United States from 1923 to 1929 tool,input
+
+calculator,1933-1872
+
+calculator: 61
+
+```
+tool, input
+```
+
+## And the output:
+
+```
+output, 61
+```
+
+With the result from the calculator tool, the LLM now has enough information to provide the final answer, so it picked the output tool and chose "61" as the final answer.
+
+This is what makes the agent architecture so useful—the LLM is given the agency to decide. The next step is to arrive at an answer and decide how many steps to take—that is, when to stop.
+
+This architecture, called [ReAct,](https://oreil.ly/M7hF-) was first proposed by Shunyu Yao et al. The rest of this chapter explores how to improve the performance of the agent architecture, motivated by the email assistant example from [Chapter](#page--1-0) 5.
+
+But first, let's see what it looks like to implement the basic agent architecture using a chat model and LangGraph.
+

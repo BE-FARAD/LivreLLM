@@ -1,0 +1,80 @@
+# use it
+
+chatbot.invoke({"question": "Which model provider
+```
+
+```
+import { ChatOpenAI } from '@langchain/openai'
+import { ChatPromptTemplate } from '@langchain/co
+import { RunnableLambda } from '@langchain/core/r
+// the building blocks
+const template = ChatPromptTemplate.fromMessages(
+ ['system', 'You are a helpful assistant.'],
+ ['human', '{question}'],
+])
+const model = new ChatOpenAI()
+// combine them in a function
+const chatbot = template.pipe(model)
+// use it
+```
+
+```
+await chatbot.invoke({
+ "question": "Which model providers offer LLMs?"
+})
+```
+
+#### *The output:*
+
+```
+AIMessage(content="Hugging Face's `transformers` 
+ `openai` library, and Cohere using the `coher
+```
+
+Crucially, the last line is the same between the two examples that is, you use the function and the LCEL sequence in the same way, with invoke/stream/batch . And in this version, you don't need to do anything else to use streaming:
+
+```
+chatbot = template | model
+for part in chatbot.stream({
+ "question": "Which model providers offer LLMs
+}):
+ print(part)
+ # > AIMessageChunk(content="Hugging")
+```
+
+```
+ # > AIMessageChunk(content=" Face's")
+ # > AIMessageChunk(content=" `transformers`")
+ # ...
+```
+
+```
+const chatbot = template.pipe(model)
+for await (const token of await chatbot.stream({
+ "question": "Which model providers offer LLMs?"
+})) {
+ console.log(token)
+}
+```
+
+And, for Python only, it's the same for using asynchronous methods:
+
+```
+chatbot = template | model
+await chatbot.ainvoke({
+ "question": "Which model providers offer LLMs
+})
+```
+
+## Summary
+
+In this chapter, you've learned about the building blocks and key components necessary to build LLM applications using LangChain. LLM applications are essentially a chain consisting of the large language model to make predictions, the prompt instruction(s) to guide the model toward a desired output, and an optional output parser to transform the format of the model's output.
+
+All LangChain components share the same interface with invoke , stream , and batch methods to handle various inputs and outputs. They can either be combined and executed imperatively by calling them directly or declaratively using LCEL.
+
+The imperative approach is useful if you intend to write a lot of custom logic, whereas the declarative approach is useful for simply assembling existing components with limited customization.
+
+In [Chapter](#page-13-0) 2, you'll learn how to provide external data to your AI chatbot as *context* so that you can build an LLM application
+
+that enables you to "chat" with your data.
+

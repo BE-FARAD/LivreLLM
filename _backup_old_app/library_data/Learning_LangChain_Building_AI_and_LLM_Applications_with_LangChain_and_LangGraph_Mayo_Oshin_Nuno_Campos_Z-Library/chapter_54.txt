@@ -1,0 +1,82 @@
+# *JavaScript*
+
+
+```
+const input = {
+ messages: [
+```
+
+```
+ HumanMessage(`How old was the 30th president 
+ died?`)
+ ]
+}
+for await (const c of await graph.stream(input))
+ console.log(c)
+}
+```
+
+### *The output:*
+
+```
+{
+ "select_tools": {
+ "selected_tools': ['duckduckgo_search', 
+ }
+}
+{
+ "model": {
+ "messages": AIMessage(
+ content="",
+ tool_calls=[
+ {
+ "name": "duckduckgo_search",
+ "args": {
+ "query": "30th president 
+ },
+ "id": "9ed4328dcdea4904b1b544
+            "type": "tool call"
+```
+
+```
+ type : tool_call ,
+ }
+ ],
+ )
+ }
+}
+{
+ "tools": {
+ "messages": [
+ ToolMessage(
+ content="Calvin Coolidge (born Ju
+ U.S.—died January 5, 1933, No
+ the 30th president of the Uni
+ acceded to the presidency aft
+ Warren G. Harding, just as th
+ to light....",
+ name="duckduckgo_search",
+ tool_call_id="9ed4328dcdea4904b1b
+ )
+ ]
+ }
+}
+{
+ "model": {
+ "messages": AIMessage(
+ content="Calvin Coolidge, the 30th pr
+ was born on July 4, 1872, and die
+ calculate his age at the time of 
+ birth year from his death year. \
+```
+
+```
+ Birth year\nAge at death = 1933 -
+ years\n\nCalvin Coolidge was 61 y
+ )
+ }
+}
+```
+
+Notice how the first thing we did was query the retriever to get the most relevant tools for the current user query. Then, we proceeded to the regular agent architecture.
+

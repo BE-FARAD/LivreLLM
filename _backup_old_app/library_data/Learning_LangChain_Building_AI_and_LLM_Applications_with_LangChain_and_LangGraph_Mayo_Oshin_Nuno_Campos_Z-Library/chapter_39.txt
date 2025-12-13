@@ -1,0 +1,66 @@
+# <span id="page-17-0"></span>Chapter 5. Cognitive Architectures with LangGraph
+
+
+So far, we've looked at the most common features of LLM applications:
+
+- Prompting techniques in the [Preface](#page--1-0) and [Chapter](#page--1-0) 1
+- RAG in Chapters [2](#page--1-0) and [3](#page--1-0)
+- Memory in [Chapter](#page--1-0) 4
+
+The next question should be: How do we assemble these pieces into a coherent application that achieves the goal we set out to solve? To draw a parallel with the world of bricks and mortar, a swimming pool and a one-story house are built of the same materials, but obviously serve very different purposes. What makes them uniquely suited to their different purposes is the plan for how those materials are combined—that is, their architecture. The same is true when building LLM applications. The most important decisions you have to make are how to assemble the different components you have at your disposal (such as RAG, prompting techniques, memory) into something that achieves your purpose.
+
+Before we look at specific architectures, let's walk through an example. Any LLM application you might build will start from a purpose: what the app is designed to do. Let's say you want to build an email assistant—an LLM application that reads your emails before you do and aims to reduce the amount of emails you need to look at. The application might do this by archiving a few uninteresting ones, directly replying to some, and marking others as deserving of your attention later.
+
+You probably also would want the app to be bound by some constraints in its action. Listing those constraints helps tremendously, as they will help inform the search for the right architecture. [Chapter](#page--1-0) 8 covers these constraints in more detail and how to work with them. For this hypothetical email assistant, let's say we'd like it to do the following:
+
+- Minimize the number of times it interrupts you (after all, the whole point is to save time).
+- Avoid having your email correspondents receive a reply that you'd never have sent yourself.
+
+This hints at the key trade-off often faced when building LLM apps: the trade-off between *agency* (or the capacity to act autonomously) and *reliability* (or the degree to which you can trust its outputs). Intuitively, the email assistant will be more
+
+useful if it takes more actions without your involvement, but if you take it too far, it will inevitably send emails you wish it hadn't.
+
+One way to describe the degree of autonomy of an LLM application is to evaluate how much of the behavior of the application is determined by an LLM (versus code):
+
+- Have an LLM decide the output of a step (for instance, write a draft reply to an email).
+- Have an LLM decide the next step to take (for instance, for a new email, decide between the three actions it can take on an email: archive, reply, or mark for review).
+- Have an LLM decide what steps are available to take (for instance, have the LLM write code that executes a dynamic action you didn't preprogram into the application).
+
+We can classify a number of popular *recipes* for building LLM applications based on where they fall in this spectrum of autonomy, that is, which of the three tasks just mentioned are handled by an LLM and which remain in the hands of the developer or user. These recipes can be called *cognitive architectures*. In the artificial intelligence field, the term *cognitive architecture* has long been used to denote models of human reasoning (and their implementations in computers).
+
+An LLM cognitive architecture (the term was first applied to LLMs, to our knowledge, in a paper ) can be defined as a recipe for the steps to be taken by an LLM application (see [Figure](#page-0-0) 5-1). A *step* is, for instance, retrieval of relevant documents (RAG), or calling an LLM with a chain-of-thought prompt. **[1](#page--1-0)**
+
+<span id="page-0-0"></span>![](_page_0_Figure_1.jpeg)
+
+Figure 5-1. Cognitive architectures for LLM applications
+
+Now let's look at each of the major architectures, or recipes, that you can use when building your application (as shown in [Figure](#page-0-0) 5-1):
+
+#### *0: Code*
+
+This is not an LLM cognitive architecture (hence we numbered it **0**), as it doesn't use LLMs at all. You can think of this as regular software you're used to writing. The first interesting architecture (for this book, at any rate) is actually the next one.
+
+#### *1: LLM call*
+
+This is the majority of the examples we've seen in the book so far, with one LLM call only. This is useful mostly when it's part of a larger application that makes use of an LLM for achieving a specific task, such as translating or summarizing a piece of text.
+
+#### *2: Chain*
+
+The next level up, so to speak, comes with the use of multiple LLM calls in a predefined sequence. For instance, a text-to-SQL application (which receives as input from the user a natural language description of some calculation to make over a database) could make use of two LLM calls in sequence:
+
+One LLM call to generate a SQL query, from the natural language query, provided by the user, and a description of the database contents, provided by the developer.
+
+And another LLM call to write an explanation of the query appropriate for a nontechnical user, given the
+
+query generated in the previous call. This one could then be used to enable the user to check if the generated query matches his request.
+
+#### *3: Router*
+
+This next step comes from using the LLM to define the sequence of steps to take. That is, whereas the chain architecture always executes a static sequence of steps (however many) determined by the developer, the router architecture is characterized by using an LLM to choose between certain predefined steps. An example would be a RAG application with multiple indexes of documents from different domains, with the following steps:
+
+- 1. An LLM call to pick which of the available indexes to use, given the user-supplied query and the developersupplied description of the indexes.
+- 2. A retrieval step that queries the chosen index for the most relevant documents for the user query.
+- 3. Another LLM call to generate an answer, given the user-supplied query and the list of relevant documents fetched from the index.
+
+That's as far as we'll go in this chapter. We will talk about each of these architectures in turn. The next chapters discuss the agentic architectures, which make even more use of LLMs. But first let's talk about some better tooling to help us on this journey.
+

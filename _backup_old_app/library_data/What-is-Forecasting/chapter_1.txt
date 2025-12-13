@@ -1,0 +1,115 @@
+What is Forecasting? 
+Forecasting is a technique for making predictions of the direction of future trends based on the 
+analysis of past and present data. Businesses use forecasting to determine how to allocate 
+their budgets or plan for expected expenses for an upcoming period of time.   
+Basically, it is a decision-making tool that helps businesses cope with the impact of the future’s 
+uncertainty by analysing historical data and trends. It is a planning tool that enables businesses 
+to chart their next moves and create budgets that will hopefully cover whatever uncertainties may 
+occur.  
+Forecaster uses data for carried out forecasting methods can either get from primary sources or 
+secondary sources. 
+• Primary sources: Primary sources provide first-hand information, gathered directly by 
+the person or organization that is doing the forecasting. They usually collect the data 
+from various questionnaires, focus groups or interviews and, although all the information 
+is difficult to gather and integrate, the direct way of acquiring the data makes primary 
+sources the most trustworthy. 
+• Secondary sources: Secondary sources provide information that already collected and 
+processed by a third-party organization. Receiving the data in an organized and arranged 
+way makes the forecasting process easier. 
+Features of Forecasting 
+Here are some features for making a forecast: 
+1. Involves future events 
+Forecasts are created to anticipate future possibilities, scope, etc making them important for 
+product planning. 
+2. Based on past and present events 
+Forecasts are based on points of view, intuition, guesses, as well as on actual facts, figures, and 
+other related data. All the factors that go into forming a forecast reflect to some extent what 
+happened with the business in the past and what is likely to occur in the future. 
+3. Uses forecasting techniques 
+Most organizations use the quantitative method, particularly in the planning and budgeting 
+process. 
+https://youtu.be/M8Kiwv9gDJU  
+Methods of Forecasting 
+Companies choose between two basic techniques when they want to predict what can happen in 
+the future. They are- qualitative methods and quantitative methods.  
+1. Qualitative method 
+We have also known the qualitative method as the judgmental method. Qualitative forecasting 
+offers subjective results, as it consists of personal judgments by experts or forecasters. Forecasts 
+are generally biased because they are based on the expert’s knowledge, experience, and rarely 
+rely on data. 
+One example is when a person forecasts the outcome of a football game, which is based more on 
+personal motivation and interest. 
+2. Quantitative method 
+The quantitative forecasting method is a numerical process, making it consistent and aim-
+oriented. It drives away from relying the results on opinion and intuition, instead of utilizing 
+large amounts of data and figures that are interpreted. 
+There are four main quantitative forecasting methods you can use to determine future sales 
+values, revenues, expenses, costs, trends, and other identical indicators. They are: 
+• Straight-line method: This is the simplest forecasting method, both to learn and to 
+follow. It's typically used by financial accountants to determine future revenues based on 
+past trends and figures. 
+• Moving average: This technique determines the underlying pattern of a dataset to predict 
+future values. The most widely used types are the three-month and the five-month 
+moving average. 
+• Simple linear regression: Simple linear regression is specially useful when analyzing 
+the connection between different variables, to get a more accurate forecast. 
+• Multiple linear regression: we mainly used Multiple linear regression for forecasting 
+revenues, in situations where two or more independent variables are needed for a 
+forecast. 
+Process of Forecasting 
+You need to follow a careful process in order to generate accurate results. Let's discuss some 
+steps in the process: 
+1. Develop the basis of forecasting 
+The first step in the process is developing the basis of the analysis of the company’s condition 
+and determining where the business is currently standing in the market. 
+2. Estimate the future operations of the business 
+Depending upon the research organized during the first step, the second part of forecasting 
+concerns with estimating the future conditions of the industry how the business operates and 
+predicting how the company will handle it. 
+3. Regulate the forecast 
+This step involves looking at different forecasts data in the past and comparing them with the 
+actual impact that happened to the business. Then evaluated differences in previous results and 
+current forecasts, and the reasons behind the deviations are recognized. 
+4. Review the process 
+They reviewed every step. After that, they made refinements and modifications if needed. 
+Benefits of forecasting 
+Helps to Predict the Future 
+It gives management a broad idea of what to expect. Forecasting gives the company a sense of 
+direction, which will allow the business to function better in the marketplace. Forecasting brings 
+out some risks and uncertainties that a new business may face and can offer an entrepreneur the 
+right tools to prepare for elements, such as the strength of the competition, potential demand for 
+a product or service and future industry development. 
+Good for Customers 
+If a company can anticipate demand, it is more likely to make sure its products are always 
+available within the market. There is a greater chance of meeting customer's orders and 
+delivering the product on time. 
+Keeps a Company Up-to-date 
+Businesses that forecast regularly must think ahead all the time. This helps them predict the 
+change in market trends. Forecasting gives managers required data that they can use to identify 
+any weakness in the organization's processes. By discovering potential shortcomings ahead of 
+time, the company's managers have the suitable tools to rectify any weakness before they affect 
+the profits. 
+Learn from Past Experience 
+Most businesses face several possible uncertainties, such as periodic rises and falls in sales, 
+changes in staff and changes in raw material prices, depending on the exact nature and purpose 
+of the organization. Forecasting plays a significant role in bringing managers with the 
+information they need to make wise decisions regarding the company's future. 
+Collecting and analyzing past data helps people remember what worked previously and what 
+didn’t. Learning from experience strengthens us.  
+Promoting workplace cooperation 
+Gathering and studying the data required for forecasting typically requires coordination and 
+association between all the company's department managers, as well as other employees. This 
+makes the entire process a collaboration, enhancing team spirit and cohesion. 
+Receiving Financing 
+If the business requires a loan for a new project, the bank will ask for information about the 
+future, such as sales, profits, etc. The bank needs that data before it will think of approving the 
+loan. 
+Terms Related to Forecasting 
+Demand Forecasting 
+Demand forecasting is the method of using historical sales data to evaluate future customer 
+demand. It is an important step for businesses to make wise and quick decisions about inventory 
+levels based on purchase trend estimates. Read more>> 
+Sales Forecasting 
+Sales Forecasting is basically estimating future revenue by predicting the amount of product or 
+services a sales unit will sell in the next week, month, and year. Read more>> 
+ 

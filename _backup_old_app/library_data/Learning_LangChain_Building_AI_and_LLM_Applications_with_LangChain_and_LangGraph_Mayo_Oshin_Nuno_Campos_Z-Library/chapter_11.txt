@@ -1,0 +1,15 @@
+# Prompt
+
+system = """You are an expert at routing a user q
+ source.
+Based on the programming language the question is
+ relevant data source."""
+prompt = ChatPromptTemplate.from_messages(
+ [
+ ("system"
+                , system),
+ ("human"
+               ,
+                 "{question}"),
+ ]
+)

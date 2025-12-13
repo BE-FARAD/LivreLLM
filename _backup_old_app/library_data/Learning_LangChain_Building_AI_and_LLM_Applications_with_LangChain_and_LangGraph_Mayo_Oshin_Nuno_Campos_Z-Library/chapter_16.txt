@@ -1,0 +1,8 @@
+# Embed prompts
+
+```
+
+```
+embeddings = OpenAIEmbeddings()
+prompt_templates = [physics_template, math_templa
+prompt_embeddings = embeddings.embed_documents(pr

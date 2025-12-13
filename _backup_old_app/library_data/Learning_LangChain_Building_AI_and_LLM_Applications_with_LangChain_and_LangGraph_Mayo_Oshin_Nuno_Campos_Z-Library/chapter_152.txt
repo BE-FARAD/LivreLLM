@@ -1,0 +1,8 @@
+# first, pip install langchain-postgres
+
+from langchain_community.document_loaders import
+from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCha
+from langchain_postgres.vectorstores import PGVec
+from langchain_core.documents import Document
+import uuid

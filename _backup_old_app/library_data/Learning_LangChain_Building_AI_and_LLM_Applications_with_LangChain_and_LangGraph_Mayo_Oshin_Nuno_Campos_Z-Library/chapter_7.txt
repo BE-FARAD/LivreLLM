@@ -1,0 +1,7 @@
+# Query Routing
+
+
+Although using a single vector store is useful, the required data may live in a variety of data sources, including relational databases or other vector stores.
+
+For example, you may have two vector stores: one for LangChain Python documentation and another for LangChain JS documentation. Given a user's question, we would like to *route* the query to the appropriate inferred data source to retrieve relevant docs. *Query routing* is a strategy used to forward a user's query to the relevant data source.
+

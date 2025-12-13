@@ -1,0 +1,3 @@
+# combined
+
+chain = write_query | execute_query

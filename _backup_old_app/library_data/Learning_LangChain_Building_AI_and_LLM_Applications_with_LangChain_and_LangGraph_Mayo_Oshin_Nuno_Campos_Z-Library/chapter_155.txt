@@ -1,0 +1,44 @@
+# Tracking Changes to Your Documents
+
+
+One of the key challenges with working with vector stores is working with data that regularly changes, because changes mean re-indexing. And re-indexing can lead to costly recomputations of embeddings and duplications of preexisting content.
+
+Fortunately, LangChain provides an indexing API to make it easy to keep your documents in sync with your vector store. The API utilizes a class ( RecordManager ) to keep track of document writes into the vector store. When indexing content, hashes are computed for each document and the following information is stored in RecordManager :
+
+- The document hash (hash of both page content and metadata)
+- Write time
+- The source ID (each document should include information in its metadata to determine the ultimate source of this document).
+
+In addition, the indexing API provides cleanup modes to help you decide how to delete existing documents in the vector store. For example, If you've made changes to how documents are processed before insertion or if source documents have changed, you may want to remove any existing documents that come from the same source as the new documents being indexed. If some source documents have been deleted, you'll want to delete all existing documents in the vector store and replace them with the re-indexed documents.
+
+## The modes are as follows:
+
+- None mode does not do any automatic cleanup, allowing the user to manually do cleanup of old content.
+- Incremental and full modes delete previous versions of the content if the content of the source document or derived documents has changed.
+
+Full mode will additionally delete any documents not included in documents currently being indexed.
+
+Here's an example of the use of the indexing API with Postgres database set up as a record manager:
+
+```
+from langchain.indexes import SQLRecordManager, i
+from langchain_postgres.vectorstores import PGVec
+from langchain_openai import OpenAIEmbeddings
+from langchain.docstore.document import Document
+connection = "postgresql+psycopg://langchain:lang
+collection_name = "my_docs"
+embeddings_model = OpenAIEmbeddings(model="text-e
+namespace = "my_docs_namespace"
+vectorstore = PGVector(
+ embeddings=embeddings_model,
+ collection_name=collection_name,
+ connection=connection,
+ use_jsonb=True,
+)
+record_manager = SQLRecordManager(
+ namespace,
+```
+
+```
+ db_url="postgresql+psycopg://langchain:langch
+)

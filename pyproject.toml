@@ -1,0 +1,36 @@
+[project]
+name = "book-reader"
+version = "0.1.0"
+description = "Application de lecture interactive de livres techniques"
+requires-python = ">=3.12"
+dependencies = [
+    "streamlit>=1.28.0",
+    "python-dotenv>=1.0.0",
+    "marker-pdf>=0.2.0",
+    "openai>=1.0.0",
+    "ollama>=0.1.0",
+    "qdrant-client>=1.6.0",
+    "fastembed>=0.2.0",
+    "pydub>=0.25.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.25.0",
+    "langdetect>=1.0.9",
+    "flask>=3.1.2",
+    "markdown>=3.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

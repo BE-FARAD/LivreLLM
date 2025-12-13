@@ -1,0 +1,114 @@
+# **Hypothetical Document Embeddings**
+
+
+*Hypothetical Document Embeddings* (HyDE) is a strategy that involves creating a hypothetical document based on the user's query, embedding the document, and retrieving relevant documents based on vector similarity. The intuition behind HyDE is that an LLM-generated hypothetical document will be more similar to the most relevant documents than the original query, as shown in [Figure](#page-6-0) 3-7. **[4](#page--1-0)**
+
+<span id="page-6-0"></span>![](_page_6_Figure_0.jpeg)
+
+Figure 3-7. An illustration of HyDE closer in the vector space to the document embeddings than the plain query embeddings
+
+## First, define a prompt to generate a hypothetical document:
+
+```
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutp
+from langchain_openai import ChatOpenAI
+prompt_hyde = ChatPromptTemplate.from_template(""
+ answer the question.\n Question: {question} \n
+generate_doc = (
+```
+
+```
+ prompt_hyde | ChatOpenAI(temperature=0) | Str
+)
+```
+
+```
+import {ChatOpenAI} from '@langchain/openai'
+import {ChatPromptTemplate} from '@langchain/core
+import {RunnableLambda} from '@langchain/core/run
+const prompt = ChatPromptTemplate.fromTemplate(`P
+ answer the question
+Question: {question}
+Passage:`)
+const llm = new ChatOpenAI({temperature: 0})
+const generateDoc = prompt.pipe(llm).pipe(msg =>
+```
+
+Next, we take the hypothetical document and use it as input to the retriever , which will generate its embedding and search for similar documents in the vector store:
+
+```
+retrieval_chain = generate_doc | retriever
+```
+
+```
+const retrievalChain = generateDoc.pipe(retriever
+```
+
+Finally, we take the retrieved documents, pass them as context to the final prompt, and instruct the model to generate an output:
+
+```
+prompt = ChatPromptTemplate.from_template("""Answ
+ on this context:
+{context}
+Question: {question}
+""")
+llm = ChatOpenAI(temperature=0)
+@chain
+```
+
+```
+@chain
+def qa(input):
+ # fetch relevant documents from the hyde retrie
+ docs = retrieval_chain.invoke(input)
+ # format prompt
+ formatted = prompt.invoke({"context": docs, "qu
+ # generate answer
+ answer = llm.invoke(formatted)
+ return answer
+qa.invoke("""Who are some key figures in the anci
+ philosophy?""")
+```
+
+```
+const prompt = ChatPromptTemplate.fromTemplate(`A
+ question based on this context:
+{context}
+Question: {question}
+`)
+const llm = new ChatOpenAI({temperature: 0})
+const qa = RunnableLambda.from(async input => {
+  // fetch relevant documents from the hyde retri
+```
+
+```
+ // fetch relevant documents from the hyde retri
+ const docs = await retrievalChain.invoke(input)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return answer
+})
+await qa.invoke(`Who are some key figures in the 
+ philosophy?`)
+```
+
+To recap what we covered in this section, query transformation consists of taking the user's original query and doing the following:
+
+- Rewriting into one or more queries
+- Combining the results of those queries into a single set of the most relevant results
+
+Rewriting the query can take many forms, but it's usually done in a similar fashion: take the user's original query—a prompt you wrote—and ask an LLM to write a new query or queries. Some examples of typical changes made are:
+
+Removing irrelevant/unrelated text from the query.
+
+- Grounding the query with past conversation history. For instance, to make sense of a query such as *and what about in LA,* we need to combine it with a hypothetical past question about the weather in SF, to arrive at a useful query such as *weather in LA*.
+- Casting a wider net for relevant documents by also fetching documents for related queries.
+- Decomposing a complex question into multiple, simpler questions and then including results for all of them in the final prompt to generate an answer.
+
+The right rewriting strategy to use will depend on your use case.
+
+Now that we've covered the main query transformation strategies, let's discuss the second major question to answer in order to build a robust RAG system: How do we route queries to retrieve relevant data from multiple data sources?
+

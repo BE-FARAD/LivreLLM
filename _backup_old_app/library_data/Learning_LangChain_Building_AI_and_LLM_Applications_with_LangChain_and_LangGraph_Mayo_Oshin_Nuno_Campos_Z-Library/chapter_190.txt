@@ -1,0 +1,21 @@
+# fetch relevant documents
+
+docs = retriever.invoke("""Who are the key figure
+ history of philosophy?""")
+```
+
+```
+// create retriever
+const retriever = db.asRetriever()
+```
+
+```
+// fetch relevant documents
+const docs = await retriever.invoke(`Who are the 
+ greek history of philosophy?`)
+```
+
+Note that we are using a vector store method you haven't seen before: as\_retriever . This function abstracts the logic of embedding the user's query and the underlying similarity search calculations performed by the vector store to retrieve the relevant documents.
+
+There is also an argument k , which determines the number of relevant documents to fetch from the vector store. For example:
+

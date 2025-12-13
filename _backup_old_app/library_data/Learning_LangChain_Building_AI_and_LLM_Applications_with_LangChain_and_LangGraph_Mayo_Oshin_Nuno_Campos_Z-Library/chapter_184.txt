@@ -1,0 +1,31 @@
+# **Retrieving Relevant Documents**
+
+
+A RAG system for an AI app typically follows three core stages:
+
+#### *Indexing*
+
+This stage involves preprocessing the external data source and storing embeddings that represent the data in a
+
+vector store where they can be easily retrieved.
+
+### *Retrieval*
+
+This stage involves retrieving the relevant embeddings and data stored in the vector store based on a user's query.
+
+## *Generation*
+
+This stage involves synthesizing the original prompt with the retrieved relevant documents as one final prompt sent to the model for a prediction.
+
+The three basic stages look like [Figure](#page-7-0) 3-1.
+
+<span id="page-7-0"></span>![](_page_7_Figure_6.jpeg)
+
+Figure 3-1. The key stages of RAG
+
+The indexing stage of this process was covered extensively in [Chapter](#page--1-4) 2, where you learned how to use document loaders,
+
+text splitters, embeddings, and vector stores.
+
+Let's run through an example from scratch again, starting with the indexing stage:
+

@@ -1,0 +1,4 @@
+# fetch relevant documents
+
+docs = retriever.get_relevant_documents("""Who ar
+ ancient greek history of philosophy?""")

@@ -1,0 +1,23 @@
+# Subgraphs in LangGraph
+
+
+Before we dive into multi-agent architectures, let's look at an important technical concept in LangGraph that enables it. *Subgraphs* are graphs that are used as part of another graph. Here are some use cases for subgraphs:
+
+- Building multi-agent systems (discussed in the next section).
+- When you want to reuse a set of nodes in multiple graphs, you can define them once in a subgraph and then use them in multiple parent graphs.
+- When you want different teams to work on different parts of the graph independently, you can define each part as a
+
+subgraph, and as long as the subgraph interface (the input and output schemas) is respected, the parent graph can be built without knowing any details of the subgraph.
+
+There are two ways to add subgraph nodes to a parent graph:
+
+*Add a node that calls the subgraph directly*
+
+This is useful when the parent graph and the subgraph share state keys, and you don't need to transform state on the way in or out.
+
+*Add a node with a function that invokes the subgraph*
+
+This is useful when the parent graph and the subgraph have different state schemas, and you need to transform state before or after calling the subgraph.
+
+Let's look at each in turn.
+

@@ -1,0 +1,83 @@
+# *JavaScript*
+
+
+```
+import { DuckDuckGoSearch } from "@langchain/comm
+import { Calculator } from "@langchain/community/
+```
+
+```
+import { ChatOpenAI } from "@langchain/openai";
+import { OpenAIEmbeddings } from "@langchain/open
+import { Document } from "@langchain/core/documen
+import { MemoryVectorStore } from "langchain/vect
+import {
+ StateGraph,
+ Annotation,
+ messagesStateReducer,
+ START,
+} from "@langchain/langgraph";
+import { ToolNode, toolsCondition } from "@langch
+import { HumanMessage } from "@langchain/core/mes
+const search = new DuckDuckGoSearch();
+const calculator = new Calculator();
+const tools = [search, calculator];
+const embeddings = new OpenAIEmbeddings();
+const model = new ChatOpenAI({ temperature: 0.1 }
+const toolsStore = await MemoryVectorStore.fromDo
+ tools.map(
+ (tool) =>
+ new Document({
+ pageContent: tool.description,
+ metadata: { name: tool.constructor.name }
+ })
+ ),
+```
+
+```
+ embeddings
+);
+const toolsRetriever = toolsStore.asRetriever();
+const annotation = Annotation.Root({
+ messages: Annotation({ reducer: messagesStateRe
+ selected_tools: Annotation(),
+});
+async function modelNode(state) {
+ const selectedTools = tools.filter((tool) =>
+ state.selected_tools.includes(tool.constructo
+ );
+ const res = await model.bindTools(selectedTools
+ return { messages: res };
+}
+async function selectTools(state) {
+ const query = state.messages[state.messages.len
+ const toolDocs = await toolsRetriever.invoke(qu
+ return {
+ selected_tools: toolDocs.map((doc) => doc.met
+ };
+}
+const builder = new StateGraph(annotation)
+ .addNode("select_tools", selectTools)
+ .addNode("model", modelNode)
+```
+
+```
+ .addNode("tools", new ToolNode(tools))
+ .addEdge(START, "select_tools")
+ .addEdge("select_tools", "model")
+ .addConditionalEdges("model", toolsCondition)
+ .addEdge("tools", "model");
+```
+
+You can see the visual representation in [Figure](#page-8-0) 6-3.
+
+<span id="page-8-0"></span>![](_page_8_Figure_2.jpeg)
+
+Figure 6-3. Modifying the agent architecture to deal with many tools
+
+#### **NOTE**
+
+This is very similar to the regular agent architecture. The only difference is that we stop by the select\_tools node before entering the actual agent loop. After that, it works just as the regular agent architecture we've seen before.
+
+Now let's see some example output for the same query as before:
+

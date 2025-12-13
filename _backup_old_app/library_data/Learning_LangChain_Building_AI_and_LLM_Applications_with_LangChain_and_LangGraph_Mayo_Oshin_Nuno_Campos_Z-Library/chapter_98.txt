@@ -1,0 +1,17 @@
+# **Deploy from the LangSmith UI**
+
+
+At this point, you should have completed all prerequisite steps and your LangGraph API should be working locally. Your next step is to navigate to your LangSmith dashboard panel and click the Deployments tab. You should see a UI similar to [Figure](#page-16-0) 9-6.
+
+<span id="page-16-0"></span>![](_page_16_Picture_0.jpeg)
+
+Figure 9-6. LangGraph Platform deployment UI page
+
+Next, click the New Deployment button in the top right corner of the page.
+
+#### **NOTE**
+
+If you don't see a page with the New Deployment button, it's likely that you haven't yet upgraded to a LangSmith Plus plan according to the instructions in the "Usage and billing" setting.
+
+You should now see a page of three form fields to complete.
+

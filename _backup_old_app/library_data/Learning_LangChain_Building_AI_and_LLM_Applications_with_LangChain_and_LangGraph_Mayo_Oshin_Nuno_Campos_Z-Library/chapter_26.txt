@@ -1,0 +1,9 @@
+# *Edges*
+
+
+The connections between nodes. Edges determine the path taken from the first node to the last, and they can be fixed (that is, after Node B, always visit node D) or conditional (evaluate a function to decide the next node to visit after node C).
+
+LangGraph offers utilities to visualize these graphs and numerous features to debug their workings while in development. These graphs can then easily be deployed to serve production workloads at high scale.
+
+If you followed the instructions in [Chapter](#page--1-0) 1, you'll already have LangGraph installed. If not, you can install it by running one of the following commands in your terminal:
+

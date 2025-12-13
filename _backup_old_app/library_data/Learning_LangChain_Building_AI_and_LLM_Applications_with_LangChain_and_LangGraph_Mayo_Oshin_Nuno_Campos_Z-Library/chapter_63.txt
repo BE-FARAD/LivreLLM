@@ -1,0 +1,14 @@
+# Define subgraph
+
+def subgraph_node(state: SubgraphState):
+ # note that this subgraph node can communicat
+ # via the shared "foo" key
+ return {"foo": state["foo"] + "bar"}
+subgraph_builder = StateGraph(SubgraphState)
+subgraph builder add node(subgraph node)
+```
+
+```
+subgraph_builder.add_node(subgraph_node)
+...
+subgraph = subgraph_builder.compile()

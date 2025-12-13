@@ -1,0 +1,168 @@
+# useful to generate natural language outputs
+
+model_high_temp = ChatOpenAI(temperature=0.7)
+class State(TypedDict):
+ # to track conversation history
+ messages: Annotated[list, add_messages]
+ # input
+ user_query: str
+ # output
+ sql_query: str
+ sql_explanation: str
+class Input(TypedDict):
+ user_query: str
+class Output(TypedDict):
+ sql_query: str
+ sql_explanation: str
+generate_prompt = SystemMessage(
+ """You are a helpful data analyst who generat
+ on their questions."""
+)
+def generate_sql(state: State) -> State:
+ user_message = HumanMessage(state["user_query
+   messages = [generate prompt *state["messages
+```
+
+```
+ messages = [generate_prompt, state[ messages
+ res = model_low_temp.invoke(messages)
+ return {
+ "sql_query": res.content,
+ # update conversation history
+ "messages": [user_message, res],
+ }
+explain_prompt = SystemMessage(
+ "You are a helpful data analyst who explains 
+)
+def explain_sql(state: State) -> State:
+ messages = [
+ explain_prompt,
+ # contains user's query and SQL query fro
+ *state["messages"],
+ ]
+ res = model_high_temp.invoke(messages)
+ return {
+ "sql_explanation": res.content,
+ # update conversation history
+ "messages": res,
+ }
+builder = StateGraph(State, input=Input, output=O
+builder.add_node("generate_sql", generate_sql)
+builder.add_node("explain_sql", explain_sql)
+builder add edge(START "generate sql")
+```
+
+```
+builder.add_edge(START, generate_sql )
+builder.add_edge("generate_sql", "explain_sql")
+builder.add_edge("explain_sql", END)
+graph = builder.compile()
+```
+
+```
+import {
+ HumanMessage,
+ SystemMessage
+} from "@langchain/core/messages";
+import { ChatOpenAI } from "@langchain/openai";
+import {
+ StateGraph,
+ Annotation,
+ messagesStateReducer,
+ START,
+ END,
+} from "@langchain/langgraph";
+// useful to generate SQL query
+const modelLowTemp = new ChatOpenAI({ temperature
+// useful to generate natural language outputs
+const modelHighTemp = new ChatOpenAI({ temperatur
+const annotation = Annotation.Root({
+```
+
+```
+const annotation Annotation.Root({
+ messages: Annotation({ reducer: messagesStateRe
+ user_query: Annotation(),
+ sql_query: Annotation(),
+ sql_explanation: Annotation(),
+});
+const generatePrompt = new SystemMessage(
+ `You are a helpful data analyst who generates S
+ their questions.`
+);
+async function generateSql(state) {
+ const userMessage = new HumanMessage(state.user
+ const messages = [generatePrompt, ...state.mess
+ const res = await modelLowTemp.invoke(messages)
+ return {
+ sql_query: res.content as string,
+ // update conversation history
+ messages: [userMessage, res],
+ };
+}
+const explainPrompt = new SystemMessage(
+ "You are a helpful data analyst who explains SQ
+);
+async function explainSql(state) {
+ const messages = [explainPrompt, ...state.messa
+```
+
+```
+ const messages [explainPrompt, ...state.messa
+ const res = await modelHighTemp.invoke(messages
+ return {
+ sql_explanation: res.content as string,
+ // update conversation history
+ messages: res,
+ };
+}
+const builder = new StateGraph(annotation)
+ .addNode("generate_sql", generateSql)
+ .addNode("explain_sql", explainSql)
+ .addEdge(START, "generate_sql")
+ .addEdge("generate_sql", "explain_sql")
+ .addEdge("explain_sql", END);
+const graph = builder.compile();
+```
+
+The visual representation of the graph is shown in [Figure](#page-16-0) 5-3.
+
+<span id="page-16-0"></span>![](_page_16_Figure_0.jpeg)
+
+Figure 5-3. The chain architecture
+
+Here's an example of inputs and outputs:
+
+```
+graph.invoke({
+```
+
+```
+ "user_query": "What is the total sales for each
+})
+```
+
+```
+await graph.invoke({
+ user_query: "What is the total sales for each p
+})
+```
+
+### *The output:*
+
+```
+{
+ "sql_query": "SELECT product_name, SUM(sales_am
+ sales\nGROUP BY product_name;",
+ "sql_explanation": "This query will retrieve th
+ by summing up the sales_amount column for e
+ results by product_name.",
+}
+```
+
+First, the generate\_sql node is executed, which populates the sql\_query key in the state (which will be part of the final output) and updates the messages key with the new messages.
+
+Then the explain\_sql node runs, taking the SQL query generated in the previous step and populating the sql\_explanation key in the state. At this point, the graph finishes running, and the output is returned to the caller.
+
+Note also the use of separate input and output schemas when creating the StateGraph . This lets you customize which parts of the state are accepted as input from the user and which are returned as the final output. The remaining state keys are used by the graph nodes internally to keep intermediate state and are made available to the user as part of the streaming output produced by stream() .
+

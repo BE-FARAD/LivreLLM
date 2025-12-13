@@ -1,0 +1,20 @@
+# *JavaScript*
+
+
+```
+const input = {messages: [new HumanMessage('hi!)]
+for await (const chunk of await graph.stream(inpu
+ console.log(chunk)
+}
+```
+
+## *The output:*
+
+```
+{ "chatbot": { "messages": [AIMessage("How can I
+```
+
+Notice how the input to the graph was in the same shape as the State object we defined earlier; that is, we sent in a list of
+
+messages in the messages key of a dictionary. In addition, the stream function streams the full value of the state after each step of the graph.
+

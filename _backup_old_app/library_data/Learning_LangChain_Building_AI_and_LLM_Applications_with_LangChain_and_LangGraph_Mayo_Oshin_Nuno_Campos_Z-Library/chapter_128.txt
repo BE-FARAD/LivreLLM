@@ -1,0 +1,3 @@
+# Hi!
+
+completions = model.batch(['Hi there!', 'Bye!'])

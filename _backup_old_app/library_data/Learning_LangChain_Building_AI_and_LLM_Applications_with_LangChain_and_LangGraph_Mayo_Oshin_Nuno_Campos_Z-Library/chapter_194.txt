@@ -1,0 +1,11 @@
+# **Generating LLM Predictions Using Relevant Documents**
+
+
+Once we've retrieved the relevant documents based on the user's query, the final step is to add them to the original prompt as context and then invoke the model to generate a final output [\(Figure](#page-15-0) 3-3).
+
+<span id="page-15-0"></span>![](_page_15_Figure_1.jpeg)
+
+Figure 3-3. An example flow demonstrating indexing documents, retrieval of relevant documents from a vector store, and inclusion of retrieved documents as context in the LLM prompt
+
+Here's a code example continuing on from our previous example:
+

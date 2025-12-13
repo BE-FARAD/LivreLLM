@@ -1,0 +1,144 @@
+@startuml Séquence 01 - Import d'un nouveau livre
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam participantBackgroundColor #E3F2FD
+skinparam participantBorderColor #1976D2
+skinparam sequenceMessageAlign center
+
+title Diagramme de Séquence - Import et Traitement d'un Nouveau Livre
+
+actor Utilisateur as user
+participant "ApplicationController" as app
+participant "FileWatcher" as watcher
+participant "QdrantClient" as qdrant
+participant "MarkerConverter" as marker
+participant "ImageManager" as imgMgr
+participant "DocumentManager" as docMgr
+participant "TranslationService" as translator
+participant "VectorStore" as vectorStore
+participant "AudioManager" as audioMgr
+participant "TTSService" as tts
+
+' ===== ÉTAPE 1 : DÉPÔT DU FICHIER =====
+user -> user : Dépose fichier.pdf\ndans 01-input
+
+' ===== ÉTAPE 2 : SCAN =====
+alt Scan au démarrage
+    app -> watcher : scanOnStartup()
+else Scan par clic utilisateur
+    user -> app : Clic "Scanner"
+    app -> watcher : scanOnUserClick()
+end
+
+activate watcher
+
+' ===== ÉTAPE 3 : VÉRIFICATION EXISTENCE =====
+watcher -> watcher : computeHash(file)
+watcher -> qdrant : checkDocumentExists(hash)
+activate qdrant
+qdrant --> watcher : exists: bool
+deactivate qdrant
+
+alt Fichier déjà existant
+    watcher --> app : "Fichier déjà importé"
+    app --> user : Notification
+else Nouveau fichier
+
+    ' ===== ÉTAPE 4 : CONVERSION MARKER =====
+    watcher -> marker : convert(pdfFile)
+    activate marker
+
+    marker -> marker : extractText()
+    marker -> marker : extractImages()
+    marker -> marker : extractTables()
+    marker -> marker : extractMathFormulas()
+    marker -> marker : detectLanguage()
+
+    marker --> watcher : MarkdownDocument
+    deactivate marker
+
+    ' ===== ÉTAPE 5 : SAUVEGARDE IMAGES =====
+    watcher -> imgMgr : saveImages(images, bookName)
+    activate imgMgr
+
+    loop Pour chaque image
+        imgMgr -> imgMgr : generateImageName()\n{book}_ch{XX}_img{XXX}.png
+        imgMgr -> imgMgr : saveImage()
+    end
+
+    imgMgr --> watcher : imagePaths
+    deactivate imgMgr
+
+    ' ===== ÉTAPE 6 : SAUVEGARDE MARKDOWN ORIGINAL =====
+    watcher -> docMgr : saveMarkdown(doc, originalLang)
+    activate docMgr
+    docMgr -> docMgr : Créer 02-output/{book}/{lang}/
+    docMgr --> watcher : filePath
+    deactivate docMgr
+
+    ' ===== ÉTAPE 7 : TRADUCTION SI ANGLAIS =====
+    alt Document en anglais
+        watcher -> translator : translate(document)
+        activate translator
+
+        loop Pour chaque chapitre
+            translator -> translator : translateChapter()
+            translator -> translator : preserveCodeBlocks()
+            translator -> translator : preserveMathFormulas()
+            translator -> translator : preserveImageReferences()
+        end
+
+        translator --> watcher : MarkdownDocument (FR)
+        deactivate translator
+
+        watcher -> docMgr : saveMarkdown(docFR, "fr")
+        activate docMgr
+        docMgr --> watcher : filePathFR
+        deactivate docMgr
+    end
+
+    ' ===== ÉTAPE 8 : VECTORISATION =====
+    watcher -> vectorStore : indexDocument(document)
+    activate vectorStore
+
+    vectorStore -> vectorStore : splitByChapter()
+
+    loop Pour chaque chunk
+        vectorStore -> vectorStore : embed(chunk)
+        vectorStore -> qdrant : upsert(vector, metadata)
+    end
+
+    vectorStore --> watcher : indexed
+    deactivate vectorStore
+
+    ' ===== ÉTAPE 9 : GÉNÉRATION AUDIO =====
+    watcher -> audioMgr : generateChapterAudio(chapters)
+    activate audioMgr
+
+    loop Pour chaque chapitre
+        loop Pour chaque paragraphe
+            audioMgr -> tts : textToSpeech(paragraph)
+            activate tts
+            tts --> audioMgr : audioFile
+            deactivate tts
+            audioMgr -> audioMgr : saveAudio()\n{book}_ch{XX}_para{XXX}.mp3
+        end
+    end
+
+    audioMgr --> watcher : audioPaths
+    deactivate audioMgr
+
+    ' ===== ÉTAPE 10 : MÉTADONNÉES =====
+    watcher -> qdrant : storeBookMetadata(book)
+    activate qdrant
+    qdrant --> watcher : stored
+    deactivate qdrant
+
+    watcher --> app : Import terminé
+    deactivate watcher
+
+    app --> user : "Livre importé avec succès"
+end
+
+@enduml

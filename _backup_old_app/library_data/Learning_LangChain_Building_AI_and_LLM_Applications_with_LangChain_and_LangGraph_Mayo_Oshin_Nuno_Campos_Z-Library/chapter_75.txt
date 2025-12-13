@@ -1,0 +1,231 @@
+# Getting Set Up with LangChain
+
+
+To follow along with the rest of the chapter, and the chapters to come, we recommend setting up LangChain on your computer first.
+
+See the instructions in the [Preface](#page--1-4) regarding setting up an OpenAI account and complete these if you haven't yet. If you prefer using a different LLM provider, see "Why [LangChain?"](#page-6-0) for alternatives.
+
+Then head over to the API Keys [page](https://oreil.ly/BKrtV) on the OpenAI website (after logging in to your OpenAI account), create an API key, and save it—you'll need it soon.
+
+#### **NOTE**
+
+In this book, we'll show code examples in both Python and JavaScript (JS). LangChain offers the same functionality in both languages, so just pick the one you're most comfortable with and follow the respective code snippets throughout the book (the code examples for each language are equivalent).
+
+First, some setup instructions for readers using Python:
+
+- 1. Ensure that you have Python [installed. See](https://oreil.ly/20K9l) the instructions for your operating system.
+- 2. Install Jupyter if you want to run the examples in a notebook environment. You can do this by running pip install notebook in your terminal.
+- 3. Install the LangChain library by running the following commands in your terminal:
+
+```
+pip install langchain langchain-openai langchai
+pip install langchain-text-splitters langchain-
+```
+
+4. Take the OpenAI API key you generated at the beginning of this section and make it available in your terminal environment. You can do this by running the following:
+
+```
+export OPENAI_API_KEY=your-key
+```
+
+- 5. Don't forget to replace your-key with the API key you generated previously.
+- 6. Open a Jupyter notebook by running this command:
+
+```
+jupyter notebook
+```
+
+You're now ready to follow along with the Python code examples.
+
+Here are the instructions for readers using JavaScript:
+
+1. Take the OpenAI API key you generated at the beginning of this section and make it available in your terminal environment. You can do this by running the following:
+
+```
+export OPENAI_API_KEY=your-key
+```
+
+2. Don't forget to replace your-key with the API key you generated previously.
+
+- 3. If you want to run the examples as Node.js scripts, install Node by following the [instructions](https://oreil.ly/5gjiO).
+- 4. Install the LangChain libraries by running the following commands in your terminal:
+
+```
+npm install langchain @langchain/openai @langch
+npm install @langchain/core pg
+```
+
+5. Take each example, save it as a *.js* file and run it with node ./file.js .
+
+## Using LLMs in LangChain
+
+To recap, LLMs are the driving engine behind most generative AI applications. LangChain provides two simple interfaces to interact with any LLM API provider:
+
+- Chat models
+- LLMs
+
+The LLM interface simply takes a string prompt as input, sends the input to the model provider, and then returns the model prediction as output.
+
+Let's import LangChain's OpenAI LLM wrapper to invoke a model prediction using a simple prompt:
+
+## *Python*
+
+```
+from langchain_openai.llms import OpenAI
+model = OpenAI(model="gpt-3.5-turbo")
+model.invoke("The sky is")
+```
+
+## *JavaScript*
+
+```
+import { OpenAI } from "@langchain/openai";
+const model = new OpenAI({ model: "gpt-3.5-turbo"
+await model.invoke("The sky is");
+```
+
+## *The output:*
+
+```
+Blue!
+```
+
+#### **TIP**
+
+Notice the parameter model passed to OpenAI . This is the most common parameter to configure when using an LLM or chat model, the underlying model to use, as most providers offer several models with different trade-offs in capability and cost (usually larger models are more capable, but also more expensive and slower). See OpenAI's [overview](https://oreil.ly/dM886) of the models they offer.
+
+Other useful parameters to configure include the following, offered by most providers.
+
+### *temperature*
+
+This controls the sampling algorithm used to generate output. Lower values produce more predictable outputs (for example, 0.1), while higher values generate more creative, or unexpected, results (such as 0.9). Different tasks will need different values for this parameter. For instance, producing structured output usually benefits from a lower temperature, whereas creative writing tasks do better with a higher value:
+
+### *max\_tokens*
+
+This limits the size (and cost) of the output. A lower value may cause the LLM to stop generating the output before getting to a natural end, so it may appear to have been truncated.
+
+Beyond these, each provider exposes a different set of parameters. We recommend looking at the documentation for the one you choose. For an example, refer to [OpenAI's](https://oreil.ly/5O1RW) platform.
+
+Alternatively, the chat model interface enables back and forth conversations between the user and model. The reason why it's a separate interface is because popular LLM providers like OpenAI differentiate messages sent to and from the model into *user*, *assistant*, and *system* roles (here *role* denotes the type of content the message contains):
+
+### *System role*
+
+Used for instructions the model should use to answer a user question
+
+### *User role*
+
+Used for the user's query and any other content produced by the user
+
+## *Assistant role*
+
+Used for content generated by the model
+
+The chat model's interface makes it easier to configure and manage conversions in your AI chatbot application. Here's an example utilizing LangChain's ChatOpenAI model:
+
+### *Python*
+
+from langchain\_openai.chat\_models import ChatOpen from langchain\_core.messages import HumanMessage
+
+```
+model = ChatOpenAI()
+prompt = [HumanMessage("What is the capital of Fr
+model.invoke(prompt)
+```
+
+## *JavaScript*
+
+```
+import { ChatOpenAI } from '@langchain/openai'
+import { HumanMessage } from '@langchain/core/mes
+const model = new ChatOpenAI()
+const prompt = [new HumanMessage('What is the cap
+await model.invoke(prompt)
+```
+
+### *The output:*
+
+```
+AIMessage(content='The capital of France is Paris
+```
+
+Instead of a single prompt string, chat models make use of different types of chat message interfaces associated with each role mentioned previously. These include the following:
+
+### *HumanMessage*
+
+A message sent from the perspective of the human, with the user role
+
+## *AIMessage*
+
+A message sent from the perspective of the AI that the human is interacting with, with the assistant role
+
+## *SystemMessage*
+
+A message setting the instructions the AI should follow, with the system role
+
+## *ChatMessage*
+
+A message allowing for arbitrary setting of role
+
+Let's incorporate a SystemMessage instruction in our example:
+
+## *Python*
+
+```
+from langchain_core.messages import HumanMessage,
+from langchain_openai.chat_models import ChatOpen
+model = ChatOpenAI()
+system_msg = SystemMessage(
+```
+
+```
+ '''You are a helpful assistant that responds 
+ exclamation marks.'''
+)
+human_msg = HumanMessage('What is the capital of 
+model.invoke([system_msg, human_msg])
+```
+
+## *JavaScript*
+
+```
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage } from "@lan
+const model = new ChatOpenAI();
+const prompt = [
+ new SystemMessage(
+ `You are a helpful assistant that responds to
+ exclamation marks.`,
+ ),
+ new HumanMessage("What is the capital of France
+];
+await model.invoke(prompt);
+```
+
+## *The output:*
+
+## AIMessage('Paris!!!')
+
+As you can see, the model obeyed the instruction provided in the SystemMessage even though it wasn't present in the user's question. This enables you to preconfigure your AI application to respond in a relatively predictable manner based on the user's input.
+
+## Making LLM Prompts Reusable
+
+The previous section showed how the prompt instruction significantly influences the model's output. Prompts help the model understand context and generate relevant answers to queries.
+
+Here is an example of a detailed prompt:
+
+Answer the question based on the context below. I answered using the information provided, answer w
+
+Context: The most recent advancements in NLP are Models (LLMs). These models outperform their smal become invaluable for developers who are creating
+
+biliti D l t i t th d l
+
+executing. This can be useful when the way you display output to your users closely tracks the shape of the graph state.
+
+- debug . This mode yields detailed events every time something happens in your graph, including:
+  - checkpoint events, whenever a new checkpoint of the current state is saved to the database
+  - task events, emitted whenever a node is about to start running
+  - task\_result events, emitted whenever a node finishes running
+- Finally, you can combine these modes; for instance, requesting both updates and values by passing a list.
+
+You control the stream mode with the stream\_mode argument to stream() .
+

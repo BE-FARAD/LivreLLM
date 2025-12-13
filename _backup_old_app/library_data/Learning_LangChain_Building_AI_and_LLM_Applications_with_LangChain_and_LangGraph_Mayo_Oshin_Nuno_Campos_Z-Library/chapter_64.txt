@@ -1,0 +1,54 @@
+# Define parent graph
+
+builder = StateGraph(State)
+builder.add_node("subgraph", subgraph)
+...
+graph = builder.compile()
+```
+
+### *JavaScript*
+
+```
+import { StateGraph, Annotation, START } from "@l
+const StateAnnotation = Annotation.Root({
+ foo: Annotation(),
+});
+const SubgraphStateAnnotation = Annotation.Root({
+ // note that this key is shared with the parent
+ foo: Annotation(),
+ bar: Annotation(),
+});
+// Define subgraph
+const subgraphNode = async (state) => {
+ // note that this subgraph node can communicate
+```
+
+```
+ // the parent graph via the shared "foo" key
+ return { foo: state.foo + "bar" };
+};
+const subgraph = new StateGraph(SubgraphStateAnno
+ .addNode("subgraph", subgraphNode);
+ ...
+ .compile();
+// Define parent graph
+const parentGraph = new StateGraph(StateAnnotatio
+ .addNode("subgraph", subgraph)
+ .addEdge(START, "subgraph")
+ // Additional parent graph setup would go here
+ .compile();
+```
+
+## **Calling a Subgraph with a Function**
+
+You might want to define a subgraph with a completely different schema. In that case, you can create a node with a function that invokes the subgraph. This function will need to transform the input (parent) state to the subgraph state before invoking the subgraph and transform the results back to the parent state before returning the state update from the node.
+
+Let's see what it looks like:
+
+```
+class State(TypedDict):
+ foo: str
+class SubgraphState(TypedDict):
+ # none of these keys are shared with the pare
+ bar: str
+ baz: str

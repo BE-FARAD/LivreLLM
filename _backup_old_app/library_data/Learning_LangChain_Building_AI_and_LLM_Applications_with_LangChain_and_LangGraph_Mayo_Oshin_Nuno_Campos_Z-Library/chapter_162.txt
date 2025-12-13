@@ -1,0 +1,36 @@
+# Indexing Optimization
+
+
+A basic RAG indexing stage involves naive text splitting and embedding of chunks of a given document. However, this basic approach leads to inconsistent retrieval results and a relatively high occurrence of hallucinations, especially when the data source contains images and tables.
+
+There are various strategies to enhance the accuracy and performance of the indexing stage. We will cover three of them in the next sections: MultiVectorRetriever, RAPTOR, and ColBERT.
+
+### **MultiVectorRetriever**
+
+A document that contains a mixture of text and tables cannot be simply split by text into chunks and embedded as context: the entire table can be easily lost. To solve this problem, we can decouple documents that we want to use for answer synthesis, from a reference that we want to use for the [retriever. Figure](#page-8-0) 2- 5 illustrates how.
+
+<span id="page-8-0"></span>![](_page_8_Figure_1.jpeg)
+
+Figure 2-5. Indexing multiple representations of a single document
+
+For example, in the case of a document that contains tables, we can first generate and embed summaries of table elements, ensuring each summary contains an id reference to the full raw table. Next, we store the raw referenced tables in a separate docstore. Finally, when a user's query retrieves a table summary, we pass the entire referenced raw table as context to the final prompt sent to the LLM for answer synthesis. This approach enables us to provide the model with the full context of information required to answer the question.
+
+Here's an example. First, let's use the LLM to generate summaries of the documents:
+
+```
+from langchain_community.document_loaders import
+from langchain_text_splitters import RecursiveCha
+from langchain_openai import OpenAIEmbeddings
+from langchain_postgres.vectorstores import PGVec
+from langchain_core.output_parsers import StrOutp
+from langchain_core.prompts import ChatPromptTemp
+from pydantic import BaseModel
+from langchain_core.runnables import RunnablePass
+from langchain_openai import ChatOpenAI
+from langchain_core.documents import Document
+from langchain.retrievers.multi_vector import Mul
+from langchain.storage import InMemoryStore
+import uuid
+connection = "postgresql+psycopg://langchain:lang
+collection_name = "summaries"
+embeddings_model = OpenAIEmbeddings()

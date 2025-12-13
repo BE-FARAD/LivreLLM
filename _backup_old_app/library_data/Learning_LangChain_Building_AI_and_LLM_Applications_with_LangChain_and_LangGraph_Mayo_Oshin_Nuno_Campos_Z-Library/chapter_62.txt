@@ -1,0 +1,21 @@
+# **Calling a Subgraph Directly**
+
+
+The simplest way to create subgraph nodes is to attach a subgraph directly as a node. When doing so, it is important that the parent graph and the subgraph share state keys, because those shared keys will be used to communicate. (If your graph and subgraph do not share any keys, see the next section.)
+
+#### **NOTE**
+
+If you pass extra keys to the subgraph node (that is, in addition to the shared keys), they will be ignored by the subgraph node. Similarly, if you return extra keys from the subgraph, they will be ignored by the parent graph.
+
+Let's see what it looks like in action:
+
+#### *Python*
+
+```
+from langgraph.graph import START, StateGraph
+from typing import TypedDict
+class State(TypedDict):
+ foo: str # this key is shared with the subgra
+class SubgraphState(TypedDict):
+ foo: str # this key is shared with the parent
+ bar: str

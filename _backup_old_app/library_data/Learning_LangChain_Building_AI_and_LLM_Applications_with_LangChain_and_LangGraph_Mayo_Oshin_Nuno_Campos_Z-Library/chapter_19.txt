@@ -1,0 +1,7 @@
+# replace this with the connection details of you
+
+db = SQLDatabase.from_uri("sqlite:///Chinook.db")
+llm = ChatOpenAI(model="gpt-4", temperature=0)
+```
+
+```

@@ -1,0 +1,51 @@
+# `prompt` and `completion` are the results of us
+
+prompt = template invoke({
+```
+
+```
+prompt = template.invoke({
+ "context": """The most recent advancements in
+ Large Language Models (LLMs). These model
+ counterparts and have become invaluable f
+ applications with NLP capabilities. Devel
+ models through Hugging Face's `transforme
+ OpenAI and Cohere's offerings through the
+ libraries, respectively.""",
+ "question": "Which model providers offer LLMs
+})
+model.invoke(prompt)
+```
+
+```
+import { ChatPromptTemplate } from '@langchain/co
+import { ChatOpenAI } from '@langchain/openai'
+const model = new ChatOpenAI()
+const template = ChatPromptTemplate.fromMessages(
+ ['system', `Answer the question based on the co
+ cannot be answered using the information prov
+ don\'t know".`],
+ ['human', 'Context: {context}'],
+ ['human', 'Question: {question}'],
+])
+```
+
+```
+const prompt = await template.invoke({
+ context: `The most recent advancements in NLP a
+ Language Models (LLMs). These models outperfo
+ counterparts and have become invaluable for d
+ applications with NLP capabilities. Developer
+ through Hugging Face's \`transformers\` libra
+ and Cohere's offerings through the \`openai\`
+ respectively.`,
+ question: "Which model providers offer LLMs?"
+})
+await model.invoke(prompt)
+```
+
+```
+AIMessage(content="Hugging Face's `transformers` 
+ `openai` library, and Cohere using the `coher
+```
+

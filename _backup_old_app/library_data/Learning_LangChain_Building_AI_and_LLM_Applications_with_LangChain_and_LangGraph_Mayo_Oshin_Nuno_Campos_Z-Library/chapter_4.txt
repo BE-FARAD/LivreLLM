@@ -1,0 +1,98 @@
+# LangChain and Why It's Important
+
+
+LangChain was one of the earliest open source libraries to provide LLM and prompting building blocks and the tooling to reliably combine them into larger applications. As of writing, LangChain has amassed over 28 million monthly [downloads](https://oreil.ly/8OKbf), 99,000 [GitHub](https://oreil.ly/bF5pc) stars, and the largest developer community in generative AI ([72,000+](https://oreil.ly/PNWL3) strong). It has enabled software engineers who don't have an ML background to utilize the power of LLMs to build a variety of apps, ranging from AI chatbots to AI agents that can reason and take action responsibly.
+
+LangChain builds on the idea stressed in the preceding section: that prompting techniques are most useful when used together. To make that easier, LangChain provides simple *abstractions* for each major prompting technique. By abstraction we mean Python and JavaScript functions and classes that encapsulate the ideas of those techniques into easy-to-use wrappers. These
+
+abstractions are designed to play well together and to be combined into a larger LLM application.
+
+First of all, LangChain provides integrations with the major LLM providers, both commercial [\(OpenAI](https://oreil.ly/TTLXA), [Anthropic](https://oreil.ly/O4UXw), [Google,](https://oreil.ly/12g3Z) and more) and open source ([Llama,](https://oreil.ly/5WAVi) [Gemma,](https://oreil.ly/-40Ne) and others). These integrations share a common interface, making it very easy to try out new LLMs as they're announced and letting you avoid being locked-in to a single provider. We'll use these in [Chapter](#page--1-1) 1.
+
+LangChain also provides *prompt template* abstractions, which enable you to reuse prompts more than once, separating static text in the prompt from placeholders that will be different for each time you send it to the LLM to get a completion generated. We'll talk more about these also in [Chapter](#page--1-1) 1. LangChain prompts can also be stored in the LangChain Hub for sharing with teammates.
+
+LangChain contains many integrations with third-party services (such as Google Sheets, Wolfram Alpha, Zapier, just to name a few) exposed as *tools*, which is a standard interface for functions to be used in the tool-calling technique.
+
+For RAG, LangChain provides integrations with the major *embedding models* (language models designed to output a numeric representation, the *embedding*, of the meaning of a sentence, paragraph, and so on), *vector stores* (databases dedicated to storing embeddings), and *vector indexes* (regular databases with vector-storing capabilities). You'll learn a lot more about these in Chapters [2](#page--1-1) and [3](#page--1-1).
+
+For CoT, LangChain (through the LangGraph library) provides *agent* abstractions that combine chain-of-thought reasoning and tool calling, first popularized by the ReAct [paper.](https://oreil.ly/27BIC) This enables building LLM applications that do the following:
+
+- 1. Reason about the steps to take.
+- 2. Translate those steps into external tool calls.
+- 3. Receive the output of those tool calls.
+- 4. Repeat until the task is accomplished.
+
+We cover these in Chapters [5](#page--1-1) through [8.](#page--1-1)
+
+For chatbot use cases, it becomes useful to keep track of previous interactions and use them when generating the response to a future interaction. This is called *memory*, and [Chapter](#page--1-1) 4 discusses using it in LangChain.
+
+Finally, LangChain provides the tools to compose these building blocks into cohesive applications. Chapters [1](#page--1-1) through [6](#page--1-1) talk more about this.
+
+In addition to this library, LangChain provides [LangSmith—](https://oreil.ly/geRgx)a platform to help debug, test, deploy, and monitor AI workflows —and LangGraph Platform—a platform for deploying and scaling LangGraph agents. We cover these in Chapters [9](#page--1-1) and [10](#page--1-1).
+
+## What to Expect from This Book
+
+With this book, we hope to convey the excitement and possibility of adding LLMs to your software engineering toolbelt.
+
+We got into programming because we like building things, getting to the end of a project, looking at the final product and realizing there's something new out there, and we built it. Programming with LLMs is so exciting to us because it expands the set of things we can build, it makes previously hard things easy (for example, extracting relevant numbers from a long text) and previously impossible things possible—try building an automated assistant a year ago and you end up with the *phone*
+
+*tree hell* we all know and love from calling up customer support numbers.
+
+Now with LLMs and LangChain, you can actually build pleasant assistants (or myriad other applications) that chat with you and understand your intent to a very reasonable degree. The difference is night and day! If that sounds exciting to you (as it does to us) then you've come to the right place.
+
+In this Preface, we've given you a refresher on what makes LLMs tick and why exactly that gives you "thing-building" superpowers. Having these very large ML models that understand language and can output answers written in conversational English (or some other language) gives you a *programmable* (through prompt engineering), versatile language-generation tool. By the end of the book, we hope you'll see just how powerful that can be.
+
+We'll begin with an AI chatbot customized by, for the most part, plain English instructions. That alone should be an eye-opener: you can now "program" part of the behavior of your application without code.
+
+Then comes the next capability: giving your chatbot access to your own documents, which takes it from a generic assistant to one that's knowledgeable about any area of human knowledge for which you can find a library of written text. This will allow you to have the chatbot answer questions or summarize documents you wrote, for instance.
+
+After that, we'll make the chatbot remember your previous conversations. This will improve it in two ways: It will feel a lot more natural to have a conversation with a chatbot that remembers what you have previously chatted about, and over time the chatbot can be personalized to the preferences of each of its users individually.
+
+Next, we'll use chain-of-thought and tool-calling techniques to give the chatbot the ability to plan and act on those plans, iteratively. This will enable it to work toward more complicated requests, such as writing a research report about a subject of your choice.
+
+As you use your chatbot for more complicated tasks, you'll feel the need to give it the tools to collaborate with you. This encompasses both giving you the ability to interrupt or authorize actions before they are taken, as well as providing the chatbot with the ability to ask for more information or clarification before acting.
+
+Finally, we'll show you how to deploy your chatbot to production and discuss what you need to consider before and after taking that step, including latency, reliability, and security. Then we'll show you how to monitor your chatbot in production and continue to improve it as it is used.
+
+Along the way, we'll teach you the ins and outs of each of these techniques, so that when you finish the book, you will have truly added a new tool (or two) to your software engineering toolbelt.
+
+## Conventions Used in This Book
+
+The following typographical conventions are used in this book:
+
+#### *Italic*
+
+Indicates new terms, URLs, email addresses, filenames, and file extensions.
+
+#### *Constant width*
+
+Used for program listings, as well as within paragraphs to refer to program elements such as variable or function names, databases, data types, environment variables, statements, and keywords.
+
+```
+ # Initialize a dictionary to hold fused score
+ # Documents will be keyed by their contents t
+ fused_scores = {}
+ documents = {}
+ # Iterate through each list of ranked documen
+ for docs in results:
+ # Iterate through each document in the li
+ # with its rank (position in the list)
+ for rank, doc in enumerate(docs):
+ # Use the document contents as the ke
+ doc_str = doc.page_content
+ # If the document hasn't been seen ye
+ # - initialize score to 0
+ # - save it for later
+ if doc_str not in fused_scores:
+ fused_scores[doc_str] = 0
+ documents[doc_str] = doc
+ # Update the score of the document us
+ # 1 / (rank + k)
+ fused_scores[doc_str] += 1 / (rank +
+ # Sort the documents based on their fused sco
+ # to get the final reranked results
+ reranked_doc_strs = sorted(
+ fused_scores, key=lambda d: fused_scores[
+ )
+```
+

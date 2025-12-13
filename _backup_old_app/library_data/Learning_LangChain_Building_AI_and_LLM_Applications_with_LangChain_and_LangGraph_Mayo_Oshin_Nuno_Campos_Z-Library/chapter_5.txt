@@ -1,0 +1,96 @@
+# retrieve the corresponding doc for each doc
+
+
+```
+ # retrieve the corresponding doc for each doc
+ return [
+ documents[doc_str]
+ for doc_str in reranked_doc_strs
+ ]
+retrieval_chain = generate_queries | retriever.ba
+```
+
+```
+function reciprocalRankFusion(results, k = 60) {
+ // Initialize a dictionary to hold fused scores
+ // Documents will be keyed by their contents to
+ const fusedScores = {}
+ const documents = {}
+ results.forEach(docs => {
+ docs.forEach((doc, rank) => {
+ // Use the document contents as the key for
+ const key = doc.pageContent
+ // If the document hasn't been seen yet,
+ // - initialize score to 0
+ // - save it for later
+ if (!(key in fusedScores)) {
+ fusedScores[key] = 0
+       d t [k ] 0
+```
+
+```
+ documents[key] = 0
+ }
+ // Update the score of the document using t
+ // 1 / (rank + k)
+ fusedScores[key] += 1 / (rank + k)
+ })
+ })
+ // Sort the documents based on their fused scor
+ // to get the final reranked results
+ const sorted = Object.entries(fusedScores).sort
+ // retrieve the corresponding doc for each key
+ return sorted.map(([key]) => documents[key])
+}
+const retrievalChain = queryGen
+ .pipe(retriever.batch.bind(retriever))
+ .pipe(reciprocalRankFusion)
+```
+
+Notice that the function also takes a k parameter, which determines how much influence documents in each query's result sets have over the final list of documents. A higher value indicates that lower-ranked documents have more influence.
+
+Finally, we combine our new retrieval chain (now using RRF) with the full chain we've seen before:
+
+```
+prompt = ChatPromptTemplate.from_template("""Answ
+ on this context:
+{context}
+Question: {question}
+""")
+llm = ChatOpenAI(temperature=0)
+@chain
+def multi_query_qa(input):
+ # fetch relevant documents 
+ docs = retrieval_chain.invoke(input)
+ # format prompt
+ formatted = prompt.invoke({"context": docs,
+                                              "
+ # generate answer
+ answer = llm.invoke(formatted)
+ return answer
+multi_query_qa.invoke("""Who are some key figures
+ of philosophy?""")
+```
+
+```
+const rewritePrompt = ChatPromptTemplate.fromTemp
+ question based on this context:
+{context}
+Question: {question}
+`)
+const llm = new ChatOpenAI({temperature: 0})
+const multiQueryQa = RunnableLambda.from(async in
+ // fetch relevant documents
+ const docs = await retrievalChain.invoke(input)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return answer
+})
+await multiQueryQa.invoke(`Who are some key figur
+ history of philosophy?`)
+```
+
+RAG-Fusion's strength lies in its ability to capture the user's intended expression, navigate complex queries, and broaden the scope of retrieved documents, enabling serendipitous discovery.
+

@@ -1,0 +1,63 @@
+# Converting Your Documents into Text
+
+
+As mentioned at the beginning of the chapter, the first step in preprocessing your document is to convert it to text. In order to achieve this, you would need to build logic to parse and extract the document with minimal loss of quality. Fortunately, LangChain provides *document loaders* that handle the parsing logic and enable you to "load" data from various sources into a Document class that consists of text and associated metadata.
+
+For example, consider a simple *.txt* file. You can simply import a LangChain TextLoader class to extract the text, like this:
+
+```
+from langchain_community.document_loaders import
+loader = TextLoader("./test.txt")
+loader.load()
+```
+
+```
+import { TextLoader } from "langchain/document_lo
+const loader = new TextLoader("./test.txt");
+const docs = await loader.load();
+```
+
+#### *The output:*
+
+```
+[Document(page_content='text content \n', metadat
+ './test.txt'})]
+```
+
+The previous code block assumes that you have a file named test.txt in your current directory. Usage of all LangChain document loaders follows a similar pattern:
+
+- 1. Start by picking the loader for your type of document from the long list of [integrations](https://oreil.ly/iLJ33).
+- 2. Create an instance of the loader in question, along with any parameters to configure it, including the location of your documents (usually a filesystem path or web address).
+- 3. Load the documents by calling load() , which returns a list of documents ready to pass to the next stage (more on that soon).
+
+Aside from *.txt* files, LangChain provides document loaders for other popular file types including *.csv*, *.json*, and Markdown, alongside integrations with popular platforms such as Slack and Notion.
+
+For example, you can use WebBaseLoader to load HTML from web URLs and parse it to text.
+
+Install the beautifulsoup4 package:
+
+```
+pip install beautifulsoup4
+```
+
+#### *Python*
+
+from langchain\_community.document\_loaders import
+
+```
+loader = WebBaseLoader("https://www.langchain.com
+loader.load()
+```
+
+```
+// install cheerio: npm install cheerio
+import {
+ CheerioWebBaseLoader
+} from "@langchain/community/document_loaders/web
+const loader = new CheerioWebBaseLoader("https://
+const docs = await loader.load();
+```
+
+In the case of our Tesla PDF use case, we can utilize LangChain's PDFLoader to extract text from the PDF document:
+
+```

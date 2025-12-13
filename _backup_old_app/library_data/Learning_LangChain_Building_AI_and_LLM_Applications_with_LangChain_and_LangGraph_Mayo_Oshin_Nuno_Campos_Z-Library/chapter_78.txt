@@ -1,0 +1,155 @@
+# Somewhere else in your application
+
+event.set()
+```
+
+```
+const controller = new AbortController()
+const input = {
+  "messages": [
+```
+
+```
+ messages : [
+ new HumanMessage(`How old was the 30th presid
+ he died?`)
+ ]
+}
+const config = {"configurable": {"thread_id": "1"
+try {
+ const output = await graph.stream(input, {
+ ...config,
+ signal: controller.signal
+ });
+ for await (const chunk of output) {
+ console.log(chunk); // do something with the 
+ }
+} catch (e) {
+ console.log(e);
+}
+// Somewhere else in your application
+controller.abort()
+```
+
+This makes use of an event or signal, so that you can control interruption from outside of the running application. Notice in the Python code block the use of aclosing ; this ensures the stream is properly closed when interrupted. Notice in JS the use of the try-catch statement, as interrupting the run will result in an abort exception being raised. Finally notice that usage of the checkpointer requires passing in an identifier for this thread, to distinguish this interaction with the graph from all others.
+
+<span id="page-8-0"></span>![](_page_8_Figure_1.jpeg)
+
+Figure 8-4. The authorize pattern
+
+A second control mode is authorize , where the user defines ahead of time that they want the application to hand off control to them every time a particular node is about to be called (see [Figure](#page-8-0) 8-4). This is usually implemented for tool confirmationbefore any tool (or particular tools) is called, the application will pause and ask for confirmation, at which point the user can, again:
+
+- Resume computation, accepting the tool call.
+- Send a new message to guide the bot in a different direction, in which case the tool will not be called.
+- Do nothing.
+
+Here's the code:
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+config = {"configurable": {"thread_id": "1"}}
+output = graph.astream(input, config, interrupt_b
+async for c in output:
+ ... # do something with the output
+```
+
+```
+const input = {
+ "messages": [
+ new HumanMessage(`How old was the 30th presid
+ he died?`)
+ ]
+}
+const config = {"configurable": {"thread_id": "1"
+const output = await graph.stream(input, {
+ ...config,
+ interruptBefore: ['tools']
+});
+for await (const chunk of output) {
+ console.log(chunk); // do something with the ou
+}
+```
+
+This will run the graph up until it is about to enter the node called tools , thus giving you the chance to inspect the current state, and decide whether to proceed or not. Notice that interrupt\_before is a list where order is not important; if
+
+you pass multiple node names, it will interrupt before entering each of them.
+
+## <span id="page-11-0"></span>**Resume**
+
+To proceed from an interrupted graph—such as when using one of the previous two patterns—you just need to re-invoke the graph with null input (or None in Python). This is taken as a signal to continue processing the previous non-null input:
+
+## *Python*
+
+```
+config = {"configurable": {"thread_id": "1"}}
+output = graph.astream(None, config, interrupt_be
+async for c in output:
+ ... # do something with the output
+```
+
+```
+const config = {"configurable": {"thread_id": "1"
+```
+
+```
+const output = await graph.stream(null, {
+ ...config,
+ interruptBefore: ['tools']
+});
+for await (const chunk of output) {
+ console.log(chunk); // do something with the ou
+}
+```
+
+## <span id="page-12-0"></span>**Restart**
+
+If instead you want an interrupted graph to start over from the first node, with additional new input, you just need to invoke it with new input:
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+```
+
+```
+config = {"configurable": {"thread_id": "1"}}
+output = graph.astream(input, config)
+async for c in output:
+ ... # do something with the output
+```
+
+```
+const input = {
+ "messages": [
+ new HumanMessage(`How old was the 30th presid
+ he died?`)
+ ]
+}
+const config = {"configurable": {"thread_id": "1"
+const output = await graph.stream(input, config);
+for await (const chunk of output) {
+ console.log(chunk); // do something with the ou
+}
+```
+
+This will keep the current state of the graph, merge it with the new input, and start again from the first node.
+
+If you want to lose the current state, just change the thread\_id , which will start a new interaction from a blank slate. Any string value is a valid thread\_id ; we'd recommend using UUIDs (or other unique identifiers) as thread IDs.
+
+## **Edit state**
+
+Sometimes you might want to update the state of the graph before resuming; this is possible with the update\_state method. You'll usually want to first inspect the current state with get\_state .
+
+Here's what it looks like:
+
+```
+config = {"configurable": {"thread_id": "1"}}
+state = graph.get_state(config)

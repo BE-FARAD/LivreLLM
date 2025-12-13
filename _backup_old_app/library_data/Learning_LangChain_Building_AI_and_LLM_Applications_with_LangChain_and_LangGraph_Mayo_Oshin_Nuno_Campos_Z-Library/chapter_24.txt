@@ -1,0 +1,13 @@
+# <span id="page-17-0"></span>Chapter 4. Using LangGraph to Add Memory to Your Chatbot
+
+
+In [Chapter](#page--1-4) 3, you learned how to provide your AI chatbot application with up-to-date and relevant context. This enables your chatbot to generate accurate responses based on the user's input. But that's not enough to build a production-ready application. How can you enable your application to actually "chat" back and forth with the user, while remembering prior conversations and relevant context?
+
+Large language models are *stateless*, which means that each time the model is prompted to generate a new response it has no memory of the prior prompt or model response. In order to provide this historical information to the model, we need a robust memory system that will keep track of previous conversations and context. This historical information can then be included in the final prompt sent to the LLM, thus giving it "memory." [Figure](#page-18-0) 4-1 illustrates this.
+
+<span id="page-18-0"></span>![](_page_18_Figure_0.jpeg)
+
+Figure 4-1. Memory and retrieval used to generate context-aware answers from an LLM
+
+In this chapter, you'll learn how to build this essential memory system using LangChain's built-in modules to make this development process easier.
+

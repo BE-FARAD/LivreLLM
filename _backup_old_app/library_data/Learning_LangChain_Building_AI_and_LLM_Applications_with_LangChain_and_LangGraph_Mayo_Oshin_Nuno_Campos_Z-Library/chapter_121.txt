@@ -1,0 +1,1162 @@
+# Ambient Computing
+
+
+<span id="page-5-1"></span><span id="page-5-0"></span>A very useful UX pattern has been the always-on background software that pipes up when something "interesting" has
+
+happened that deserves your attention. You can find this in many places today. A few examples are:
+
+- You can set an alert in your brokerage app to notify you when some stock goes below a certain price.
+- You can ask Google to notify you when new search results are found matching some search query.
+- You can define alerts for your computer infrastructure to notify you when something is outside the regular pattern of behavior.
+
+The main obstacle to deploying this pattern more widely may be coming up with a reliable definition of *interesting* ahead of time that is both of the following:
+
+#### *Useful*
+
+It will notify you when you think it should.
+
+### *Practical*
+
+Most users won't want to spend massive amounts of time ahead precreating endless rules for alerts.
+
+The reasoning capabilities of LLMs can unlock new applications of this pattern of *ambient computing* that are simultaneously more useful (they identify more of what you'd find interesting)
+
+and less work to set up (their reasoning can replace a lot or all of the manual setup of rules).
+
+The big difference between *collaborative* and *ambient* is concurrency:
+
+#### *Collaborative*
+
+You and the LLM are usually (or sometimes) doing work at the same time and feeding off each other's work.
+
+#### *Ambient*
+
+The LLM is continuously doing some kind of work in the background while you, the user, are presumably doing something else entirely.
+
+#### To build this, you need:
+
+#### *Triggers*
+
+The LLM agent needs to receive (or poll periodically for) new information from the environment. This is in fact what motivates ambient computing: a preexisting source of periodic or continuous new information that needs to be processed.
+
+#### *Long-term memory*
+
+It would not be possible to detect new interesting events without consulting a database of previously received information.
+
+#### *Reflection (or learning)*
+
+Understanding what is *interesting* (what deserves human input) likely requires learning from each previous interesting event after it happens. This is usually called a *reflection step*, in which the LLM produces an update to its long-term memory, possibly modifying its internal "rules" for detecting future interesting events.
+
+#### *Summarize output*
+
+An agent working in the background is likely to produce much more output than the human user would like to see. This requires that the agent architecture be modified to produce summaries of the work done and surface to the user only what is new or noteworthy.
+
+#### *Task manager*
+
+Having an LLM agent working continuously in the background requires employing some system for managing the work, queuing new runs, and handling and recovering from error.
+
+## Summary
+
+LLMs have the potential to change not only how we build [software, but](https://oreil.ly/RqnCm) also the very software we build. This new capability that we developers have at our disposal to generate new content will not only enhance many existing apps, but it can make new things possible that we haven't dreamed of yet.
+
+There's no shortcut here. You really do need to build something (s)crappy, speak to users, and rinse and repeat until something new and unexpected comes out the other side.
+
+With this last chapter, and the book as a whole, we have tried to give you the knowledge we think can help you build something uniquely good with LLMs. We want to thank you for coming on this journey with us and wish you the best of luck in your career and future.
+
+## Index
+
+### **Symbols**
+
+{} (curly braces), Making LLM Prompts [Reusable](#page--1-1)
+
+#### **A**
+
+abstractions, [LangChain](#page--1-2) and Why It's Important [agency, Cognitive](#page--1-4) [Architectures](#page--1-3) with LangGraph, The Plan-Do Loop, [Patterns](#page--1-5) to Make the Most of LLMs agency-reliability trade-off, Cognitive Architectures with [LangGraph, Patterns](#page--1-6) to Make the Most of LLMs-Patterns to Make the Most of LLMs agent architecture agent abstractions, [LangChain](#page--1-9) and Why It's Important always calling tools first, [Always](#page--1-10) Calling a Tool First-[Always](#page--1-11) Calling a Tool First dealing with many tools, [Dealing](#page--1-12) with Many [Tools-Dealing](#page--1-13) with Many Tools LangGraph agent creation, Building a [LangGraph](#page--1-14) Agent-Building a [LangGraph](#page--1-15) Agent multi-agent architectures, Multi-Agent [Architectures-](#page--1-16)Supervisor [Architecture,](#page--1-17) [Multitasking](#page--1-18) LLMs plan-do loop, The [Plan-Do](#page--1-19) Loop-The [Plan-Do](#page--1-20) Loop
+
+```
+reflection prompting technique, Reflection-Reflection
+  unique aspects of, Agent Architecture
+agents, evaluating performance of
+  final response, Testing an agent's final response-Testing a
+  single step of an agent
+  levels of testing, Evaluating an Agent's End-to-End
+  Performance
+  single steps, Testing a single step of an agent-Testing a
+  single step of an agent
+  trajectory, Testing an agent's trajectory-Testing an agent's
+  trajectory
+AI chatbots (see chatbots)
+AIMessage interface, Using LLMs in LangChain
+alerts, Ambient Computing
+algorithms, Preface
+ambient computing, Ambient Computing
+Anthropic, Preface, LangChain and Why It's Important, LLM
+Fundamentals with LangChain
+API access, protecting, Security
+API keys, retrieving, Large Language Model
+application logs, Creating Datasets
+architecture (see also agent architecture; cognitive
+architectures)
+```
+
+```
+ReAct architecture, LangChain and Why It's Important, The
+  Plan-Do Loop
+  router architecture, Architecture #3: Router-Architecture
+  #3: Router
+  transformer neural network architecture, Brief Primer on
+  LLMs
+ArcSearch, Introducing LangGraph
+argument k, Retrieving Relevant Documents
+assistant role, Dialogue-Tuned LLMs, Using LLMs in
+LangChain
+assistants (see chatbots)
+assistants (LangGraph Platform), Assistants
+async execution, Using the Runnable Interface
+authentication, Security
+authorize mode, Human-in-the-Loop Modalities
+auto-evaluators, adding, Improving LLM-as-a-judge
+evaluators performance
+autonomy, Cognitive Architectures with LangGraph, Patterns
+to Make the Most of LLMs
+```
+
+**B**
+
+bag-of-words model, [Embeddings](#page--1-55) Before LLMs Bard, [Preface](#page--1-56) batch method, Using the [Runnable](#page--1-57) Interface, [Summary](#page--1-58)
+
+## BLOOM, Brief [Primer](#page--1-59) on LLMs braces, curly ({}), Making LLM Prompts [Reusable](#page--1-1)
+
+**C**
+
+```
+canvases, Building with LLMs
+chain architecture, Architecture #2: Chain-Architecture #2:
+Chain
+chain-of-thought (CoT) prompting, Chain-of-Thought,
+LangChain and Why It's Important, Agent Architecture
+Chase, Harrison, Preface
+chat dataset, Creating Datasets
+chat models
+  alternative LLM providers for, LLM Fundamentals with
+  LangChain
+  interactive chatbots, Interactive Chatbots
+  message interfaces in, Using LLMs in LangChain
+  roles in, Using LLMs in LangChain
+chatbots
+  adding memory to chatbots, Adding Memory to
+  StateGraph-Adding Memory to StateGraph
+  advanced components, Interactive Chatbots
+  asynchronous execution of, Imperative Composition
+  basic components, Interactive Chatbots
+```
+
+building chatbot memory [systems, Building](#page--1-74) a Chatbot Memory System[-Building](#page--1-75) a Chatbot Memory System
+
+ChatGPT, [Preface](#page--1-76)
+
+conversation history, [Modifying](#page--1-77) Chat History-[Summary](#page--1-78),
+
+[Interactive](#page-1-2) Chatbots
+
+interactive, [Interactive](#page--1-79) Chatbots
+
+limitation of simple, RAG Part I: [Indexing](#page--1-80) Your Data memory and, [LangChain](#page--1-81) and Why It's Important modifying chat history, [Modifying](#page--1-77) Chat History[-Summary](#page--1-78) overview of creating, What to [Expect](#page--1-82) from This Book prompt and chat model example [of, Imperative](#page--1-83)
+
+Composition
+
+streaming support with Python or [JavaScript, Imperative](#page--1-84) Composition
+
+ChatGPT, [Preface](#page--1-76)
+
+ChatMessage interface, Using LLMs in [LangChain](#page--1-85) [ChatPromptTemplate, Making](#page--1-87) LLM Prompts [Reusable-](#page--1-86)Getting Specific Formats out of LLMs
+
+checkpoint events, [Intermediate](#page--1-88) Output checkpointers, Adding Memory to [StateGraph](#page--1-89)[, Human-in-the-](#page--1-90)Loop Modalities
+
+classification problems, [Embeddings](#page--1-91) Before LLMs
+
+Claude, [Preface](#page--1-92)
+
+code examples, obtaining and using, Using Code [Examples](#page--1-93)
+
+```
+cognitive architectures
+  chain architecture, Architecture #2: Chain-Architecture #2:
+  Chain
+  definition of term, Cognitive Architectures with
+  LangGraph
+  LLM call architecture, Architecture #1: LLM Call-
+  Architecture #1: LLM Call
+  major LLM architectures, Cognitive Architectures with
+  LangGraph
+  router architecture, Architecture #3: Router-Architecture
+  #3: Router
+Cohere, LLM Fundamentals with LangChain, Generating Text
+Embeddings
+ColBERT model, ColBERT: Optimizing Embeddings
+collaborative editing, Collaborative Editing with LLMs-
+Collaborative Editing with LLMs
+comments and questions, How to Contact Us
+composition (see declarative composition; imperative
+composition)
+concurrency, Collaborative Editing with LLMs
+concurrent inputs, dealing with, Refuse concurrent inputs-
+Fork and merge
+context
+```
+
+accurate output with, The Goal: Picking Relevant Context for LLMs, Introducing [Retrieval-Augmented](#page--1-104) Generation dealing with complex, Multi-Agent [Architectures](#page--1-106) definition of term, [Retrieval-Augmented](#page--1-107) Generation context windows, Converting Your [Documents](#page--1-108) into Text,
+
+### [Trimming](#page--1-109) Messages
+
+continuous [improvement](#page--1-110) cycle, Testing Techniques Across the LLM App Development Cycle (see also testing) conversation history, [Interactive](#page-1-2) Chatbots copilots, [Collaborative](#page-3-0) Editing with LLMs cosine similarity, Semantic [Embeddings](#page--1-111) Explained,
+
+### Retrieving Relevant [Documents](#page--1-112)
+
+CoT prompting (see chain-of-thought prompting) [create, read, update, delete](#page--1-113) (CRUD), Storing Embeddings in a Vector Store
+
+cron jobs (LangGraph Platform), [Cron](#page--1-114) jobs CSV format, Other [Machine-Readable](#page--1-115) Formats with Output Parsers
+
+curly braces ({}), Making LLM Prompts [Reusable](#page--1-1) current events, RAG Part I: [Indexing](#page--1-116) Your Data, Introducing [Retrieval-Augmented](#page--1-117) Generation
+
+**D**
+
+data indexing
+
+converting documents into text, Converting Your Documents into [Text-Converting](#page--1-118) Your [Documents](#page--1-119) into Text embeddings, [Embeddings:](#page--1-120) Converting Text to Numbers-Converting Your [Documents](#page--1-118) into Text end-to-end example, Generating Text [Embeddings-](#page--1-121)Generating Text [Embeddings](#page--1-122) generating text embeddings, Generating Text [Embeddings-](#page--1-123)Generating Text [Embeddings](#page--1-124) limitations of LLM's knowledge [corpus, RAG](#page--1-80) Part I: Indexing Your Data optimizing, Indexing [Optimization](#page--1-125)-[Summary](#page--1-126) process of, Retrieving Relevant [Documents](#page--1-127) relevant content for LLMs, The Goal: Picking Relevant Context for [LLMs, Retrieving](#page--1-128) Relevant [Documents](#page--1-129)-Generating LLM [Predictions](#page--1-130) Using Relevant Documents splitting text into chunks, [Splitting](#page--1-131) Your Text into Chunks-[Splitting](#page--1-132) Your Text into Chunks storing embeddings in vector stores, Storing Embeddings in a Vector [Store-Working](#page--1-133) with Vector Stores tracking document changes, Tracking Changes to Your [Documents-Tracking](#page--1-135) Changes to Your [Documents](#page--1-136) data models (LangGraph Platform), Data [Models](#page--1-137) data queries query construction, Query [Construction](#page--1-138)-[Text-to-SQL](#page--1-139)
+
+```
+query routing, Query Routing-Semantic Routing
+  query transformation, Query Transformation-Hypothetical
+  Document Embeddings
+database access, protecting, Security
+database description, Text-to-SQL
+datasets
+  creating, Creating Datasets-Defining Your Evaluation
+  Criteria
+  dialogue datasets, Dialogue-Tuned LLMs
+  task-specific datasets, Instruction-Tuned LLMs
+debug mode (LangGraph), Intermediate Output
+declarative composition, Using the Runnable Interface,
+Declarative Composition-Summary
+defense in depth, Security
+dense embeddings, LLM-Based Embeddings
+dependencies, installing, Install Dependencies
+deployment
+  LangGraph API configuration file, Create a LangGraph API
+  Config
+  LangGraph Studio, Launch LangGraph Studio-Launch
+  LangGraph Studio
+  from LangSmith UI, Deploy from the LangSmith UI-
+  Environment variables
+  prerequisites, Prerequisites-Create a LangSmith Account
+```
+
+security considerations, [Security](#page--1-164) testing LangGraph app locally, Test Your LangGraph App [Locally-Test](#page--1-165) Your [LangGraph](#page--1-166) App Locally design stage, testing during, The Design Stage: [Self-Corrective](#page--1-16) RAG-The Design Stage: [Self-Corrective](#page--1-167) RAG dialogue-tuning, [Dialogue-Tuned](#page--1-168) LLMs dimensions, LLM-Based [Embeddings](#page--1-169) document loaders, Converting Your [Documents](#page--1-170) into Text documents classifying, [Embeddings](#page--1-91) Before LLMs [decoupling, M](#page--1-172)[ultiVectorRetrieve](#page--1-171)[r-RAPTOR:](#page--1-172) Recursive Abstractive Processing for Tree-Organized Retrieval deleting, Tracking Changes to Your [Documents](#page--1-173) [preprocessing, The](#page--1-174) Goal: Picking Relevant Context for LLMs reranking/reordering, [RAG-Fusion](#page--1-175) retrieving relevant [documents, Retrieving](#page--1-176) Relevant Documents-Retrieving Relevant [Documents](#page--1-177) tracking document changes, Tracking Changes to Your [Documents-Tracking](#page--1-135) Changes to Your [Documents](#page--1-136) double texting (LangGraph Platform), [Double](#page--1-178) texting drift, [Regression](#page--1-179) Testing DuckDuckGo, Building a [LangGraph](#page--1-180) Agent dynamic few-shot prompting, Few-Shot [Prompting](#page--1-181)
+
+**E**
+
+edges, [Introducing](#page--1-1) LangGraph editing, collaborative, [Collaborative](#page--1-2) Editing with LLMs-[Collaborative](#page--1-3) Editing with LLMs embedding models, [LangChain](#page--1-4) and Why It's Important, LLM Fundamentals with [LangChain, LLM-Based](#page--1-5) [Embeddings](#page--1-6) embeddings bag-of-words model, [Embeddings](#page--1-7) Before LLMs benefits of, [Embeddings:](#page--1-8) Converting Text to Numbers [definition](#page--1-9) of term, The Goal: Picking Relevant Context for LLMs generating text embeddings, Generating Text [Embeddings-](#page--1-10)Generating Text [Embeddings](#page--1-11) LLM-based embeddings, LLM-Based [Embeddings](#page--1-12) optimizing, ColBERT: Optimizing [Embeddings](#page--1-13) retrieving relevant [embeddings, Retrieving](#page--1-14) Relevant Documents semantic embeddings, Semantic [Embeddings](#page--1-15) Explained-Semantic [Embeddings](#page--1-16) Explained storing embeddings in vector stores, Storing Embeddings in a Vector [Store-Working](#page--1-17) with Vector Stores
+
+uses [for, E](#page--1-20)[mbeddings](#page--1-19) Before LLMs, Semantic Embeddings Explained
+
+environment variables, [Environment](#page--1-21) variables error handling, The Design Stage: [Self-Corrective](#page--1-22) RAG errors, monitoring, [Monitoring](#page--1-23) and Fixing Errors evaluation metrics (see also testing) defining, Defining Your [Evaluation](#page--1-24) Criteria getting started, Defining Your [Evaluation](#page--1-25) Criteria improving LLM-as-a-judge [performance, Improving](#page--1-26) LLMas-a-judge evaluators [performance-Improving](#page--1-27) LLM-as-ajudge evaluators performance main evaluators, Defining Your [Evaluation](#page--1-28) Criteria pairwise evaluation, Pairwise [evaluation](#page--1-29) expected output, Brief [Primer](#page--1-30) on LLMs external [data, retrieving, The](#page--1-31) Goal: Picking Relevant Context
+
+**F**
+
+for LLMs
+
+[feedback, collecting](#page--1-32) in production, Collect Feedback in Production
+
+few-shot prompting, Few-Shot [Prompting](#page--1-33), [Text-to-SQL](#page--1-34), Improving [LLM-as-a-judge](#page--1-35) evaluators performance file access, protecting, [Security](#page--1-36)
+
+```
+final response, evaluating, Testing an agent's final response-
+Testing a single step of an agent
+fine-tuning
+  dialogue datasets, Dialogue-Tuned LLMs
+  fine-tuned LLMs, Fine-Tuned LLMs
+floating-point values, Semantic Embeddings Explained
+flow engineering, Architecture #2: Chain
+fork and merge strategy, Fork and merge
+formats
+  machine-readable, Other Machine-Readable Formats with
+  Output Parsers
+  providing format instructions, Other Machine-Readable
+  Formats with Output Parsers
+  specifying from LLMs, Getting Specific Formats out of
+  LLMs-Other Machine-Readable Formats with Output
+  Parsers
+frontiers, Patterns to Make the Most of LLMs
+function calls, Logical Routing
+```
+
+**G**
+
+Gemma, Brief Primer on [Prompting](#page--1-49)[, LangChain](#page--1-50) and Why It's Important generate-reflect loop, [Reflection](#page--1-51)
+
+```
+generation stage, Generating LLM Predictions Using Relevant
+Documents
+generative AI
+  beginnings of, Preface
+  LLMs versus ML algorithms, Preface
+GitHub Copilot Chat, Interactive Chatbots
+Google
+  Gemini, Preface
+  LangChain integration with, LangChain and Why It's
+  Important
+graphs, Introducing LangGraph (see also LangGraph)
+ground truth references, Defining Your Evaluation Criteria
+```
+
+**H**
+
+hallucinations, RAG Part I: [Indexing](#page--1-60) Your Data, ColBERT: Optimizing Embeddings, Query [Transformation, Trimmi](#page--1-61)ng Messages, Testing: [Evaluation, Monitoring, and](#page--1-63) Continuous Improvement heuristic evaluators, Defining Your [Evaluation](#page--1-65) Criteria Hierarchical Navigable Small World [\(HNSW\), Retrieving](#page--1-14) Relevant Documents Hugging Face, Generating Text [Embeddings](#page--1-66) human evaluators, Defining Your [Evaluation](#page--1-67) Criteria human-computer interfaces (HCI), [Building](#page--1-68) with LLMs
+
+```
+human-in-the-loop modalities
+  authorize mode, Human-in-the-Loop Modalities
+  checkpointers, Human-in-the-Loop Modalities
+  edit state, Edit state
+  fork step, Fork
+  interactive chatbots and, Interactive Chatbots
+  interrupt mode, Human-in-the-Loop Modalities
+  LangGraph Platform API, Human-in-the-loop
+  restart step, Restart
+  resume step, Resume
+HumanMessage interface, Using LLMs in LangChain
+Hypothetical Document Embeddings (HyDE), Hypothetical
+Document Embeddings-Hypothetical Document Embeddings
+```
+
+**I**
+
+```
+imperative composition, Using the Runnable Interface-
+Imperative Composition, Summary
+inaccuracies, RAG Part I: Indexing Your Data
+independent agents, Multi-Agent Architectures
+indexing (see data indexing; vector indexes)
+ingestions, The Goal: Picking Relevant Context for LLMs
+input
+  chat format and, Dialogue-Tuned LLMs
+  dynamic inputs, Making LLM Prompts Reusable
+```
+
+```
+handling concurrent, Multitasking LLMs-Fork and merge
+  in LLMs versus machine learning, Brief Primer on LLMs
+  role in LLMs, Brief Primer on LLMs
+instruction-tuning, Instruction-Tuned LLMs
+interactive chatbots, Streaming LLM Output Token-by-Token,
+Interactive Chatbots (see also chatbots)
+intermediate output, Intermediate Output-Intermediate
+Output, Collaborative Editing with LLMs
+interrupt mode, Human-in-the-Loop Modalities
+interrupt strategy, Interrupt
+invoke method, Using LLMs in LangChain, Making LLM
+Prompts Reusable, Using the Runnable Interface, Summary
+jailbreaking, Dialogue-Tuned LLMs
+JavaScript
+  agent architecture
+    implementing, Building a LangGraph Agent
+    subagents, Supervisor Architecture
+    supervisor, Supervisor Architecture
+  asynchronous execution with, Imperative Composition
+  chatbot conversation configuration, Using LLMs in
+  LangChain
+  chatbot edges, adding, Creating a StateGraph
+```
+
+**J**
+
+```
+chatbot memory systems, Building a Chatbot Memory
+System
+chatbot nodes, adding, Creating a StateGraph
+chatbot streaming support, Imperative Composition,
+Declarative Composition
+ChatPromptTemplate, Making LLM Prompts Reusable-
+Getting Specific Formats out of LLMs
+cognitive architectures
+  chain, Architecture #2: Chain
+  LLM call, Architecture #1: LLM Call
+  router, Architecture #3: Router
+composition
+  declarative, Declarative Composition
+  imperative, Imperative Composition
+data indexing
+  end-to-end example, Generating Text Embeddings
+  example of, Retrieving Relevant Documents
+document loaders and, Converting Your Documents into
+Text
+documents, retrieving full context, MultiVectorRetriever-
+RAPTOR: Recursive Abstractive Processing for Tree-
+Organized Retrieval
+dynamic inputs
+  constructing, Making LLM Prompts Reusable
+```
+
+```
+feeding into LLMs, Making LLM Prompts Reusable
+embeddings, retrieving relevant, Retrieving Relevant
+Documents
+Hypothetical Document Embeddings (HyDE), Hypothetical
+Document Embeddings-Hypothetical Document
+Embeddings
+LangChain set up using, Getting Set Up with LangChain
+LangGraph
+  installation, Introducing LangGraph
+  visual representation, Creating a StateGraph
+messages
+  filtering, Filtering Messages
+  merging, Merging Consecutive Messages
+  trimming, Trimming Messages
+model predictions, invoking, Using LLMs in LangChain,
+Generating LLM Predictions Using Relevant Documents-
+Generating LLM Predictions Using Relevant Documents
+multi-query retrieval in, Multi-Query Retrieval-Multi-
+Query Retrieval
+output
+  intermediate, Intermediate Output
+  streaming token-by-token, Streaming LLM Output
+  Token-by-Token
+  structured, Structured Output
+```
+
+```
+output parsers in, Other Machine-Readable Formats with
+Output Parsers
+RAG-Fusion strategy, RAG-Fusion-RAG-Fusion
+record management in, Tracking Changes to Your
+Documents
+reflection prompting technique, Reflection
+Rewrite-Retrieve-Read strategy, Rewrite-Retrieve-Read
+routing
+  logical, Logical Routing-Logical Routing
+  semantic, Semantic Routing-Semantic Routing
+runnable interface, Using the Runnable Interface
+schema creation, Structured Output
+state inspection and updating, Adding Memory to
+StateGraph
+StateGraph
+  creating, Creating a StateGraph
+  memory addition, Adding Memory to StateGraph
+subgraphs
+  calling directly, Calling a Subgraph Directly
+  calling with functions, Calling a Subgraph with a
+  Function
+SystemMessage instruction, Using LLMs in LangChain
+text embeddings with, Generating Text Embeddings
+```
+
+text extraction with, Converting Your [Documents](#page--1-159) into Text
+
+```
+text, splitting into chunks, Splitting Your Text into Chunks-
+     Splitting Your Text into Chunks
+     text-to-metadata filter, Text-to-Metadata Filter-Text-to-
+     Metadata Filter
+     text-to-SQL translations, Text-to-SQL
+     tools
+       always calling first, Always Calling a Tool First
+       dealing with many, Dealing with Many Tools
+     vector stores and, Working with Vector Stores
+  JSON output, JSON Output, Structured Output
+  JSONSchema notation, Structured Output
+K
+```
+
+k parameter, [RAG-Fusion](#page--1-167) k-nearest neighbors [\(k-NN\), RAPTOR:](#page--1-168) Recursive Abstractive Processing for Tree-Organized Retrieval Kahneman, Daniel, [Reflection](#page--1-169) keyword searches, [Embeddings](#page--1-170) Before LLMs kv (key-value) dataset, [Creating](#page--1-171) Datasets
+
+**L**
+
+LangChain (see also LangGraph; large language models; LLM applications; retrieval-augmented generation)
+
+assembling LLM applications, Assembling the Many Pieces of an LLM [Application-Summary, Cognitive](#page--1-172) Architectures with LangGraph-Cognitive [Architectures](#page--1-175) with LangGraph beginnings of, [Preface](#page--1-176)
+
+benefits [of, P](#page--1-179)[refac](#page--1-177)[e-P](#page--1-179)[reface](#page--1-178)[, LangChain](#page--1-179) and Why It's Important, LLM [Fundamentals](#page--1-180) with [LangChain-LLM](#page--1-181) Fundamentals with LangChain
+
+documentation for, LLM [Fundamentals](#page--1-5) with LangChain getting specific formats out of LLMs, Getting Specific Formats out of LLMs-Other [Machine-Readable](#page--1-45) Formats with Output Parsers
+
+interfaces provided, Using LLMs in [LangChain](#page--1-182) making LLM prompts [reusable, Making](#page--1-183) LLM Prompts Reusable-Getting Specific [Formats](#page--1-114) out of LLMs setting up, Getting Set Up with [LangChain](#page--1-184) using LLMs in, Using LLMs in [LangChai](#page--1-185)[n-Using](#page--1-186) LLMs in LangChain
+
+LangChain Expression Language (LCEL) imperative versus declarative [composition, Using](#page--1-187) the Runnable Interface
+
+optimized execution plan using, Declarative [Composition](#page--1-188) LangGraph (see also cognitive architectures; LangChain; LangSmith)
+
+adding memory to chatbots, Adding Memory to [StateGraph-Adding](#page--1-189) Memory to [StateGraph](#page--1-190) basics of, [Introducing](#page--1-191) LangGraph-[Introducing](#page--1-192) LangGraph building chatbot memory [systems, Building](#page--1-193) a Chatbot Memory System[-Building](#page--1-194) a Chatbot Memory System building LangGraph agents, Building a [LangGraph](#page--1-195) Agent-Building a [LangGraph](#page--1-196) Agent configuration file, Create a [LangGraph](#page--1-197) API Config control flow illustration, [Backend](#page--1-198) API creating a [StateGraph, Creating](#page--1-200) a [StateGraph](#page--1-199)-Creating a StateGraph installing, [Introducing](#page--1-201) LangGraph intermediate output, [Intermediate](#page--1-202) Output modifying chat history, [Modifying](#page--1-203) Chat History[-Summary](#page--1-204) purpose of, [Introducing](#page--1-191) LangGraph self-corrective RAG, The Design Stage: [Self-Corrective](#page--1-205) RAG-The Design Stage: [Self-Corrective](#page--1-206) RAG stream modes supported in, [Intermediate](#page--1-207) Output streaming LLM output [token-by-token, Streaming](#page--1-208) LLM Output Token-by-Token [subgraphs, Subgraphs](#page--1-210) in [LangGraph](#page--1-209)-Calling a Subgraph with a Function LangGraph Platform API
+
+data models, Data [Models](#page--1-211)
+
+```
+deployment using, Backend API
+  features, Features-Webhooks
+LangGraph Studio, Launch LangGraph Studio-Launch
+LangGraph Studio
+LangSmith (see also LangChain; LangGraph)
+  account creation, Create a LangSmith Account
+  agent evaluation example, Testing an agent's trajectory
+  comparison view/regression testing, Regression Testing
+  dataset creation, Creating Datasets
+  deployment from LangSmith UI, Deploy from the
+  LangSmith UI-Environment variables
+  few-shot prompting, Improving LLM-as-a-judge evaluators
+  performance-Improving LLM-as-a-judge evaluators
+  performance
+  pairwise evaluation, Pairwise evaluation
+  trace results in, The Design Stage: Self-Corrective RAG
+  tracing, Tracing
+language models, Brief Primer on LLMs
+large language model (llm) dataset, Creating Datasets
+large language models (LLMs) (see also structured output)
+  alternative providers for, LLM Fundamentals with
+  LangChain
+  ambient computing with, Ambient Computing
+  benefits and drawbacks of, Building with LLMs
+```
+
+brief primer on, Brief [Primer](#page--1-225) on [LLMs-Brief](#page--1-232) Primer on LLMs
+
+building with, [Building](#page--1-233) with LLMs-Ambient [Computing](#page--1-234) Claude and Bard, [Preface](#page--1-235) collaborative editing with, Collaborative Editing with [LLMs-Collaborative](#page--1-2) Editing with LLMs deployment example, Large [Language](#page--1-236) Model getting specific formats out of LLMs, Getting Specific
+
+Formats out of LLMs-Other [Machine-Readable](#page--1-45) Formats with Output Parsers
+
+limitations of knowledge [corpus, RAG](#page--1-237) Part I: Indexing Your Data
+
+LLM-based embeddings, LLM-Based [Embeddings](#page--1-12) versus machine learning, [Preface](#page--1-54) for multilingual output, Brief [Primer](#page--1-238) on LLMs open source LLMs, Brief Primer on [Promptin](#page--1-49)[g, LangChain](#page--1-50) and Why It's Important
+
+OpenAI's GPT-3, Brief [Primer](#page--1-239) on LLMs
+
+OpenAI's GPT-3.5, [Preface](#page--1-240)
+
+relevant content for LLMs, The Goal: Picking Relevant Context for [LLMs, Retrieving](#page--1-241) Relevant [Documents](#page--1-242)-Generating LLM [Predictions](#page--1-136) Using Relevant Documents types of, Brief [Primer](#page--1-243) on LLMs[-Fine-Tuned](#page--1-244) LLMs
+
+using in [LangChain, Using](#page--1-186) LLMs in [LangChain-](#page--1-185)Using LLMs in LangChain
+
+latency, [Patterns](#page--1-245) to Make the Most of [LLMs, Intermediate](#page--1-246) Output, [Interactive](#page--1-247) Chatbots
+
+LCEL (see LangChain Expression Language)
+
+Llama, Brief Primer on [Promptin](#page--1-49)[g, LangChain](#page--1-50) and Why It's Important
+
+llm (large language model) dataset, [Creating](#page--1-228) Datasets LLM applications (see also deployment; evaluation metrics; testing)
+
+agentic, Agent [Architecture](#page--1-248)
+
+assembling, Assembling the Many Pieces of an LLM [Application-Summary, Cognitive](#page--1-172) Architectures with LangGraph-Cognitive [Architectures](#page--1-175) with LangGraph benefits of LangChain for building, LLM Fundamentals with [LangChain-LLM](#page--1-180) [Fundamentals](#page--1-181) with LangChain challenge in building good [applications, LLM](#page--1-249) Fundamentals with LangChain
+
+common features of, Cognitive [Architectures](#page--1-250) with LangGraph
+
+key stages of app [development, Testing](#page--1-251) Techniques Across the LLM App Development Cycle
+
+major LLM [architectures, Cognitive](#page--1-252) Architectures with LangGraph
+
+```
+multiactor applications, Introducing LangGraph
+    multitasking LLMs, Multitasking LLMs-Fork and merge
+    patterns and key concepts for successful, Structured
+    Output-Fork and merge
+    security considerations, Security
+    trade-off between agency and reliability, Cognitive
+    Architectures with LangGraph, Patterns to Make the Most
+    of LLMs-Patterns to Make the Most of LLMs
+  LLM call architecture, Architecture #1: LLM Call-Architecture
+  #1: LLM Call
+  LLM-as-a-judge evaluators, Defining Your Evaluation Criteria
+  LLM-driven loop, The Plan-Do Loop
+  LLMs (see large language models)
+  logical routing, Logical Routing-Logical Routing
+  long-term memory, Ambient Computing
+  loops, The Plan-Do Loop
+M
+  machine learning (ML)
+    basics of, Preface
+    current applications of, Preface
+    versus LLMs, Preface
+  max_tokens parameter, Using LLMs in LangChain
+  memory systems
+```
+
+```
+adding memory to StateGraph, Adding Memory to
+  StateGraph-Adding Memory to StateGraph
+  building chatbot memory systems, Building a Chatbot
+  Memory System-Building a Chatbot Memory System
+  long-term memory, Ambient Computing
+  purpose of, Using LangGraph to Add Memory to Your
+  Chatbot
+merging forks, Collaborative Editing with LLMs
+messages
+  appending, Creating a StateGraph
+  filtering, Filtering Messages-Merging Consecutive
+  Messages
+  merging, Merging Consecutive Messages-Summary
+  trimming, Trimming Messages-Trimming Messages
+misuse, anticipating potential, Security
+mitigation strategies, Security
+ML (see machine learning)
+model drift, Regression Testing
+model parameter, Using LLMs in LangChain
+monitoring errors, Monitoring and Fixing Errors (see also
+testing)
+multi-agent architectures, Multi-Agent Architectures-
+Supervisor Architecture
+```
+
+```
+multi-query retrieval strategy, Multi-Query Retrieval-Multi-
+  Query Retrieval
+  multiactor applications, Introducing LangGraph
+  multilingual output, Brief Primer on LLMs
+  multitasking, Multitasking LLMs-Fork and merge
+  MultiVectorRetriever, MultiVectorRetriever-RAPTOR:
+  Recursive Abstractive Processing for Tree-Organized
+  Retrieval
+N
+  neural networks, Brief Primer on LLMs
+  nodes, Introducing LangGraph
+  Norvig, Peter, Agent Architecture
+O
+  observability, Production
+  offline evaluation, Defining Your Evaluation Criteria
+  Ollama, LLM Fundamentals with LangChain
+  online evaluation, Production
+  OpenAI API
+    account creation, Brief Primer on Prompting, Getting Set
+    Up with LangChain
+    copying prompts to Playground, Brief Primer on
+    Prompting
+```
+
+```
+integration with LangChain, LangChain and Why It's
+  Important, Generating Text Embeddings
+  launch of ChatGPT and ChatGPT API, Preface
+  overview of models offered, Using LLMs in LangChain
+  pricing, Preface
+OpenSearch, LLM Fundamentals with LangChain
+optimized execution plan, Declarative Composition
+orchestration capabilities, LLM Fundamentals with
+LangChain
+output (see also structured output)
+  accurate, The Goal: Picking Relevant Context for LLMs,
+  Introducing Retrieval-Augmented Generation
+  expected output, Brief Primer on LLMs
+  JSON output, JSON Output, Structured Output
+  multilingual output, Brief Primer on LLMs
+  role in LLMs, Brief Primer on LLMs
+  streaming token-by-token, Interactive Chatbots
+  summarizing, Ambient Computing
+output parsers, Other Machine-Readable Formats with
+Output Parsers
+```
+
+**P**
+
+pairwise evaluation, Pairwise [evaluation](#page--1-29) parallel execution, Using the [Runnable](#page--1-187) Interface
+
+```
+parameters
+  basics of, Brief Primer on LLMs
+  k parameter, RAG-Fusion
+  max_tokens, Using LLMs in LangChain
+  model parameter, Using LLMs in LangChain
+  temperature, Using LLMs in LangChain
+permissions, limiting, Security
+Perplexity, Introducing LangGraph
+persistence, Adding Memory to StateGraph
+PGVector, Getting Set Up with PGVector
+plan-do loop, The Plan-Do Loop-The Plan-Do Loop
+Playground (OpenAI API), Brief Primer on Prompting
+Postgres, Getting Set Up with PGVector
+preprocessing, The Goal: Picking Relevant Context for LLMs
+preproduction stage testing
+  dataset creation, Creating Datasets-Defining Your
+  Evaluation Criteria
+  defining evaluation criteria, Defining Your Evaluation
+  Criteria-Pairwise evaluation
+  end-to-end performance, Evaluating an Agent's End-to-End
+  Performance-Testing an agent's trajectory
+  purpose of, The Preproduction Stage
+  regression testing, Regression Testing
+pretrained LLMs, Brief Primer on LLMs
+```
+
+```
+primitives, Building with LLMs
+private data, RAG Part I: Indexing Your Data
+production stage testing
+  classification and tagging, Classification and Tagging
+  collecting feedback, Collect Feedback in Production
+  monitoring and fixing errors, Monitoring and Fixing
+  Errors
+  tracing, Tracing
+prompt engineering, Dialogue-Tuned LLMs-Brief Primer on
+Prompting
+prompt injection guardrails, Security
+prompt template abstractions, LangChain and Why It's
+Important
+prompts
+  benefits of LangChain for prompting, LangChain and Why
+  It's Important
+  best practices for, Brief Primer on LLMs
+  brief primer on prompting, Brief Primer on Prompting-
+  Few-Shot Prompting
+  combining prompting techniques, Tool Calling, LangChain
+  and Why It's Important
+  definition of term, Brief Primer on LLMs
+  example of detailed, Making LLM Prompts Reusable
+  purpose of, Making LLM Prompts Reusable
+```
+
+```
+reflection prompting technique, Reflection-Reflection
+  reusing, LangChain and Why It's Important, Making LLM
+  Prompts Reusable-Getting Specific Formats out of LLMs
+  structured output with, Structured Output
+Pydantic, JSON Output
+Python
+  agent architecture
+    implementing, Building a LangGraph Agent
+    subagents, Supervisor Architecture
+    supervisor, Supervisor Architecture
+  asynchronous execution with, Imperative Composition
+  chatbot conversation configuration, Using LLMs in
+  LangChain
+  chatbot edges, adding, Creating a StateGraph
+  chatbot memory systems, Building a Chatbot Memory
+  System
+  chatbot nodes, adding, Creating a StateGraph
+  chatbot streaming support, Imperative Composition,
+  Declarative Composition
+  ChatPromptTemplate, Making LLM Prompts Reusable-
+  Getting Specific Formats out of LLMs
+  cognitive architectures
+    chain, Architecture #2: Chain
+    LLM call, Architecture #1: LLM Call
+```
+
+```
+router, Architecture #3: Router
+ColBERT model, ColBERT: Optimizing Embeddings
+composition
+  declarative, Declarative Composition
+  imperative, Imperative Composition
+data indexing
+  end-to-end example, Generating Text Embeddings
+  example of, Retrieving Relevant Documents
+document loaders and, Converting Your Documents into
+Text
+document summaries, generating, MultiVectorRetriever
+documents, retrieving full context, MultiVectorRetriever
+dynamic inputs
+  constructing, Making LLM Prompts Reusable
+  feeding into LLMs, Making LLM Prompts Reusable
+embeddings, retrieving relevant, Retrieving Relevant
+Documents
+f-string syntax, Making LLM Prompts Reusable
+Hypothetical Document Embeddings (HyDE), Hypothetical
+Document Embeddings-Hypothetical Document
+Embeddings
+LangChain set up using, Getting Set Up with LangChain
+LangGraph
+  installation, Introducing LangGraph
+```
+
+```
+visual representation, Creating a StateGraph
+messages
+  filtering, Filtering Messages
+  merging, Merging Consecutive Messages
+  trimming, Trimming Messages
+model predictions, invoking, Using LLMs in LangChain,
+Generating LLM Predictions Using Relevant Documents-
+Generating LLM Predictions Using Relevant Documents
+multi-query retrieval in, Multi-Query Retrieval-Multi-
+Query Retrieval
+output
+  intermediate, Intermediate Output
+  JSON, JSON Output
+  streaming token-by-token, Streaming LLM Output
+  Token-by-Token
+  structured, Structured Output
+output parsers in, Other Machine-Readable Formats with
+Output Parsers
+RAG-Fusion strategy, RAG-Fusion-RAG-Fusion
+record management in, Tracking Changes to Your
+Documents
+reflection prompting technique, Reflection
+Rewrite-Retrieve-Read strategy, Rewrite-Retrieve-Read
+routing
+```
+
+```
+logical, Logical Routing-Logical Routing
+  semantic, Semantic Routing-Semantic Routing
+runnable interface, Using the Runnable Interface
+schema creation, Structured Output
+state inspection and updating, Adding Memory to
+StateGraph
+StateGraph
+  creating, Creating a StateGraph
+  memory addition, Adding Memory to StateGraph
+subgraphs
+  calling directly, Calling a Subgraph Directly
+  calling with functions, Calling a Subgraph with a
+  Function
+SystemMessage instruction, Using LLMs in LangChain
+text embeddings with, Generating Text Embeddings
+text extraction with, Converting Your Documents into Text
+text, splitting into chunks, Splitting Your Text into Chunks-
+Splitting Your Text into Chunks
+text-to-metadata filter, Text-to-Metadata Filter-Text-to-
+Metadata Filter
+text-to-SQL translations, Text-to-SQL
+tools
+  always calling first, Always Calling a Tool First
+  dealing with many, Dealing with Many Tools
+```
+
+```
+storing summaries in, MultiVectorRetriever
+       working with, Working with Vector Stores
+Q
+  queries (see data queries)
+  query construction
+    process of, Query Construction
+    purpose of, Summary
+    text-to-metadata filter, Text-to-Metadata Filter-Text-to-
+    Metadata Filter
+    text-to-SQL translations, Text-to-SQL-Text-to-SQL
+  query routing strategy
+    logical routing, Logical Routing-Logical Routing
+    purpose of, Query Routing
+    semantic routing, Semantic Routing-Semantic Routing
+  query transformation
+    definition of term, Query Transformation
+    Hypothetical Document Embeddings (HyDE), Hypothetical
+    Document Embeddings-Hypothetical Document
+    Embeddings
+    multi-query retrieval strategy, Multi-Query Retrieval-
+    Multi-Query Retrieval
+    purpose of, Summary
+```
+
+vector stores
+
+RAG-Fusion strategy, [RAG-Fusion](#page--1-97)-[RAG-Fusion](#page--1-67) Rewrite-Retrieve-Read strategy, [Rewrite-Retrieve-Read](#page--1-98)-[Rewrite-Retrieve-Read](#page--1-99) questions and comments, How to [Contact](#page--1-100) Us queueing, Queue [concurrent](#page--1-101) inputs
+
+**R**
+
+RAG (see retrieval-augmented generation)
+
+RAG-Fusion strategy, [RAG-Fusion](#page--1-97)-[RAG-Fusion](#page--1-67)
+
+RAPTOR (recursive abstractive processing for tree-organized
+
+[retrieval\), RAPTOR:](#page--1-102) Recursive Abstractive Processing for
+
+Tree-Organized Retrieval
+
+rate limiting, [Security](#page--1-103)
+
+ReAct [architecture, L](#page--1-105)[angChain](#page--1-104) and Why It's Important, The Plan-Do Loop
+
+real-time collaboration, [Collaborative](#page--1-106) Editing with LLMs reciprocal rank fusion (RRF) [algorithm,](#page--1-67) [RAG-Fusion](#page--1-97)[-RAG-](#page--1-67)Fusion
+
+record management, Tracking Changes to Your [Documents](#page--1-107)-Tracking Changes to Your [Documents](#page--1-108)
+
+recursive abstractive processing for tree-organized retrieval [\(RAPTOR\), RAPTOR:](#page--1-102) Recursive Abstractive Processing for Tree-Organized Retrieval
+
+reflection prompting technique, [Reflection](#page--1-19)[-Reflection](#page--1-20)
+
+reflection step, Ambient [Computing](#page--1-109) regression testing, [Regression](#page--1-110) Testing reinforcement learning from human feedback (RLHF), [Instruction-Tuned](#page--1-111) LLMs reliability, Cognitive [Architectures](#page--1-112) with [LangGraph, Patterns](#page--1-113) to Make the Most of LLMs, [Building](#page--1-114) with LLMs reranking/reordering, [RAG-Fusion](#page--1-115) [response, evaluating, Evaluating](#page--1-116) an Agent's End-to-End Performance retrieval process, Retrieving Relevant [Documents](#page--1-117) retrieval-augmented generation (RAG) building robust RAG [systems, Generating](#page--1-118) LLM Predictions Using Relevant Documents core stages of, Retrieving Relevant [Documents](#page--1-119) [definition](#page--1-120) of term, The Goal: Picking Relevant Context for LLMs generating LLM [predictions, Generating](#page--1-121) LLM Predictions Using Relevant [Documents-Generating](#page--1-58) LLM Predictions Using Relevant Documents introduction to, Introducing [Retrieval-Augmented](#page--1-122) Generation process of, RAG Part II: [Chatting](#page--1-123) with Your Data prompting with, [Retrieval-Augmented](#page--1-124) Generation query handling
+
+construction, Query [Construction-](#page--1-12)[Text-to-SQL](#page--1-89) routing, Query [Routing-](#page--1-125)[Semantic](#page--1-71) Routing transformation, Query [Transformatio](#page--1-126)[n-Hypothetical](#page--1-51) Document Embeddings
+
+retrieving relevant [documents, Retrieving](#page--1-127) Relevant Documents-Retrieving Relevant [Documents](#page--1-128) self-corrective RAG, The Design Stage: [Self-Corrective](#page--1-129) RAG-The Design Stage: [Self-Corrective](#page--1-130) RAG
+
+Rewrite-Retrieve-Read strategy, [Rewrite-Retrieve-Read](#page--1-98)-[Rewrite-Retrieve-Read](#page--1-99)
+
+RLHF (reinforcement learning from human feedback), [Instruction-Tuned](#page--1-111) LLMs
+
+roles, [Dialogue-Tuned](#page--1-131) LLMs, Using LLMs in [LangChain](#page--1-132) router [architecture, A](#page--1-134)[rchitecture](#page--1-133) #3: Router-Architecture #3:
+
+## Router
+
+routing
+
+logical routing, Logical [Routing](#page--1-90)-Logical [Routing](#page--1-70) query routing, Query [Routing](#page--1-125)[-Semantic](#page--1-71) Routing semantic routing, [Semantic](#page--1-135) Routing-[Semantic](#page--1-71) Routing RRF (reciprocal rank fusion) algorithm, [RAG-Fusion](#page--1-97) runnable interface, Using the [Runnable](#page--1-136) Interface runs (LangGraph Platform), [Runs](#page--1-137) Russell, Stuart, Agent [Architecture](#page--1-138)
+
+```
+sandboxing, Security
+save and send, Collaborative Editing with LLMs
+security best practices, Security
+self-correction, The Design Stage: Self-Corrective RAG
+self-critique prompting technique, Reflection
+semantic embeddings, Semantic Embeddings Explained-
+Semantic Embeddings Explained
+semantic relationships, Splitting Your Text into Chunks
+semantic routing, Semantic Routing-Semantic Routing
+sensitive data, protecting, Security
+single steps, evaluating, Evaluating an Agent's End-to-End
+Performance
+sparse embeddings, Embeddings Before LLMs
+specialized subsystems, Multi-Agent Architectures
+state, Introducing LangGraph, Creating a StateGraph,
+Human-in-the-Loop Modalities, Collaborative Editing with
+LLMs
+statefulness, Introducing LangGraph
+StateGraph
+  adding memory to, Adding Memory to StateGraph-Adding
+  Memory to StateGraph
+  creation, Creating a StateGraph-Creating a StateGraph
+stateless runs (LangGraph Platform), Stateless runs
+```
+
+```
+statelessness, Using LangGraph to Add Memory to Your
+Chatbot
+static few-shot prompting, Few-Shot Prompting
+stream method, Using the Runnable Interface, Summary,
+Intermediate Output
+streaming (LangGraph Platform), Streaming
+streaming chat, Interactive Chatbots
+structured output
+  human-in-the-loop modalities, Human-in-the-Loop
+  Modalities-Fork
+  intermediate output, Intermediate Output-Intermediate
+  Output
+  need for, Structured Output
+  strategies to achieve, Structured Output
+  streaming LLM output token-by-token, Streaming LLM
+  Output Token-by-Token
+subagents, Supervisor Architecture
+subgraphs
+  adding to parent graphs, Subgraphs in LangGraph
+  calling subgraphs directly, Calling a Subgraph Directly-
+  Calling a Subgraph with a Function
+  calling subgraphs with functions, Calling a Subgraph with
+  a Function
+  use cases for, Subgraphs in LangGraph
+```
+
+```
+subsystems, specialized, Multi-Agent Architectures
+Supabase, Vector Store
+supervisor architecture, Multi-Agent Architectures-
+Supervisor Architecture
+synthetic data, Creating Datasets
+system role, Dialogue-Tuned LLMs, Using LLMs in LangChain
+SystemMessage interface, Using LLMs in LangChain
+```
+
+**T**
+
+tables, [MultiVectorRetriever](#page--1-186) task [managers,](#page--1-188) [Collaborative](#page--1-187) Editing with LLMs, Ambient Computing task-specific datasets, [Instruction-Tuned](#page--1-189) LLMs task\_result events, [Intermediate](#page--1-190) Output temperature parameter, Using LLMs in [LangChain](#page--1-191) testing design stage, The Design Stage: [Self-Corrective](#page--1-129) RAG-The Design Stage: Self-Corrective RAG key stages of app [development, Testing](#page--1-192) Techniques Across the LLM App Development Cycle [predeployment, Test](#page--1-194) Your [LangGraph](#page--1-193) App Locally-Test Your LangGraph App Locally [preproduction](#page--1-196) stage, The [Preproduction](#page--1-195) Stage-Testing an agent's trajectory
+
+```
+production stage, Production-Monitoring and Fixing
+  Errors
+text
+  converting documents into text, Converting Your
+  Documents into Text-Converting Your Documents into Text
+  converting text to numbers, Embeddings: Converting Text
+  to Numbers-Semantic Embeddings Explained
+  generating text embeddings, Generating Text Embeddings-
+  Generating Text Embeddings
+  mixed with tables, MultiVectorRetriever
+  splitting text into chunks, Splitting Your Text into Chunks-
+  Splitting Your Text into Chunks
+  text-to-metadata filter, Text-to-Metadata Filter-Text-to-
+  Metadata Filter
+  text-to-SQL translations, Text-to-SQL-Text-to-SQL
+third-party services, LangChain and Why It's Important
+threads, Adding Memory to StateGraph, Handle
+independently
+threads (LangGraph Platform), Threads
+token-by-token streaming output, Streaming LLM Output
+Token-by-Token
+tokens, Brief Primer on LLMs
+tool-calling technique
+```
+
+agentic LLM applications and, Agent [Architecture](#page--1-210)
+
+always calling tools first, [Always](#page--1-211) Calling a Tool First-[Always](#page--1-212) Calling a Tool First
+
+dealing with many tools, [Dealing](#page--1-213) with Many Tools-Dealing with Many [Tools, Multi-Agent](#page--1-214) [Architectures](#page--1-215)
+
+definition of term, Tool [Calling](#page--1-216)
+
+integrations provided [for, LangChain](#page--1-217) and Why It's
+
+## Important
+
+interactive chatbots and, [Interactive](#page--1-218) Chatbots structured output with, [Structured](#page--1-219) Output
+
+tracing, [Tracing](#page--1-5)
+
+[trajectory, evaluating, Evaluating](#page--1-220) an Agent's End-to-End [Performance, Testing](#page--1-196) an agent's [trajectory-](#page--1-221)Testing an agent's trajectory
+
+transformer neural network [architecture, Brief](#page--1-222) Primer on LLMs
+
+triggers, Ambient [Computing](#page--1-223)
+
+trimming messages, [Trimming](#page--1-224) Messages[-Trimming](#page--1-225) Messages try-catch statement, [Human-in-the-Loop](#page--1-226) Modalities
+
+**U**
+
+undo/redo stacks, [Collaborative](#page--1-227) Editing with LLMs Universally Unique Identifiers [\(UUIDs\), Adding](#page--1-228) Memory to StateGraph
+
+updates mode (LangGraph), [Intermediate](#page--1-229) Output
+
+**V**
+
+```
+values mode (LangGraph), Intermediate Output
+variance, Patterns to Make the Most of LLMs
+vector indexes, LangChain and Why It's Important
+vector stores
+  alternative providers for, LLM Fundamentals with
+  LangChain
+  definition of term, LangChain and Why It's Important, The
+  Goal: Picking Relevant Context for LLMs
+  deployment example, Vector Store
+  storing embeddings in vector stores, Storing Embeddings
+  in a Vector Store-Working with Vector Stores
+version control, Collaborative Editing with LLMs
+VSCode code editor, Interactive Chatbots
+```
+
+**W**
+
+Weaviate, LLM [Fundamentals](#page--1-243) with LangChain webhooks (LangGraph Platform), [Webhooks](#page--1-244)
+
+XML format, Other [Machine-Readable](#page--1-245) Formats with Output Parsers
+
+**Y**
+
+Yao, Shunyu, The [Plan-Do](#page--1-246) Loop
+
+**Z**
+
+zero-shot prompting, Zero-Shot [Prompting](#page--1-222) Zod, JSON [Output](#page--1-247)
+
+## About the Authors
+
+**Mayo Oshin** is a tech entrepreneur, AI advisor, and angel investor. Mayo was an early developer contributor and advocate for the open source LangChain library and an early pioneer in the popular AI "chat" with data movement (5+ million people reached through his thought-leadership ideas so far).
+
+Mayo has consulted with, advised, and trained hundreds of engineers and product managers at various leading institutions, including Amazon, LinkedIn, Evercore, Visa, and BCG.
+
+You can learn more about him at his website, *[mayooshin.com](https://mayooshin.com/)*, and get his latest ideas on AI and technology on [X.](https://x.com/mayowaoshin)
+
+**Nuno Campos** is a founding software engineer at LangChain, Inc. Nuno has a decade of experience as a Python and JavaScript software engineer, architect and open source maintainer. He has worked for various tech startups in software engineering and data science roles. He holds an MSc in Finance.
+
+## Colophon
+
+The animals on the cover of *Learning LangChain* are European tree frogs (*Hyla arborea*).
+
+They are primarily found in mainland Europe, typically close to vegetation. Their green skin can adjust its color from green to grey or brown, depending on a variety of factors. This ability helps to camouflage them from predators. They also use their sticky tongues (for meals, i.e., insects) and the sticky pads on their feet (for movement) to navigate life in their habitat.
+
+During mating season, European tree frogs congregate close to ponds so that they can lay eggs near water for the soon-to-be tadpoles. The males perform a mating call that is striking for its volume, particularly when many frogs are gathered in one place. The females then lay clumps of 800 to 1,000 eggs. About 10 to 14 days later, the tadpoles hatch, and the cycle of life begins anew.
+
+Many of the animals on O'Reilly covers are endangered; all of them are important to the world.
+
+The cover illustration is by Karen Montgomery, based on an antique line engraving from *Meyers Kleines Lexicon*. The series design is by Edie Freedman, Ellie Volckhausen, and Karen Montgomery. The cover fonts are Gilroy Semibold and Guardian Sans. The text font is Adobe Minion Pro; the heading font is Adobe Myriad Condensed; and the code font is Dalton Maag's Ubuntu Mono.
+
+![](_page_19_Picture_1.jpeg)
+
+*Your gateway to knowledge and culture. Accessible for everyone.* 
+
+![](_page_19_Picture_3.jpeg)
+
+[z-library.sk](https://z-library.sk/) [z-lib.gs](https://z-lib.gs/) [z-lib.fm](https://z-lib.fm/) [go-to-library.sk](https://go-to-library.sk/)
+
+![](_page_19_Picture_8.jpeg)
+
+Offi[cial Telegram channel](https://t.me/zlibrary_official)
+
+![](_page_19_Picture_10.jpeg)
+
+[Z-Access](https://go-to-library.sk/)
+
+![](_page_19_Picture_12.jpeg)
+
+<https://wikipedia.org/wiki/Z-Library>
+
+```
+capabilities. Developers can tap into these model
+`transformers` library, or by utilizing OpenAI an
+the `openai` and `cohere` libraries, respectively
+Question: Which model providers offer LLMs?
+Answer:
+```
+
+Although the prompt looks like a simple string, the challenge is figuring out what the text should contain and how it should vary based on the user's input. In this example, the Context and Question values are hardcoded, but what if we wanted to pass these in dynamically?
+
+Fortunately, LangChain provides prompt template interfaces that make it easy to construct prompts with dynamic inputs:
+
+```
+from langchain_core.prompts import PromptTemplate
+template = PromptTemplate.from_template("""Answer
+ context below. If the question cannot be answ
+ provided, answer with "I don't know".
+Context: {context}
+```
+
+```
+Question: {question}
+Answer: """)
+template.invoke({
+ "context": """The most recent advancements in
+ Language Models (LLMs). These models outp
+ counterparts and have become invaluable f
+ applications with NLP capabilities. Devel
+ models through Hugging Face's `transforme
+ OpenAI and Cohere's offerings through the
+ libraries, respectively.""",
+ "question": "Which model providers offer LLMs
+})
+```
+
+```
+import { PromptTemplate } from '@langchain/core/p
+const template = PromptTemplate.fromTemplate(`Ans
+ context below. If the question cannot be answer
+ provided, answer with "I don't know".
+```
+
+```
+Context: {context}
+Question: {question}
+Answer: `)
+await template.invoke({
+ context: `The most recent advancements in NLP a
+ Language Models (LLMs). These models outperfo
+ counterparts and have become invaluable for d
+ applications with NLP capabilities. Developer
+ through Hugging Face's \`transformers\` libra
+ and Cohere's offerings through the \`openai\`
+ respectively.`,
+ question: "Which model providers offer LLMs?"
+})
+```
+
+StringPromptValue(text='Answer the question based question cannot be answered using the informa don\'t know".\n\nContext: The most recent adv driven by Large Language Models (LLMs). These smaller counterparts and have become invaluab creating applications with NLP capabilities. models through Hugging Face\'s `transformers` OpenAI and Cohere\'s offerings through the `o
+
+ OpenAI and Cohere\ s offerings through the o respectively.\n\nQuestion: Which model provid
+
+This example takes the static prompt from the previous block and makes it dynamic. The template contains the structure of the final prompt alongside the definition of where the dynamic inputs will be inserted.
+
+As such, the template can be used as a recipe to build multiple static, specific prompts. When you format the prompt with some specific values—in this case, context and question you get a static prompt ready to be passed in to an LLM.
+
+As you can see, the question argument is passed dynamically via the invoke function. By default, LangChain prompts follow Python's f-string syntax for defining dynamic parameters any word surrounded by curly braces, such as {question} , are placeholders for values passed in at runtime. In the previous example, {question} was replaced by "Which model providers offer LLMs?"
+
+Let's see how we'd feed this into an LLM OpenAI model using LangChain:
+
+```
+from langchain_openai.llms import OpenAI
+from langchain_core.prompts import PromptTemplate

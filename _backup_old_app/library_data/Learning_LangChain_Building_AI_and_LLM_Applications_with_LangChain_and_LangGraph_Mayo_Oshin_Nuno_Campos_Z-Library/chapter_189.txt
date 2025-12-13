@@ -1,0 +1,3 @@
+# create retriever
+
+retriever = db.as_retriever()

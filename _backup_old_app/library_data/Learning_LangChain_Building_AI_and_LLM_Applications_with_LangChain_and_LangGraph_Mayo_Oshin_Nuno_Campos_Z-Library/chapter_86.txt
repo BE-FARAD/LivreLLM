@@ -1,0 +1,10 @@
+# **Data Models**
+
+
+The LangGraph Platform API consists of a few core data models:
+
+- Assistants
+- Threads
+- Runs
+- Cron jobs
+

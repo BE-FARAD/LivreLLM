@@ -1,0 +1,47 @@
+# **Streaming LLM Output Token-by-Token**
+
+
+Sometimes you may also want to get streaming output from each LLM call inside your larger LLM application. This can be useful for various projects, such as when building an interactive chatbot, where you want each word to be displayed as soon as it is produced by the LLM.
+
+You can achieve this with LangGraph as well:
+
+## *Python*
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+output = app.astream_events(input, version="v2")
+async for event in output:
+ if event["event"] == "on_chat_model_stream":
+ content = event["data"]["chunk"].content
+ if content:
+ print(content)
+```
+
+```
+const input = {
+ messages: [
+ new HumanMessage(`How old was the 30th presid
+ he died?`)
+ ]
+```
+
+```
+}
+const output = await agent.streamEvents(input, {v
+for await (const { event, data } of output) {
+ if (event === "on_chat_model_stream") {
+ const msg = data.chunk as AIMessageChunk;
+ if (msg.content) {
+ console.log(msg.content);
+ }
+ }
+}
+```
+
+This will emit each word (technically each token) as soon as it is received from the LLM. You can find more details on this pattern from [LangChain](https://oreil.ly/ExYll).
+

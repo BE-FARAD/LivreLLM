@@ -1,0 +1,33 @@
+# something you want to add or replace
+
+update = { }
+```
+
+```
+graph.update_state(config, update)
+```
+
+```
+const config = "configurable": {"thread_id": "1"}
+const state = await graph.getState(config)
+// something you want to add or replace
+const update = { }
+await graph.updateState(config, update)
+```
+
+This will create a new checkpoint containing your update. After this, you're ready to resume the graph from this new point. See ["Resume"](#page-11-0) to find out how.
+
+## **Fork**
+
+You can also browse the history of all past states the graph has passed through, and any of them can be visited again, for instance, to get an alternative answer. This can be very useful in more creative applications, where each run through the graph is expected to produce different output.
+
+Let's see what it looks like:
+
+*Python*
+
+```
+config = {"configurable": {"thread_id": "1"}}
+history = [
+ state for state in
+ graph.get_state_history(config)
+]

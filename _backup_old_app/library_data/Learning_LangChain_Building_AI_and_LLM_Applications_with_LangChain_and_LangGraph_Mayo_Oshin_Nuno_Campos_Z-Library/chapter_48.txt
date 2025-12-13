@@ -1,0 +1,358 @@
+# Building a LangGraph Agent
+
+
+For this example, we need to install additional dependencies for the search tool we chose to use, DuckDuckGo. To install it for Python:
+
+*Python*
+
+```
+pip install duckduckgo-search
+```
+
+And for JS, we also need to install a dependency for the calculator tool:
+
+*JavaScript*
+
+```
+npm i duck-duck-scrape expr-eval
+```
+
+With that complete, let's get into the actual code to implement the agent architecture:
+
+```
+import ast
+from typing import Annotated, TypedDict
+from langchain_community.tools import DuckDuckGoS
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+from langgraph.graph import START, StateGraph
+from langgraph.graph.message import add_messages
+from langgraph.prebuilt import ToolNode, tools_co
+@tool
+def calculator(query: str) -> str:
+ """A simple calculator tool. Input should be 
+ return ast.literal_eval(query)
+search = DuckDuckGoSearchRun()
+tools = [search, calculator]
+model = ChatOpenAI(temperature=0.1).bind_tools(to
+class State(TypedDict):
+ messages: Annotated[list, add_messages]
+def model_node(state: State) -> State:
+ res = model.invoke(state["messages"])
+ return {"messages": res}
+```
+
+```
+builder = StateGraph(State)
+builder.add_node("model", model_node)
+builder.add_node("tools", ToolNode(tools))
+builder.add_edge(START, "model")
+builder.add_conditional_edges("model", tools_cond
+builder.add_edge("tools", "model")
+graph = builder.compile()
+```
+
+## *JavaScript*
+
+```
+import {
+ DuckDuckGoSearch
+} from "@langchain/community/tools/duckduckgo_sea
+import {
+ Calculator
+} from "@langchain/community/tools/calculator";
+import {
+ StateGraph,
+ Annotation,
+ messagesStateReducer,
+ START,
+} from "@langchain/langgraph";
+import {
+ ToolNode,
+ toolsCondition
+```
+
+```
+} from "@langchain/langgraph/prebuilt";
+const search = new DuckDuckGoSearch();
+const calculator = new Calculator();
+const tools = [search, calculator];
+const model = new ChatOpenAI({
+ temperature: 0.1
+}).bindTools(tools);
+const annotation = Annotation.Root({
+ messages: Annotation({
+ reducer: messagesStateReducer,
+ default: () => []
+ }),
+});
+async function modelNode(state) {
+ const res = await model.invoke(state.messages);
+ return { messages: res };
+}
+const builder = new StateGraph(annotation)
+ .addNode("model", modelNode)
+ .addNode("tools", new ToolNode(tools))
+ .addEdge(START, "model")
+ .addConditionalEdges("model", toolsCondition)
+ .addEdge("tools", "model");
+```
+
+```
+const graph = builder.compile();
+```
+
+The visual representation is shown in [Figure](#page-7-0) 6-1.
+
+<span id="page-7-0"></span>![](_page_7_Figure_2.jpeg)
+
+Figure 6-1. The agent architecture
+
+#### A few things to notice here:
+
+We're using two tools in this example: a search tool and a calculator tool, but you could easily add more or replace the ones we used. In the Python example, you also see an example of creating a custom tool.
+
+- We've used two convenience functions that ship with LangGraph. ToolNode serves as a node in our graph; it executes the tool calls requested in the latest AI message found in the state and returns a ToolMessage with the results of each. ToolNode also handles exceptions raised by tools—using the error message to build a ToolMessage that is then passed to the LLM—which may decide what to do with the error.
+- tools\_condition serves as a conditional edge function that looks at the latest AI message in the state and routes to the tools node if there are any tools to execute. Otherwise, it ends the graph.
+- Finally, notice that this graph loops between the model and tools nodes. That is, the model itself is in charge of deciding when to end the computation, which is a key attribute of the agent architecture. Whenever we code a loop in LangGraph, we'll likely want to use a conditional edge, as that allows you to define the *stop condition* when the graph should exit the loop and stop executing.
+
+Now let's see how it does in the previous example:
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+for c in graph.stream(input):
+ print(c)
+```
+
+*JavaScript*
+
+```
+const input = {
+ messages: [
+ HumanMessage(`How old was the 30th president 
+ died?`)
+ ]
+}
+for await (const c of await graph.stream(input))
+ console.log(c)
+}
+```
+
+*The output:*
+
+```
+{
+ "model": {
+ "messages": AIMessage(
+ content="",
+ tool_calls=[
+ {
+ "name": "duckduckgo_search",
+ "args": {
+ "query": "30th president 
+ death"
+ },
+ "id": "call_ZWRbPmjvo0fYkwyo4
+ "type": "tool_call",
+ }
+ ],
+ )
+ }
+}
+{
+ "tools": {
+ "messages": [
+ ToolMessage(
+ content="Calvin Coolidge (born Ju
+ U.S.—died January 5, 1933, No
+ the 30th president of the Uni
+ acceded to the presidency aft
+ Warren G. Harding, just as th
+```
+
+```
+ to light....",
+ name="duckduckgo_search",
+ tool_call_id="call_ZWRbPmjvo0fYkw
+ )
+ ]
+ }
+}
+{
+ "model": {
+ "messages": AIMessage(
+ content="Calvin Coolidge, the 30th pr
+ died on January 5, 1933, at the a
+ )
+ }
+}
+```
+
+## Walking through this output:
+
+- 1. First the model node executed and decided to call the duckduckgo\_search tool, which led the conditional edge to route us to the tools node after.
+- 2. The ToolNode executed the search tool and got the search results printed above, which actually contain the answer "Age and Year of Death . January 5, 1933 (aged 60)".
+- 3. The model tool was called again, this time with the search results as the latest message, and produced the final answer
+
+(with no more tool calls); therefore, the conditional edge ended the graph.
+
+Next, let's look at a few useful extensions to this basic agent architecture, customizing both planning and tool calling.
+
+## Always Calling a Tool First
+
+In the standard agent architecture, the LLM is always called upon to decide what tool to call next. This arrangement has a clear advantage: it gives the LLM ultimate flexibility to adapt the behavior of the application to each user query that comes in. But this flexibility comes at a cost: unpredictability. If, for instance, you, the developer of the application, know that the search tool should always be called first, that can actually be beneficial to your application:
+
+- 1. It will reduce overall latency, as it will skip the first LLM call that would generate that request to call the search tool.
+- 2. It will prevent the LLM from erroneously deciding it doesn't need to call the search tool for some user queries.
+
+On the other hand, if your application doesn't have a clear rule of the kind "you should always call this tool first," introducing such a constraint would actually make your application worse.
+
+Let's see what it looks like to do this:
+
+```
+import ast
+from typing import Annotated, TypedDict
+from uuid import uuid4
+from langchain_community.tools import DuckDuckGoS
+from langchain_core.messages import AIMessage, Hu
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+from langgraph.graph import START, StateGraph
+from langgraph.graph.message import add_messages
+from langgraph.prebuilt import ToolNode, tools_co
+@tool
+def calculator(query: str) -> str:
+ """A simple calculator tool. Input should be 
+ return ast.literal_eval(query)
+search = DuckDuckGoSearchRun()
+tools = [search, calculator]
+model = ChatOpenAI(temperature=0.1).bind_tools(to
+class State(TypedDict):
+    messages: Annotated[list add messages]
+```
+
+```
+ messages: Annotated[list, add_messages]
+def model_node(state: State) -> State:
+ res = model.invoke(state["messages"])
+ return {"messages": res}
+def first_model(state: State) -> State:
+ query = state["messages"][-1].content
+ search_tool_call = ToolCall(
+ name="duckduckgo_search", args={"query":
+ )
+ return {"messages": AIMessage(content=""
+                                           , too
+builder = StateGraph(State)
+builder.add_node("first_model", first_model)
+builder.add_node("model", model_node)
+builder.add_node("tools", ToolNode(tools))
+builder.add_edge(START, "first_model")
+builder.add_edge("first_model", "tools")
+builder.add_conditional_edges("model", tools_cond
+builder.add_edge("tools", "model")
+graph = builder.compile()
+```
+
+*JavaScript*
+
+```
+import {
+ DuckDuckGoSearch
+} from "@langchain/community/tools/duckduckgo_sea
+import {
+ Calculator
+} from "@langchain/community/tools/calculator";
+import {
+ AIMessage,
+} from "@langchain/core/messages";
+import {
+ StateGraph,
+ Annotation,
+ messagesStateReducer,
+ START,
+} from "@langchain/langgraph";
+import {
+ ToolNode,
+ toolsCondition
+} from "@langchain/langgraph/prebuilt";
+const search = new DuckDuckGoSearch();
+const calculator = new Calculator();
+const tools = [search, calculator];
+const model = new ChatOpenAI({ temperature: 0.1 }
+const annotation = Annotation.Root({
+ messages: Annotation({ reducer: messagesStateRe
+});
+```
+
+```
+async function firstModelNode(state) {
+ const query = state.messages[state.messages.len
+ const searchToolCall = {
+ name: "duckduckgo_search",
+ args: { query },
+ id: Math.random().toString(),
+ };
+ return {
+ messages: [new AIMessage({ content: ""
+                                         , tool_
+ };
+}
+async function modelNode(state) {
+ const res = await model.invoke(state.messages);
+ return { messages: res };
+}
+const builder = new StateGraph(annotation)
+ .addNode("first_model", firstModelNode)
+ .addNode("model", modelNode)
+ .addNode("tools", new ToolNode(tools))
+ .addEdge(START, "first_model")
+ .addEdge("first_model", "tools")
+ .addEdge("tools", "model")
+ .addConditionalEdges("model", toolsCondition);
+const graph = builder.compile();
+```
+
+The visual representation is shown in [Figure](#page-18-0) 6-2.
+
+<span id="page-18-0"></span>![](_page_18_Figure_0.jpeg)
+
+Figure 6-2. Modifying the agent architecture to always call a specific tool first
+
+Notice the differences compared to the previous section:
+
+- Now, we start all invocations by calling first\_model , which doesn't call an LLM at all. It just creates a tool call for the search tool, using the user's message verbatim as the search query. The previous architecture would have the LLM generate this tool call (or some other response it deemed better).
+- After that, we proceed to tools , which is identical to the previous example, and from there we proceed to the agent node as before.
+
+Now let's see some example output, for the same query as before:
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+for c in graph.stream(input):
+print(c)
+```
+
+### *JavaScript*
+
+```
+const input = {
+ messages: [
+ HumanMessage(`How old was the 30th president 
+ died?`)
+ ]
+}
+for await (const c of await graph.stream(input))
+ console.log(c)
+}
+```
+

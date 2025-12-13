@@ -1,0 +1,9 @@
+# Generating Text Embeddings
+
+
+LangChain also has an Embeddings class designed to interface with text embedding models—including OpenAI, Cohere, and
+
+Hugging Face—and generate vector representations of text. This class provides two methods: one for embedding documents and one for embedding a query. The former takes a list of text strings as input, while the latter takes a single text string.
+
+Here's an example of [embedding](https://oreil.ly/9tnzQ) a document using OpenAI's embedding model:
+

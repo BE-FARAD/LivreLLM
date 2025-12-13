@@ -1,0 +1,113 @@
+# The below examples use the OpenAI API, though y
+
+export OPENAI_API_KEY=<your-openai-api-key>
+```
+
+After the environment variables are set, no other code is required to enable tracing. Traces will be automatically logged to their specific project in the "Tracing projects" section of the LangSmith dashboard. The metrics provided include trace volume, success and failure rates, latency, token count and cost, and more—as shown in [Figure](#page-12-0) 10-17.
+
+<span id="page-12-0"></span>![](_page_12_Figure_1.jpeg)
+
+Figure 10-17. An example of LangSmith's trace performance metrics
+
+You can review a variety of strategies to implement tracing based on your needs.
+
+## **Collect Feedback in Production**
+
+Unlike the preproduction phase, evaluators for production testing don't have grounded reference responses for the LLM to compare against. Instead, evaluators need to score performance in real time as your application processes user inputs. This reference-free, real-time evaluation is often referred to as *online evaluation*.
+
+There are at least two types of feedback you can collect in production to improve app performance:
+
+### *Feedback from users*
+
+You can directly collect user feedback explicitly or implicitly. For example, giving users the ability to click a like and dislike button or provide detailed feedback based on the application's output is an effective way to track user satisfaction. In LangSmith, you can attach user feedback to any trace or intermediate run (that is, span) of a trace, including annotating traces inline or reviewing runs together in an annotation queue.
+
+### *Feedback from LLM-as-a judge evaluators*
+
+As discussed previously, these evaluators can be implemented directly on traces to identify hallucination and toxic responses.
+
+The earlier preproduction section already discussed how to set up LangSmith's auto evaluation in the Datasets & Experiments section of the dashboard.
+
+## **Classification and Tagging**
+
+In order to implement effective guardrails against toxicity or gather insights on user sentiment analysis, we need to build an effective system for labeling user inputs and generated outputs.
+
+This system is largely dependent on whether or not you have a dataset that contains reference labels. If you don't have preset labels, you can use the LLM-as-a-judge evaluator to assist in performing classification and tagging based upon specified criteria.
+
+If, however, ground truth classification labels are provided, then a custom heuristic evaluator can be used to score the chain's output relative to the ground truth class labels.
+
+### **Monitoring and Fixing Errors**
+
+Once your application is in production, LangSmith's tracing will catch errors and edge cases. You can add these errors into your
+
+test dataset for offline evaluation in order to prevent recurrences of the same issues.
+
+Another useful strategy is to release your app in phases to a small group of beta users before a larger audience can access its features. This will enable you to uncover crucial bugs, develop a solid evaluation dataset with ground truth references, and assess the general performance of the app including cost, latency, and quality of outputs.
+
+## Summary
+
+As discussed in this chapter, robust testing is crucial to ensure that your LLM application is accurate, reliable, fast, toxic-free, and cost-efficient. The three key stages of LLM app development create a data cycle that helps to ensure high performance throughout the lifetime of the application.
+
+During the design phase, in-app error handling enables selfcorrection before the error reaches the user. Preproduction testing ensures each of your app's updates avoids regression in performance metrics. Finally, production monitoring gathers real-time insights and application errors that inform the subsequent design process and the cycle repeats.
+
+Ultimately, this process of testing, evaluation, monitoring, and continuous improvement, will help you fix issues and iterate faster, and most importantly, deliver a product that users can trust to consistently deliver their desired results.
+
+## Chapter 11. Building with LLMs
+
+One of the biggest open questions in the world of LLMs today is how to best put them in the hands of end users. In some ways, LLMs are actually a more intuitive interface for computing than what came before them. They are much more forgiving of typos, slips of the tongue, and the general imprecision of humans, when compared to traditional computer applications. On the other hand, the very ability to handle inputs that are "slightly off" comes with a tendency to sometimes produce results that are also "slightly off"—which is also very much unlike any previous computing tendencies.
+
+In fact, computers were designed to reliably repeat the same set of instructions with the same results every time. Over the past few decades, that principle of reliability has permeated the design of human-computer interfaces (variously called HCI, UX, and UI) to the extent that a lot of the usual constructs end up being subpar for use in applications that rely heavily on LLMs.
+
+Let's take an example: Figma is a software application used by designers to create faithful renderings of designs for websites, mobile applications, book or magazine covers—the list goes on. As is the case with pretty much all productivity software
+
+(software for the creation of some kind of long-form content), its interface is a combination of the following:
+
+- A palette of tools and prebuilt *primitives* (fundamental building blocks), in this case lines, shapes, selection and paint tools, and many more
+- A canvas, where the user inserts these building blocks and organizes them into their creation: a website page, a mobile app screen, and so on
+
+This interface is built upon the premise that the capabilities of the software are known ahead of time, which is in fact true in the case of Figma. All building blocks and tools were coded by a software engineer ahead of time. Therefore, they were known to exist at the time the interface was designed. It sounds almost silly to point that out, but the same is not strictly true of software that makes heavy use of LLMs.
+
+Look at a word processor (e.g., Microsoft Word or Google Docs). This is a software application for the creation of long-form text content of some kind, such as a blog post, article, book chapter, and the like. The interface at our disposal here is also made up of a familiar combination:
+
+- A palette of tools and prebuilt *primitives*: in the case of a word processor, the primitives available are tables, lists, headings, image placeholders, and so forth, and the tools are spellcheck, commenting, and so on.
+- *A canvas*: in this case, it's literally a blank page, where the user types words and may include some of the elements just mentioned.
+
+How would this situation change if we were to build an LLMnative word processor? This chapter explores three possible answers to this question, which are broadly applicable to any LLM application. For each of the patterns we explore, we'll go over what key concepts you'd need to implement it successfully. We don't mean to imply that these are the only ones, it will be a while until the dust settles on this particular question.
+
+Let's look at each of these patterns, starting with the easiest to add to an existing app.
+
+## Interactive Chatbots
+
+This is arguably the easiest lift to add to an existing software application. At its most basic conception, this idea just bolts on an AI sidekick—to bounce ideas off of—while all work still happens in the existing user interface of the application. An
+
+example here is GitHub Copilot Chat, which can be used in a sidebar inside the VSCode code editor.
+
+An upgrade to this pattern is to add some communication points between the AI sidekick extension and the main application. For example, in VSCode, the assistant can "see" the content of the file currently being edited or whatever portion of that code the user has selected. And in the other direction, the assistant can insert or edit text in that open editor, arriving at some basic form of collaboration between the user and the LLM.
+
+#### **NOTE**
+
+Streaming chat as we're describing here is currently the prototypical application of LLMs. It's almost always the first thing app developers learn to build on their LLM journey, and it's almost always the first thing companies reach for when adding LLMs to their existing applications. Maybe this will remain the case for years to come, but another possible outcome could be for streaming chat to become the command line of the LLM era—that is, the closest to direct programming access, becoming a niche interface, just as it did for computers.
+
+<span id="page-0-0"></span>To build the most basic chatbot you should use these components:
+
+*A chat model*
+
+<span id="page-1-0"></span>Their dialogue tuning lends itself well to multiturn interactions with a user. Refer to the [Preface](#page--1-0) for more on dialogue tuning.
+
+#### *Conversation history*
+
+<span id="page-1-2"></span>A useful chatbot needs to be able to "get past hello." That is, if the chatbot can't remember the previous user inputs, it will be much harder to have meaningful conversations with it, which implicitly refer to previous messages.
+
+To go beyond the basics, you'd probably add the following:
+
+#### <span id="page-1-1"></span>*Streaming output*
+
+The best chatbot experiences currently stream LLM output token by token (or in larger chunks, like sentences or paragraphs) directly to the user, which alleviates the latency inherent to LLMs today.
+
+#### *Tool calling*
+
+To give the chatbot the ability to interact with the main canvas and tools of the application, you can expose them as tools the model can decide to call on—for instance, a "get selected text" tool and an "insert text at end of doc" tool.
+
+#### *Human-in-the-loop*
+
+As soon as you give the chatbot tools that can change what's in the application canvas, you create the need to give back some control to the user—for example, letting the user confirm, or even edit, before new text is inserted.
+

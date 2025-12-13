@@ -1,0 +1,49 @@
+# O'Reilly Online Learning
+
+
+#### **NOTE**
+
+For more than 40 years, *[O'Reilly](https://oreilly.com/) Media* has provided technology and business training, knowledge, and insight to help companies succeed.
+
+Our unique network of experts and innovators share their knowledge and expertise through books, articles, and our online learning platform. O'Reilly's online learning platform gives you on-demand access to live training courses, in-depth learning paths, interactive coding environments, and a vast collection of text and video from O'Reilly and 200+ other publishers. For more information, visit *[https://oreilly.com](https://oreilly.com/)*.
+
+## How to Contact Us
+
+Please address comments and questions concerning this book to the publisher:
+
+O'Reilly Media, Inc.
+
+1005 Gravenstein Highway North
+
+Sebastopol, CA 95472
+
+800-889-8969 (in the United States or Canada)
+
+707-827-7019 (international or local)
+
+707-829-0104 (fax)
+
+*[support@oreilly.com](mailto:support@oreilly.com)*
+
+*<https://oreilly.com/about/contact.html>*
+
+We have a web page for this book, where we list errata, examples, and any additional information. You can access this page at *<https://oreil.ly/learning-langchain>*.
+
+For news and information about our books and courses, visit *[https://oreilly.com](https://oreilly.com/)*.
+
+Find us on LinkedIn: *<https://linkedin.com/company/oreilly-media>*.
+
+Watch us on YouTube: *<https://youtube.com/oreillymedia>*.
+
+## Acknowledgments
+
+We would like to express our gratitude and appreciation to the reviewers—Rajat Kant Goel, Douglas Bailley, Tom Taulli, Gourav Bais, and Jacob Lee—for providing valuable technical feedback on improving this book.
+
+Tom B. Brown et al., ["Language](https://oreil.ly/1qoM6) Models Are Few-Shot Learners", arXiv, July 22, 2020. **[1](#page--1-0)**
+
+Xiang Zhang et al., "Don't Trust ChatGPT When Your Question Is Not in English: A Study of [Multilingual](https://oreil.ly/u5Cy1) Abilities and Types of LLMs", Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, December 6–10, 2023. **[2](#page--1-1)**
+
+For more information, see Ashish Vaswani et al., ["Attention](https://oreil.ly/Frtul) Is All You Need ", arXiv, June 12, 2017. **[3](#page--1-2)**
+
+Ryan Liu et al. "Mind Your Step (by Step): [Chain-of-Thought](https://oreil.ly/UHFp9) Can Reduce Performance on Tasks Where Thinking Makes Humans Worse", arXiv, November 8, 2024. **[4](#page--1-3)**
+

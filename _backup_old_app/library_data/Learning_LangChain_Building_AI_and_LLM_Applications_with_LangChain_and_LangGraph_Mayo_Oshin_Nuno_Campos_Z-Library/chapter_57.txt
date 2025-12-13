@@ -1,0 +1,5 @@
+# *Reflection*
+
+
+Taking another page out of the repertoire of human thought patterns, this is about giving your LLM app the opportunity to analyze its past output and choices, together with the ability to remember reflections from past iterations.
+

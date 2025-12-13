@@ -1,0 +1,48 @@
+# Collaborative Editing with LLMs
+
+
+<span id="page-2-0"></span>Most productivity software has some form of collaborative editing built in, which we can classify into one of these buckets (or somewhere in between):
+
+#### *Save and send*
+
+This is the most basic version, which only supports one user editing the document at a time, before "passing the buck" to another user (for example, sending the file over email) and repeating the process until done. The most obvious example is the Microsoft Office suite of apps: Excel, Word, PowerPoint.
+
+### *Version control*
+
+This is an evolution of save and send that supports multiple editors working simultaneously on their own (and unaware of each other's changes) by providing tools to combine their work afterward: merge strategies (how to combine unrelated changes) and conflict resolution (how to combine incompatible changes). The most popular example today is Git/GitHub, used by software engineers to collaborate on software projects.
+
+#### *Real-time collaboration*
+
+This enables multiple editors to work on the same document at the same time, while seeing each other's changes. This is arguably the most natural form of software-enabled collaboration, evidenced by the popularity of Google Docs and Google Sheets among technical and nontechnical computer users.
+
+This pattern of LLM user experience consists of employing an LLM agent as one of those "users" contributing to this shared document. This can take many forms, including the following:
+
+- <span id="page-3-0"></span>An always-on "copilot" giving you suggestions on how to complete the next sentence
+- An asynchronous "drafter," which you task with, for example, going off and researching the topic in question and returning later with a section you can incorporate in your final document
+
+To build this, you'd likely need the following:
+
+#### *Shared state*
+
+The LLM agent and the human users should be on the same footing in terms of access and understanding of the state of the document—that is, they would be able to parse the state of the document and produce edits to that state in a compatible format.
+
+#### *Task manager*
+
+Producing a useful edit to the document will invariably be a multistep process, which can take time and fail halfway. This creates the need for reliable scheduling and orchestration of long-running jobs, with queueing, error recovery, and control over running tasks.
+
+#### *Merging forks*
+
+Users will continue to edit the document after tasking the LLM agent, so LLM outputs will need to be merged with the users' work, either manually by the user (an experience like Git) or automatically (through conflict resolution algorithms such as CRDT and operational transformation (OT), employed by applications such as Google Docs).
+
+#### *Concurrency*
+
+<span id="page-5-3"></span>The fact that the human user and the LLM agent are working on the same thing at the same time requires the ability to handle interruptions, cancellations, reroutings (do this instead), and queueing (do this as well).
+
+#### *Undo/redo stack*
+
+This is a ubiquitous pattern in productivity software, which inevitably is needed here too. Users change their minds and want to go back to an earlier state of the document, and the LLM application needs to be capable of following them there.
+
+#### *Intermediate output*
+
+<span id="page-5-2"></span>Merging user and LLM outputs is made a lot easier when those outputs are gradual and arrive piecemeal as soon as they're produced, in much the same way that a person writes a 10-paragraph page one sentence at a time.
+

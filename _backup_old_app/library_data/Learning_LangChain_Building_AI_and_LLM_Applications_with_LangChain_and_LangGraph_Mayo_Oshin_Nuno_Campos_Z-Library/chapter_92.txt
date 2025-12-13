@@ -1,0 +1,5 @@
+# Deploying Your AI Application on LangGraph Platform
+
+
+At this point, you have created accounts for the recommended services, filled in your *.env* file with values of all necessary environment variables, and completed the core logic for your AI application. Next, we will take the necessary steps to effectively deploy your application.
+

@@ -1,0 +1,45 @@
+# The second argument is the function or Runnable
+
+builder.add_node("chatbot", chatbot)
+```
+
+```
+import {ChatOpenAI} from '@langchain/openai'
+import {
+ AIMessage,
+```
+
+```
+ SystemMessage,
+ HumanMessage
+} from "@langchain/core/messages";
+const model = new ChatOpenAI()
+async function chatbot(state) {
+ const answer = await model.invoke(state.message
+ return {"messages": answer}
+}
+builder = builder.addNode('chatbot', chatbot)
+```
+
+This node receives the current state, does one LLM call, and then returns an update to the state containing the new message produced by the LLM. The add\_messages reducer appends this message to the messages already in the state.
+
+And finally let's add the edges:
+
+*Python*
+
+```
+builder.add_edge(START, 'chatbot')
+builder.add_edge('chatbot', END)
+```
+
+```
+graph = builder.compile()
+```
+
+```
+builder = builder
+ .addEdge(START, 'chatbot')
+ .addEdge('chatbot', END)
+let graph = builder.compile()
+```
+

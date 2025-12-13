@@ -1,0 +1,16 @@
+# replay a past state
+
+graph.invoke(None, history[2].config)
+```
+
+```
+const config = "configurable": {"thread_id": "1"}
+const history = await Array.fromAsync(graph.getSt
+// replay a past state
+await graph.invoke(null, history[2].config)
+```
+
+Notice how we collect the history into a list/array in both languages; get\_state\_history returns an iterator of states (to allow consuming lazily). The states returned from the history method are sorted with the most recent first and the oldest last.
+
+The true power of the human-in-the-loop controls comes from mixing them in whatever way suits your application.
+

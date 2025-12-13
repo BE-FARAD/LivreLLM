@@ -1,0 +1,71 @@
+# **Test Your LangGraph App Locally**
+
+
+Testing your application locally ensures that there are no errors or dependency conflicts prior to deployment. To do this, we will utilize the LangGraph CLI, which includes commands to run a local development server with hot reloading and debugging capabilities.
+
+For Python, install the Python langgraph-cli package (note: this requires Python 3.11 or higher):
+
+```
+pip install -U "langgraph-cli[inmem]"
+```
+
+Or for JavaScript, install the package as follows:
+
+```
+npm i @langchain/langgraph-cli
+```
+
+Once the CLI is installed, run the following command to start the API:
+
+```
+langgraph dev
+```
+
+This will start up the LangGraph API server locally. If this runs successfully, you should see something like this:
+
+```
+Ready!
+API: http://localhost:2024
+Docs: http://localhost:2024/docs
+```
+
+The LangGraph Platform API reference is available with each deployment at the */docs* URL path (*http://localhost:2024/docs*).
+
+The easiest way to interact with your local API server is to use the auto-launched LangGraph Studio UI. Alternatively, you can interact with the local API server using cURL, as seen in this example:
+
+```
+curl --request POST \
+ --url http://localhost:8123/runs/stream \
+ --header 'Content-Type: application/json' \
+ --data '{
+ "assistant_id": "agent",
+ "input": {
+ "messages": [
+ {
+ "role": "user",
+ "content": "How are you?"
+ }
+ ]
+ },
+ "metadata": {},
+ "config": {
+ "configurable": {}
+ },
+ "multitask_strategy": "reject",
+```
+
+```
+ "stream_mode": [
+ "values"
+ ]
+}'
+```
+
+If you receive a valid response, your application is functioning well. Next, we can interact with the server using the LangGraph SDK.
+
+Here's an example both initializing the SDK client and invoking the graph:
+
+#### *Python*
+
+```
+from langgraph_sdk import get_client

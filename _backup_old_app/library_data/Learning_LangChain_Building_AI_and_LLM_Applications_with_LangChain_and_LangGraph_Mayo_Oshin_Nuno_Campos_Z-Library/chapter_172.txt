@@ -1,0 +1,6 @@
+# Each summary is linked to the original document
+
+summary_docs = [
+ Document(page_content=s, metadata={id_key: do
+ for i, s in enumerate(summaries)
+]

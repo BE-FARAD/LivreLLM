@@ -1,0 +1,10 @@
+# Index the documents
+
+index_1 = index(
+ docs,
+ record_manager,
+ vectorstore,
+ cleanup="incremental", # prevent duplicate d
+ source_id_key="source", # use the source fie
+)
+print("Index attempt 1:", index_1)

@@ -1,0 +1,99 @@
+# **Supervisor Architecture**
+
+
+In this architecture, we add each agent to the graph as a node and also add a supervisor node, which decides which agents should be called next. We use conditional edges to route
+
+execution to the appropriate agent node based on the supervisor's decision. Refer back to [Chapter](#page--1-0) 5 for an introduction to LangGraph, which goes over the concepts of nodes, edges, and more.
+
+Let's first see what the supervisor node looks like:
+
+### *Python*
+
+```
+from typing import Literal
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel
+class SupervisorDecision(BaseModel):
+ next: Literal["researcher", "coder", "FINISH"
+model = ChatOpenAI(model="gpt-4o", temperature=0)
+model = model.with_structured_output(SupervisorDe
+agents = ["researcher", "coder"]
+system_prompt_part_1 = f"""You are a supervisor t
+conversation between the following workers: {agen
+request, respond with the worker to act next. Eac
+task and respond with their results and status. W
+respond with FINISH."""
+```
+
+```
+system_prompt_part_2 = f"""Given the conversation
+ should we FINISH? Select one of: {', '.join(a
+def supervisor(state):
+ messages = [
+ ("system", system_prompt_part_1),
+ *state["messages"],
+ ("system", system_prompt_part_2)
+ ]
+ return model.invoke(messages)
+```
+
+#### *JavaScript*
+
+```
+import { ChatOpenAI } from 'langchain-openai';
+import { z } from 'zod';
+const SupervisorDecision = z.object({
+ next: z.enum(['researcher', 'coder', 'FINISH'])
+});
+const model = new ChatOpenAI({ model: 'gpt-4o', t
+const modelWithStructuredOutput = model.withStruc
+const agents = ['researcher', 'coder'];
+```
+
+```
+const systemPromptPart1 = `You are a supervisor t
+ conversation between the following workers: ${a
+ following user request, respond with the worker
+ will perform a task and respond with their resu
+ finished, respond with FINISH.`;
+const systemPromptPart2 = `Given the conversation
+ should we FINISH? Select one of: ${agents.join(
+const supervisor = async (state) => {
+ const messages = [
+ { role: 'system', content: systemPromptPart1
+ ...state.messages,
+ { role: 'system', content: systemPromptPart2
+ ];
+ return await modelWithStructuredOutput.invoke({
+};
+```
+
+#### **NOTE**
+
+The code in the prompt requires the names of your subagents to be self-explanatory and distinct. For instance, if they were simply called agent\_1 and agent\_2 , the LLM would have no information to decide which one is appropriate for each task. If needed, you could modify the prompt to add a description of each agent, which could help the LLM in picking an agent for each query.
+
+Now let's see how to integrate this supervisor node into a larger graph that includes two other subagents, which we will call researcher and coder. Our overall goal with this graph is to handle queries that can be answered either by the researcher by itself or the coder by itself, or even both of them in succession. This example doesn't include implementations for either the researcher or coder—the key idea is they could be any other LangGraph graph or node:
+
+#### *Python*
+
+```
+from typing import Literal
+from langchain_openai import ChatOpenAI
+from langgraph.graph import StateGraph, MessagesS
+model = ChatOpenAI()
+class AgentState(BaseModel):
+ next: Literal["researcher", "coder", "FINISH"
+def researcher(state: AgentState):
+ response = model.invoke(...)
+ return {"messages": [response]}
+def coder(state: AgentState):
+ response = model.invoke(...)
+```
+
+```
+ return {"messages": [response]}
+builder = StateGraph(AgentState)
+builder.add_node(supervisor)
+builder.add_node(researcher)
+builder.add_node(coder)
+builder.add_edge(START, "supervisor")

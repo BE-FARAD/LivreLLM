@@ -1,0 +1,59 @@
+# "python_docs"
+
+```
+
+```
+const question = `Why doesn't the following code 
+from langchain_core.prompts import ChatPromptTemp
+prompt = ChatPromptTemplate.from_messages(["human
+prompt.invoke("french")
+`
+```
+
+```
+await router.invoke({ question })
+```
+
+## *The output:*
+
+```
+{
+ datasource: "python_docs"
+}
+```
+
+Notice how the LLM produced JSON output, conforming to the schema we defined earlier. This will be useful in many other tasks.
+
+Once we've extracted the relevant data source, we can pass the value into another function to execute additional logic as required:
+
+```
+def choose_route(result):
+ if "python_docs" in result.datasource.lower()
+ ### Logic here 
+ return "chain for python_docs"
+ else:
+```
+
+```
+ ### Logic here 
+ return "chain for js_docs"
+full_chain = router | RunnableLambda(choose_route
+```
+
+```
+function chooseRoute(result) {
+ if (result.datasource.toLowerCase().includes('p
+ return 'chain for python_docs';
+ } else {
+ return 'chain for js_docs';
+ }
+}
+const fullChain = router.pipe(chooseRoute)
+```
+
+Notice how we don't do an exact string comparison but instead first turn the generated output to lowercase, and then do a substring match. This makes our chain more resilient to the LLM going off script and producing output that doesn't quite conform to the schema we asked for.
+
+Resilience to the random nature of LLM outputs is an important theme to keep in mind when building your LLM applications.
+
+Logical routing is most suitable when you have a defined list of data sources from which relevant data can be retrieved and utilized by the LLM to generate an accurate output. These can range from vector stores to databases and even APIs.
+

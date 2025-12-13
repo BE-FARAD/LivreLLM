@@ -1,0 +1,8 @@
+# batch the chain across the chunks
+
+summaries = summarize_chain.batch(chunks, {"max_c
+```
+
+Next, let's define the vector store and docstore to store the raw summaries and their embeddings:
+
+```

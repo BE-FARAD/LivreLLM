@@ -1,0 +1,203 @@
+@startuml Séquence 02 - Lecture Interactive
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam participantBackgroundColor #E3F2FD
+skinparam participantBorderColor #1976D2
+skinparam sequenceMessageAlign center
+
+title Diagramme de Séquence - Lecture Interactive d'un Chapitre
+
+actor Utilisateur as user
+participant "Streamlit UI" as ui
+participant "ApplicationController" as app
+participant "SessionPersistence" as session
+participant "DocumentManager" as docMgr
+participant "ReadingSessionManager" as reading
+participant "AudioManager" as audioMgr
+participant "LLMClient" as llm
+participant "RAGEngine" as rag
+participant "VectorStore" as vectorStore
+participant "MemoryCardGenerator" as memGen
+
+' ===== ÉTAPE 1 : CONNEXION =====
+user -> ui : Connexion
+ui -> app : login(userId)
+activate app
+
+app -> session : loadSession(userId)
+activate session
+session --> app : ReadingState (ou null)
+deactivate session
+
+alt Session précédente existe
+    app --> ui : "Reprendre la lecture ?"
+    user -> ui : Oui / Non
+end
+
+app --> ui : Liste des livres
+deactivate app
+
+' ===== ÉTAPE 2 : SÉLECTION LIVRE =====
+user -> ui : Sélectionne un livre
+ui -> app : selectBook(bookName)
+activate app
+
+app -> docMgr : loadMarkdown(bookName, lang)
+activate docMgr
+docMgr --> app : MarkdownDocument
+deactivate docMgr
+
+app --> ui : Liste des chapitres\n(dropdown)
+deactivate app
+
+' ===== ÉTAPE 3 : SÉLECTION CHAPITRE =====
+user -> ui : Sélectionne Chapitre N\n(liste déroulante)
+ui -> app : selectChapter(chapterNum)
+activate app
+
+app -> reading : startSession(book, chapterNum)
+activate reading
+
+' ===== ÉTAPE 4 : RÉSUMÉ INTRODUCTIF =====
+reading -> llm : summarize(chapter)
+activate llm
+llm --> reading : résumé
+deactivate llm
+
+reading --> app : résumé du chapitre
+app --> ui : Affiche résumé
+ui --> user : "Ce chapitre aborde..."
+
+' ===== ÉTAPE 5 : DÉBUT LECTURE =====
+user -> ui : "Commencer la lecture"
+ui -> app : startReading()
+
+' ===== ÉTAPE 6 : LECTURE PARAGRAPHE PAR PARAGRAPHE =====
+loop Pour chaque paragraphe
+
+    reading -> reading : getCurrentParagraph()
+
+    ' Affichage texte
+    reading --> app : paragraphe (texte + images)
+    app --> ui : Affiche paragraphe\n+ images associées
+    ui --> user : Texte Markdown rendu
+
+    ' Lecture audio
+    reading -> audioMgr : getAudioPath(book, chapter, para)
+    activate audioMgr
+    audioMgr --> reading : audioPath
+    deactivate audioMgr
+
+    reading -> audioMgr : playAudio(audioPath)
+    activate audioMgr
+    audioMgr --> user : 🔊 Lecture audio
+    deactivate audioMgr
+
+    ' Sauvegarde progression
+    reading -> session : updateProgress(userId, book, chapter, para)
+
+    ' ===== INTERRUPTION POSSIBLE =====
+    alt Utilisateur pose une question
+        user -> ui : "C'est quoi cette formule ?"
+        ui -> app : askQuestion(question)
+
+        app -> reading : askQuestion(question)
+
+        reading -> rag : query(question)
+        activate rag
+
+        rag -> vectorStore : search(question, topK=5)
+        activate vectorStore
+        vectorStore --> rag : contexte pertinent
+        deactivate vectorStore
+
+        rag -> llm : chat(question + contexte)
+        activate llm
+        llm --> rag : réponse
+        deactivate llm
+
+        rag --> reading : réponse
+        deactivate rag
+
+        reading -> reading : addToHistory(question, réponse)
+        reading --> app : réponse
+        app --> ui : Affiche réponse
+        ui --> user : Réponse du LLM
+
+        user -> ui : "Continuer la lecture"
+        ui -> app : resumeReading()
+
+    else Utilisateur met en pause
+        user -> ui : "Pause"
+        ui -> app : pauseReading()
+        app -> reading : pauseReading()
+        reading -> audioMgr : pauseAudio()
+        reading -> session : saveSession(readingState)
+
+    else Passage au paragraphe suivant
+        reading -> reading : nextParagraph()
+    end
+
+end
+
+deactivate reading
+deactivate app
+
+' ===== ÉTAPE 7 : FIN DU CHAPITRE =====
+reading --> app : Fin du chapitre
+activate app
+activate reading
+
+app --> ui : "Chapitre terminé"
+ui --> user : "Générer la fiche mémoire ?"
+
+user -> ui : "Oui"
+ui -> app : endChapter()
+
+' ===== ÉTAPE 8 : GÉNÉRATION FICHE MÉMOIRE =====
+app -> reading : generateMemoryCard()
+
+reading -> memGen : generateCard(chapter, conversationHistory)
+activate memGen
+
+memGen -> llm : extractKeyPoints(chapter)
+activate llm
+llm --> memGen : points clés
+deactivate llm
+
+memGen -> llm : summarizeQA(history)
+activate llm
+llm --> memGen : résumé Q&A
+deactivate llm
+
+memGen -> memGen : extractImportantFormulas()
+memGen -> memGen : buildCard()
+
+memGen --> reading : MemoryCard
+deactivate memGen
+
+reading -> reading : card.toMarkdown()
+reading -> reading : card.save(path)
+
+reading --> app : MemoryCard
+deactivate reading
+
+app --> ui : Affiche fiche mémoire
+ui --> user : Fiche Markdown\n(résumé, points clés,\nformules, Q&A)
+
+' ===== ÉTAPE 9 : SUITE =====
+ui --> user : "Chapitre suivant ?"
+
+alt Continuer
+    user -> ui : "Chapitre suivant"
+    ui -> app : selectChapter(chapterNum + 1)
+else Arrêter
+    user -> ui : "Quitter"
+    app -> session : saveSession(readingState)
+    app --> ui : "Session sauvegardée"
+end
+
+deactivate app
+
+@enduml

@@ -1,0 +1,6 @@
+# Load the document, split it into chunks
+
+raw_documents = TextLoader('./test.txt').load()
+text_splitter = RecursiveCharacterTextSplitter(ch
+ chunk_overlap=200)
+documents = text_splitter.split_documents(raw_doc

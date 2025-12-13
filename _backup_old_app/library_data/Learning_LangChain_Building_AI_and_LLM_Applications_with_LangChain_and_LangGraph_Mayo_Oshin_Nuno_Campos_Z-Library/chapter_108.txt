@@ -1,0 +1,92 @@
+# Prompt
+
+system = """You are a grader assessing relevance 
+ user question. 
+ If the document contains keyword(s) or semant
+ question, grade it as relevant. 
+ Give a binary score 'yes' or 'no' to indicate
+ relevant to the question."""
+grade_prompt = ChatPromptTemplate.from_messages(
+ [
+ ("system"
+                , system),
+ ("human"
+               ,
+                 """Retrieved document: \n\n {do
+ {question}"""),
+ ]
+)
+retrieval_grader = grade_prompt | structured_llm_
+question = "agent memory"
+docs = retriever.get_relevant_documents(question)
+doc_txt = docs[0].page_content # as an example
+retrieval_grader.invoke({"question": question,
+                                             "d
+```
+
+```
+import { ChatPromptTemplate } from "@langchain/co
+import { z } from "zod";
+import { ChatOpenAI } from "@langchain/openai";
+// Define the schema using Zod
+const GradeDocumentsSchema = z.object({
+ binary_score: z.string().describe(`Documents ar
+ 'yes' or 'no'`),
+});
+// Initialize LLM with structured output using Zo
+const llm = new ChatOpenAI({ model: "gpt-3.5-turb
+const structuredLLMGrader = llm.withStructuredOut
+// System and prompt template
+const systemMessage = `You are a grader assessing
+ document to a user question. 
+If the document contains keyword(s) or semantic m
+ question, grade it as relevant.
+Give a binary score 'yes' or 'no' to indicate whe
+ to the question.`;
+const gradePrompt = ChatPromptTemplate.fromMessag
+ { role: "system", content: systemMessage },
+ {
+```
+
+```
+ role: "human",
+ content: "Retrieved document: \n\n {document}
+ User question: {question}",
+ },
+]);
+// Combine prompt with the structured output
+const retrievalGrader = gradePrompt.pipe(structur
+const question = "agent memory";
+const docs = await retriever.getRelevantDocuments
+await retrievalGrader.invoke({
+ question,
+ document: docs[1].pageContent,
+});
+```
+
+#### *The output:*
+
+```
+binary_score='yes'
+```
+
+Notice the use of Pydantic/Zod to help model the binary decision output in a format that can be used to programmatically decide which node in the control flow to move toward.
+
+In LangSmith, you can see a trace of the logic flow across the nodes discussed previously (see [Figure](#page-3-0) 10-3).
+
+<span id="page-3-0"></span>![](_page_3_Picture_0.jpeg)
+
+Figure 10-3. LangSmith trace results
+
+Let's test to see what happens when the input question cannot be answered by the retrieved documents in the index.
+
+First, utilize LangGraph to make it easier to construct, execute, and debug the full control flow. See the full graph definition in the book's GitHub [repository.](https://oreil.ly/v63Vr) Notice that we've added a transform\_query node to help rewrite the input query in a format that web search can use to retrieve higher-quality results.
+
+As a final step, we set up our web search tool and execute the graph using the out-of-context question. The LangSmith trace shows that the web search tool was used as a fallback to retrieve relevant information prior to the final LLM generated answer (see [Figure](#page-5-0) 10-4).
+
+<span id="page-5-0"></span>![](_page_5_Figure_0.jpeg)
+
+Figure 10-4. LangSmith trace of self-corrective RAG utilizing web search as a fallback
+
+Let's move on to the next stage in LLM app testing: preproduction.
+

@@ -1,0 +1,14 @@
+# *Python*
+
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th presiden
+ he died?""")
+ ]
+}
+for c in graph.stream(input):
+print(c)
+```
+

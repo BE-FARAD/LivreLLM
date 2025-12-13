@@ -1,0 +1,10 @@
+# Data model
+
+class GradeDocuments(BaseModel):
+ """Binary score for relevance check on retrie
+ binary_score: str = Field(
+ description="Documents are relevant to th
+ )
+```
+
+```

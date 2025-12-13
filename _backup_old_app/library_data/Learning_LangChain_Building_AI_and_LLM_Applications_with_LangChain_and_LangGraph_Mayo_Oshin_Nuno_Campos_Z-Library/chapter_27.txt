@@ -1,0 +1,13 @@
+# *Python*
+
+
+```
+pip install langgraph
+```
+
+```
+npm i @langchain/langgraph
+```
+
+To help get you familiar with using LangGraph, we'll create a simple chatbot using LangGraph, which is a great example of the LLM call architecture with a single use of an LLM. This chatbot will respond directly to user messages. Though simple, it does illustrate the core concepts of building with LangGraph.
+

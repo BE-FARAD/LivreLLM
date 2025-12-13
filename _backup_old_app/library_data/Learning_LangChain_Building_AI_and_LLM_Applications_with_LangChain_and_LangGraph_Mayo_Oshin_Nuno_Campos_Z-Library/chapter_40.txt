@@ -1,0 +1,152 @@
+# Architecture #1: LLM Call
+
+
+As an example of the LLM call architecture, we'll return to the chatbot we created in [Chapter](#page--1-1) 4. This chatbot will respond directly to user messages.
+
+Start by creating a StateGraph , to which we'll add a node to represent the LLM call:
+
+```
+from typing import Annotated, TypedDict
+from langgraph.graph import StateGraph, START, EN
+from langgraph.graph.message import add_messages
+from langchain_openai import ChatOpenAI
+model = ChatOpenAI()
+```
+
+```
+class State(TypedDict):
+ # Messages have the type "list". The `add_mes
+ # function in the annotation defines how this
+ # be updated (in this case, it appends new me
+ # list, rather than replacing the previous me
+ messages: Annotated[list, add_messages]
+def chatbot(state: State):
+ answer = model.invoke(state["messages"])
+ return {"messages": [answer]}
+builder = StateGraph(State)
+builder.add_node("chatbot", chatbot)
+builder.add_edge(START, 'chatbot')
+builder.add_edge('chatbot', END)
+graph = builder.compile()
+```
+
+```
+import {
+ StateGraph,
+ Annotation,
+ messagesStateReducer,
+ START, END
+```
+
+```
+} from '@langchain/langgraph'
+import {ChatOpenAI} from '@langchain/openai'
+const model = new ChatOpenAI()
+const State = {
+ /**
+ * The State defines three things:
+ * 1. The structure of the graph's state (which 
+ * read/write)
+ * 2. The default values for the state's channel
+ * 3. The reducers for the state's channels. Red
+ * determine how to apply updates to the state. 
+ * appended to the messages array.
+ */
+ messages: Annotation({
+ reducer: messagesStateReducer,
+ default: () => []
+ }),
+}
+async function chatbot(state) {
+ const answer = await model.invoke(state.message
+ return {"messages": answer}
+}
+const builder = new StateGraph(State)
+ .addNode('chatbot', chatbot)
+ .addEdge(START, 'chatbot')
+```
+
+```
+ .addEdge(START, chatbot )
+ .addEdge('chatbot', END)
+const graph = builder.compile()
+```
+
+We can also draw a visual representation of the graph:
+
+*Python*
+
+```
+graph.get_graph().draw_mermaid_png()
+```
+
+*JavaScript*
+
+```
+await graph.getGraph().drawMermaidPng()
+```
+
+The graph we just made looks like [Figure](#page-7-0) 5-2.
+
+<span id="page-7-0"></span>![](_page_7_Figure_0.jpeg)
+
+Figure 5-2. The LLM call architecture
+
+You can run it with the familiar stream() method you've seen in earlier chapters:
+
+```
+input = {"messages": [HumanMessage('hi!)]}
+for chunk in graph.stream(input):
+ print(chunk)
+```
+
+```
+const input = {messages: [new HumanMessage('hi!)]
+for await (const chunk of await graph.stream(inpu
+ console.log(chunk)
+}
+```
+
+#### *The output:*
+
+```
+{ "chatbot": { "messages": [AIMessage("How can I
+```
+
+Notice how the input to the graph was in the same shape as the State object we defined earlier; that is, we sent in a list of messages in the messages key of a dictionary.
+
+This is the simplest possible architecture for using an LLM, which is not to say that it should never be used. Here are some examples of where you might see it in action in popular products, among many others:
+
+AI-powered features such as summarize and translate (such as you can find in Notion, a popular writing software) can be
+
+- powered by a single LLM call.
+- Simple SQL query generation can be powered by a single LLM call, depending on the UX and target user the developer has in mind.
+
+## Architecture #2: Chain
+
+This next architecture extends on all that by using multiple LLM calls, in a predefined sequence (that is, different invocations of the application do the same sequence of LLM calls, albeit with different inputs and results).
+
+Let's take as an example a text-to-SQL application, which receives as input from the user a natural language description of some calculation to make over a database. We mentioned earlier that this could be achieved with a single LLM call, to generate a SQL query, but we can create a more sophisticated application by making use of multiple LLM calls in sequence. Some authors call this architecture *flow engineering*. **[2](#page--1-2)**
+
+First let's describe the flow in words:
+
+1. One LLM call to generate a SQL query from the natural language query, provided by the user, and a description of the database contents, provided by the developer.
+
+2. Another LLM call to write an explanation of the query appropriate for a nontechnical user, given the query generated in the previous call. This one could then be used to enable the user to check if the generated query matches his request.
+
+You could also extend this even further (but we won't do that here) with additional steps to be taken after the preceding two:
+
+- 3. Executes the query against the database, which returns a two-dimensional table.
+- 4. Uses a third LLM call to summarize the query results into a textual answer to the original user question.
+
+And now let's implement this with LangGraph:
+
+```
+from typing import Annotated, TypedDict
+from langchain_core.messages import HumanMessage,
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, START, StateGrap
+from langgraph.graph.message import add_messages
+```
+
+```

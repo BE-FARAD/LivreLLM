@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book_title }} - Lecteur</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reader.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <a href="/" class="back-btn">← Retour à la bibliothèque</a>
+                <h1 class="book-title">📖 {{ book_title }}</h1>
+            </div>
+            <div class="header-right">
+                <span class="language-badge">{{ 'Français' if language == 'fr' else 'English' }}</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h3>Chapitres</h3>
+                <div id="chapter-list" class="chapter-list">
+                    <!-- Loaded via JS -->
+                </div>
+
+                <!-- Chat Section -->
+                <div class="chat-section">
+                    <h3>💬 Poser une question</h3>
+                    <div id="chat-messages" class="chat-messages"></div>
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="chat-input" placeholder="Votre question..." />
+                        <button id="chat-send">Envoyer</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content">
+                <!-- Audio Player (Single, Global) -->
+                <div class="audio-player-wrapper">
+                    <button id="play-chapter" class="play-chapter-btn">
+                        ▶ Lire le chapitre
+                    </button>
+                    <audio id="chapter-audio" controls style="display:none;"></audio>
+                </div>
+
+                <!-- Chapter Title -->
+                <h2 id="chapter-title" class="chapter-title">Sélectionnez un chapitre</h2>
+
+                <!-- Chapter Content -->
+                <div id="chapter-content" class="chapter-content">
+                    <p class="placeholder">Chargement...</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.0.0/marked.min.js"></script>
+
+    <script>
+        const bookName = "{{ book_name }}";
+        let currentChapter = null;
+        let chapters = [];
+    </script>
+    <script src="{{ url_for('static', filename='js/reader.js') }}?v={{ range(1, 10000) | random }}"></script>
+</body>
+
+</html>

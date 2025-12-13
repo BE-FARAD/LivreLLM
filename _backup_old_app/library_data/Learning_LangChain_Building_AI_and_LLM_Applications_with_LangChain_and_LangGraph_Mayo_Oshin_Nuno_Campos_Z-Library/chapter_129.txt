@@ -1,0 +1,67 @@
+# ['Hi!', 'See you!']
+
+for token in model.stream('Bye!'):
+ print(token)
+ # Good
+ # bye
+ # !
+```
+
+```
+import { ChatOpenAI } from '@langchain/openai'
+const model = new ChatOpenAI()
+const completion = await model.invoke('Hi there!
+// Hi!
+const completions = await model.batch(['Hi there
+// ['Hi!', 'See you!']
+for await (const token of await model.stream('Bye
+ console.log(token)
+ // Good
+ // bye
+ // !
+}
+```
+
+In this example, you see how the three main methods work:
+
+- invoke() takes a single input and returns a single output.
+- batch() takes a list of outputs and returns a list of outputs.
+- stream() takes a single input and returns an iterator of parts of the output as they become available.
+
+In some cases, where the underlying component doesn't support iterative output, there will be a single part containing all output.
+
+You can combine these components in two ways:
+
+#### *Imperative*
+
+```
+Call your components directly, for example, with
+model.invoke(...)
+```
+
+#### *Declarative*
+
+Use LangChain Expression Language (LCEL), as covered in an upcoming section
+
+[Table](#page-1-0) 1-1 summarizes their differences, and we'll see each in action next.
+
+<span id="page-1-0"></span>Table 1-1. The main differences between imperative and declarative composition.
+
+|                       | Imperative                                                                               | Declarative |
+|-----------------------|------------------------------------------------------------------------------------------|-------------|
+| Syntax                | All<br>of<br>Python<br>or<br>JavaScript                                                  | LCEL        |
+| Parallel<br>execution | Python:<br>with<br>threads<br>or<br>coroutines<br>JavaScript:<br>with<br>Promise.al<br>l | Automatic   |
+| Streaming             | With<br>yield<br>keyword                                                                 | Automatic   |
+| Async<br>execution    | With<br>async<br>functions                                                               | Automatic   |
+
+## **Imperative Composition**
+
+*Imperative composition* is just a fancy name for writing the code you're used to writing, composing these components into functions and classes. Here's an example combining prompts, models, and output parsers:
+
+#### *Python*
+
+from langchain\_openai.chat\_models import ChatOpen from langchain core.prompts import ChatPromptTemp
+
+```
+o a gc a _co e p o pts po t C at o pt e p
+from langchain_core.runnables import chain

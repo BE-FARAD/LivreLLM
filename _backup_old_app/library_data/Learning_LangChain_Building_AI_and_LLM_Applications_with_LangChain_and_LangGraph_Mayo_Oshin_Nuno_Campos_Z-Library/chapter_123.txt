@@ -1,0 +1,112 @@
+# `prompt` and `completion` are the results of us
+
+prompt = template.invoke({
+ "context": """The most recent advancements in
+ Language Models (LLMs). These models outp
+ counterparts and have become invaluable f
+ applications with NLP capabilities. Devel
+ models through Hugging Face's `transforme
+ OpenAI and Cohere's offerings through the
+ libraries, respectively.""",
+   "question": "Which model providers offer LLMs
+```
+
+```
+ question : Which model providers offer LLMs
+})
+completion = model.invoke(prompt)
+```
+
+```
+import { PromptTemplate } from '@langchain/core/p
+import { OpenAI } from '@langchain/openai'
+const model = new OpenAI()
+const template = PromptTemplate.fromTemplate(`Ans
+ context below. If the question cannot be answer
+ provided, answer with "I don't know".
+Context: {context}
+Question: {question}
+Answer: `)
+const prompt = await template.invoke({
+ context: `The most recent advancements in NLP a
+ Language Models (LLMs). These models outperfo
+ counterparts and have become invaluable for d
+ applications with NLP capabilities. Developer
+ through Hugging Face's \`transformers\` libra
+```
+
+```
+ and Cohere's offerings through the \`openai\`
+ respectively.`,
+ question: "Which model providers offer LLMs?"
+})
+await model.invoke(prompt)
+```
+
+```
+Hugging Face's `transformers` library, OpenAI usi
+Cohere using the `cohere` library offer LLMs.
+```
+
+If you're looking to build an AI chat application, the ChatPromptTemplate can be used instead to provide dynamic inputs based on the role of the chat message:
+
+```
+from langchain_core.prompts import ChatPromptTemp
+template = ChatPromptTemplate.from_messages([
+ ('system', '''Answer the question based on th
+ question cannot be answered using the inf
+ "I don\'t know".'''),
+   ('human' 'Context: {context}')
+```
+
+```
+ ( human , Context: {context} ),
+ ('human', 'Question: {question}'),
+])
+template.invoke({
+ "context": """The most recent advancements in
+ Language Models (LLMs). These models outp
+ counterparts and have become invaluable f
+ applications with NLP capabilities. Devel
+ models through Hugging Face's `transforme
+ OpenAI and Cohere's offerings through the
+ libraries, respectively.""",
+ "question": "Which model providers offer LLMs
+})
+```
+
+```
+import { ChatPromptTemplate } from '@langchain/co
+const template = ChatPromptTemplate.fromMessages(
+ ['system', `Answer the question based on the co
+ cannot be answered using the information prov
+ don\'t know".`],
+ ['human', 'Context: {context}'],
+ ['human', 'Question: {question}'],
+])
+```
+
+```
+await template.invoke({
+ context: `The most recent advancements in NLP a
+ Language Models (LLMs). These models outperfo
+ counterparts and have become invaluable for d
+ applications with NLP capabilities. Developer
+ through Hugging Face's \`transformers\` libra
+ and Cohere's offerings through the \`openai\`
+ respectively.`,
+ question: "Which model providers offer LLMs?"
+})
+```
+
+ChatPromptValue(messages=[SystemMessage(content= the context below. If the question cannot be provided, answer with "I don\'t know".'), Hum The most recent advancements in NLP are being Models (LLMs). These models outperform their become invaluable for developers who are crea capabilities. Developers can tap into these m `transformers` library, or by utilizing OpenA
+
+ through the `openai` and `cohere` libraries, (content='Question: Which model providers off
+
+Notice how the prompt contains instructions in a
+
+SystemMessage and two instances of HumanMessage that contain dynamic context and question variables. You can still format the template in the same way and get back a static prompt that you can pass to a large language model for a prediction output:
+
+```
+from langchain_openai.chat_models import ChatOpen
+from langchain_core.prompts import ChatPromptTemp

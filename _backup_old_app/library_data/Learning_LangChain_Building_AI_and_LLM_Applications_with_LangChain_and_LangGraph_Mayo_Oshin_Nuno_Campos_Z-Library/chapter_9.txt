@@ -1,0 +1,15 @@
+# Data model
+
+class RouteQuery(BaseModel):
+ """Route a user query to the most relevant da
+ datasource: Literal["python_docs"
+                                   ,
+                                    "js_docs"]
+ ...,
+ description="""Given a user question, cho
+ most relevant for answering their que
+   )
+```
+
+```
+ )

@@ -1,0 +1,9 @@
+# *Python*
+
+
+```
+from langchain_openai import ChatOpenAI
+model = ChatOpenAI()
+def chatbot(state: State):
+ answer = model.invoke(state["messages"])
+ return {"messages": [answer]}

@@ -1,0 +1,13 @@
+# Two prompts
+
+physics_template = """You are a very smart physic
+ answering questions about physics in a concis
+ When you don't know the answer to a question,
+Here is a question:
+{query}"""
+math_template = """You are a very good mathematic
+ math questions. You are so good because you a
+ problems into their component parts, answer t
+ put them together to answer the broader quest
+Here is a question:
+{query}"""

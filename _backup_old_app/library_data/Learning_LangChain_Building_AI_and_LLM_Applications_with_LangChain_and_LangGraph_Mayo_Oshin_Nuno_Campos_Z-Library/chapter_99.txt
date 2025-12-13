@@ -1,0 +1,7 @@
+# **Deployment details**
+
+
+- 1. Select "Import with GitHub" and follow the GitHub OAuth workflow to install and authorize LangChain's hostedlangserve GitHub app to access the selected repositories. After installation is complete, return to the Create New Deployment panel and select the GitHub repository to deploy from the drop-down menu.
+- 2. Specify a name for the deployment and the full path to the LangGraph API config file, including the filename. For example, if the file *langgraph.json* is in the root of the repository, simply specify *langgraph.json*.
+- 3. Specify the desired git reference (branch name) of your repository to deploy.
+

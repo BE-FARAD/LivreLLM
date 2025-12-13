@@ -1,0 +1,6 @@
+# combine them with the | operator
+
+chatbot = template | model
+```
+
+```

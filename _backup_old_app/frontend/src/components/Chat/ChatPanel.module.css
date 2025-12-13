@@ -1,0 +1,86 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    /* Fixed height for now, or flex if in sidebar */
+    border-top: 1px solid var(--mac-divider);
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.message {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 90%;
+}
+
+.user {
+    align-self: flex-end;
+    background: var(--mac-accent);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.assistant {
+    align-self: flex-start;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--mac-text-primary);
+    border-bottom-left-radius: 4px;
+}
+
+.emptyState {
+    text-align: center;
+    color: var(--mac-text-secondary);
+    font-size: 13px;
+    margin-top: 20px;
+}
+
+.loading {
+    font-size: 11px;
+    color: var(--mac-text-secondary);
+    margin-left: 8px;
+}
+
+.inputArea {
+    display: flex;
+    gap: 8px;
+}
+
+.input {
+    flex: 1;
+    border: 1px solid var(--mac-divider);
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+    outline: none;
+    background: white;
+}
+
+.input:focus {
+    border-color: var(--mac-accent);
+}
+
+.sendButton {
+    background: none;
+    border: none;
+    color: var(--mac-accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sendButton:disabled {
+    opacity: 0.5;
+}

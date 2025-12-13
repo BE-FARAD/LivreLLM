@@ -1,0 +1,26 @@
+# <span id="page-10-0"></span>**Getting Set Up with PGVector**
+
+
+To use Postgres and PGVector you'll need to follow a few setup steps:
+
+- 1. Ensure you have Docker installed on your computer, following the [instructions](https://oreil.ly/Gn28O) for your operating system.
+- 2. Run the following command in your terminal; it will launch a Postgres instance in your computer running on port 6024:
+
+```
+docker run \
+ --name pgvector-container \
+ -e POSTGRES_USER=langchain \
+ -e POSTGRES_PASSWORD=langchain \
+ -e POSTGRES_DB=langchain \
+ -p 6024:5432 \
+ -d pgvector/pgvector:pg16
+```
+
+Open your docker dashboard containers and you should see a green running status next to pgvector-container .
+
+3. Save the connection string to use in your code; we'll need it later:
+
+```
+postgresql+psycopg://langchain:langchain@localh
+```
+

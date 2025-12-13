@@ -1,0 +1,9 @@
+# both `template` and `model` can be reused many
+
+template = PromptTemplate.from_template("""Answer
+ context below. If the question cannot be answ
+ provided, answer with "I don't know".
+Context: {context}
+Question: {question}
+Answer: """)
+model = OpenAI()

@@ -1,0 +1,33 @@
+# Prerequisites
+
+
+In order to effectively deploy your AI application, you need to utilize various services to host your application, store and retrieve data, and monitor your application. In the deployment example in this chapter, we will incorporate the following services:
+
+*Vector store*
+
+Supabase
+
+*Monitoring and debugging*
+
+LangSmith
+
+*Backend API*
+
+LangGraph Platform
+
+We will dive deeper into each of these components and services and see how to adapt them for your use case. But first, let's install necessary dependencies and set up the environment variables.
+
+If you'd like to follow the [example, fork](https://oreil.ly/brqVm) this LangChain template to your GitHub account. This repository contains the full logic of a retrieval agent-based AI application.
+
+### **Install Dependencies**
+
+First, follow the instructions in the *[README.md](https://oreil.ly/N5eqe)* file to install the project dependencies.
+
+If you're not using the template, you can install the dependencies individually from the respective *pyproject.toml* or *package.json* files.
+
+Second, create a *.env* file and store the following variables:
+
+```
+OPENAI_API_KEY=
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=

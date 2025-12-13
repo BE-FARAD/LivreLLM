@@ -1,0 +1,9 @@
+# Summary
+
+
+This chapter introduced the concept of *agency* and discussed what it takes to make an LLM application *agentic*: giving the LLM the ability to decide between multiple options by using external information.
+
+We walked through the standard agent architecture built with LangGraph and looked at two useful extensions: how to always call a specific tool first and how to deal with many tools.
+
+[Chapter](#page-13-0) 7 looks at additional extensions to the agent architecture.
+

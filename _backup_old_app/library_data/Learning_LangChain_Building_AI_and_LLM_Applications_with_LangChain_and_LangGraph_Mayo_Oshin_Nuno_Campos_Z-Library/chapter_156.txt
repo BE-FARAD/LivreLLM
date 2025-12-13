@@ -1,0 +1,3 @@
+# Create the schema if it doesn't exist
+
+record_manager.create_schema()

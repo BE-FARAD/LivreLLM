@@ -1,0 +1,7 @@
+# *Multi-agent*
+
+
+Much the same way as a team can accomplish more than a single person, there are problems that can be best tackled by teams of LLM agents.
+
+Let's start with reflection.
+

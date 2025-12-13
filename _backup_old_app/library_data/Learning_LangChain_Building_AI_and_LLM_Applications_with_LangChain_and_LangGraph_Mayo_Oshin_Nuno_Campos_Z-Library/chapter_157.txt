@@ -1,0 +1,8 @@
+# Create documents
+
+docs = [
+ Document(page_content='there are cats in the 
+ "id": 1, "source": "cats.txt"}),
+ Document(page_content='ducks are also found i
+ "id": 2, "source": "ducks.txt"}),
+]

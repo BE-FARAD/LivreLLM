@@ -1,0 +1,58 @@
+# **Human-in-the-Loop Modalities**
+
+
+As we walk the autonomy (or agency) ladder, we find ourselves increasingly giving up control (or oversight) in exchange for capability (or autonomy). The shared state pattern used in LangGraph (see [Chapter](#page--1-0) 5 for an introduction) makes it easier to observe, interrupt, and modify the application. This makes it possible to use many different *human-in-the-loop* modes, or
+
+ways for the developer/end user of an application to influence what the LLM is up to.
+
+For this section, we'll again use the last architecture described in ["Dealing](#page--1-1) with Many Tools". Refer back to [Chapter](#page--1-0) 6 for the full code snippet. For all human-in-the-loop modes, we first need to attach a [checkpointer](#page--1-2) to the graph; refer to "Adding Memory to StateGraph" for more details on this:
+
+## *Python*
+
+```
+from langgraph.checkpoint.memory import MemorySav
+graph = builder.compile(checkpointer=MemorySaver(
+```
+
+## *JavaScript*
+
+```
+import {MemorySaver} from '@langchain/langgraph'
+graph = builder.compile({ checkpointer: new Memor
+```
+
+This returns an instance of the graph that stores the state at the end of each step, so every invocation after the first doesn't start
+
+from a blank slate. Any time the graph is called, it starts by using the checkpointer to fetch the most recent saved state—if any—and combines the new input with the previous state. And only then does it execute the first nodes. This is key to enabling human-in-the-loop modalities, which all rely on the graph remembering the previous state.
+
+The first mode, interrupt , is the simplest form of control the user is looking at streaming output of the application as it is produced, and manually interrupts it when he sees fit (see [Figure](#page-5-0) 8-3). The state is saved as of the last complete step prior to the user hitting the interrupt button. From there the user can choose to:
+
+- Resume from that point onward, and the computation will proceed as if it hadn't been interrupted (see ["Resume"\)](#page-11-0).
+- Send new input into the application (e.g., a new message in a chatbot), which will cancel any future steps that were pending and start dealing with the new input (see ["Restart"](#page-12-0)).
+- Do nothing and nothing else will run.
+
+<span id="page-5-0"></span>![](_page_5_Figure_0.jpeg)
+
+Figure 8-3. The interrupt pattern
+
+Let's see how to do this in LangGraph:
+
+```
+import asyncio
+event = asyncio.Event()
+```
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+config = {"configurable": {"thread_id": "1"}}
+async with aclosing(graph.astream(input, config))
+ async for chunk in stream:
+ if event.is_set():
+ break
+ else:
+ ... # do something with the output

@@ -1,0 +1,14 @@
+# second time you attempt to index, it will not a
+
+index_2 = index(
+ docs,
+ record manager,
+```
+
+```
+_ g ,
+ vectorstore,
+ cleanup="incremental",
+ source_id_key="source",
+)
+print("Index attempt 2:", index_2)

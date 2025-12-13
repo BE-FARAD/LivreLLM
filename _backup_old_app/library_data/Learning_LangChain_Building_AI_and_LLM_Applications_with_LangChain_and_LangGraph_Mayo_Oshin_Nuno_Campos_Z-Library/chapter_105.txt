@@ -1,0 +1,77 @@
+# Retrieve the relevant documents
+
+results = retriever.invoke(
+ "What are 2 LangGraph agents used in producti
+```
+
+```
+print("Results: \n"
+                   , results)
+```
+
+### *JavaScript*
+
+```
+import { RecursiveCharacterTextSplitter } from '@
+import {
+ CheerioWebBaseLoader
+} from "@langchain/community/document_loaders/web
+import {
+ InMemoryVectorStore
+} from '@langchain/community/vectorstores/in_memo
+import { OpenAIEmbeddings } from '@langchain/open
+import { ChatPromptTemplate } from '@langchain/co
+import { z } from 'zod';
+import { ChatOpenAI } from '@langchain/openai';
+const urls = [
+ 'https://blog.langchain.dev/top-5-langgraph-age
+ 'https://blog.langchain.dev/langchain-state-of-
+ 'https://blog.langchain.dev/introducing-ambient
+];
+// Load documents from URLs
+const loadDocs = async (urls) => {
+ const docs = [];
+  for (const url of urls) {
+```
+
+```
+ for (const url of urls) {
+ const loader = new CheerioWebBaseLoader(url);
+ const loadedDocs = await loader.load();
+ docs.push(...loadedDocs);
+ }
+ return docs;
+};
+const docsList = await loadDocs(urls);
+// Initialize the text splitter
+const textSplitter = new RecursiveCharacterTextSp
+ chunkSize: 250,
+ chunkOverlap: 0,
+});
+// Split the documents into smaller chunks
+const docSplits = textSplitter.splitDocuments(doc
+// Add to vector database
+const vectorstore = await InMemoryVectorStore.fro
+ docSplits,
+ new OpenAIEmbeddings()
+);
+// The `retriever` object can now be used for que
+const retriever = vectorstore.asRetriever();
+const question = 'What are 2 LangGraph agents use
+```
+
+```
+const question = What are 2 LangGraph agents use
+const docs = retriever.invoke(question);
+console.log('Retrieved documents: \n', docs[0].pa
+```
+
+As discussed previously, the LLM will grade the relevancy of the retrieved documents from the index. We can construct this instruction in a system prompt:
+
+### *Python*
+
+```
+### Retrieval Grader
+from langchain_core.prompts import ChatPromptTemp
+from langchain_core.pydantic_v1 import BaseModel,
+from langchain_openai import ChatOpenAI

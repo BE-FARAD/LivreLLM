@@ -1,0 +1,12 @@
+# The vectorstore to use to index the child chunk
+
+vectorstore = PGVector(
+ embeddings=embeddings_model,
+ collection_name=collection_name,
+ connection=connection,
+ use_jsonb=True,
+)
+```
+
+```
+)

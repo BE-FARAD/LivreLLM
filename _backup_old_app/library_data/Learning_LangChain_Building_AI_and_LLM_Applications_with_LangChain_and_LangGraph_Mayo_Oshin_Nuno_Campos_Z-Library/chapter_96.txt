@@ -1,0 +1,3 @@
+# when calling langgraph up
+
+client = get_client()

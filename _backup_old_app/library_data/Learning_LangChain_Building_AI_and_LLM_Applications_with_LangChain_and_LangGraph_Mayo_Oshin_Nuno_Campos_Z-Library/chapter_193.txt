@@ -1,0 +1,20 @@
+# fetch the 2 most relevant documents
+
+docs = retriever.invoke("""Who are the key figure
+ of philosophy?""")
+```
+
+```
+// create retriever with k=2
+const retriever = db.asRetriever({k: 2})
+// fetch the 2 most relevant documents
+const docs = await retriever.invoke(`Who are the 
+ greek history of philosophy?`)
+```
+
+In this example, the argument k is specified as 2. This tells the vector store to return the two most relevant documents based on the user's query.
+
+It may seem counterintuitive to use a low k value, but retrieving more documents is not always better. The more documents are retrieved, the slower your application will perform, the larger the prompt (and associated cost of generation) will be, and the greater the likelihood of retrieving chunks of text that contain irrelevant information, which will cause the LLM to hallucinate.
+
+Now that we've completed the retrieval stage of the RAG system, let's move on to the final generation stage.
+

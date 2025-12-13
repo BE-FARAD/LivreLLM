@@ -1,0 +1,8 @@
+# Define parent graph
+
+def node(state: State):
+ # transform the state to the subgraph state
+ response = subgraph.invoke({"bar": state["foo
+ # transform response back to the parent state
+ return {"foo": response["bar"]}
+builder = StateGraph(State)

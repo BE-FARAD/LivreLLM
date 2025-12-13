@@ -1,0 +1,77 @@
+# Apprendre LangChain
+
+Créer des Applications d'IA et LLM avec LangChain et LangGraph
+
+![](_page_0_Picture_3.jpeg)
+
+Mayo Oshin & Nuno Campos
+
+## Éloges pour *Apprendre LangChain*
+
+*Avec des explications claires et des techniques exploitables, c'est la ressource incontournable pour quiconque cherche à exploiter la puissance de LangChain pour des agents et une IA générative prête pour la production. À lire absolument pour les développeurs souhaitant repousser les limites de cette plateforme.*
+
+—Tom Taulli, consultant en informatique et auteur de *AI-Assisted Programming*
+
+*Ce guide complet sur LangChain couvre tout, de la récupération de documents et l'indexation au déploiement et au suivi des agents d'IA en production. Avec des exemples engageants, des illustrations intuitives et des codes pratiques, ce livre a rendu l'apprentissage de LangChain intéressant et amusant !*
+
+—Rajat K. Goel, ingénieur logiciel senior, IBM
+
+*Ce livre est un guide complet sur LLM, couvrant les notions de base à la production, rempli d'aperçus techniques, de stratégies pratiques et de modèles d'IA robustes.*
+
+—Gourav Singh Bais, data scientist senior et rédacteur technique senior, Allianz Services
+
+*Prototyper des applications d'IA générative est facile—les mettre en production est difficile. Les stratégies et les outils d'Apprendre LangChain permettent de transformer des idées en applications modernes et prêtes pour la production.*
+
+—James Spiteri, directeur de la gestion des produits pour la sécurité, Elastic
+
+*Apprendre LangChain offre un chemin clair pour transformer la façon dont vous construisez des applications alimentées par l'IA. En décomposant des architectures flexibles et un pointage de contrôle robuste, il offre une base solide pour créer des agents AI fiables et prêts pour la production à grande échelle.*
+
+—David O'Regan, responsable ingénierie IA/ML, GitLab
+
+*Apprendre LangChain nous a aidés à éviter le boilerplate pour le débogage et le suivi. Les nombreux modèles utiles et les aperçus des outils nous ont permis de progresser rapidement et de déployer des applications IA en toute confiance.*
+
+—Chris Focke, scientifique en chef de l'IA, AppFolio
+
+*En enseignant LangChain à travers des exemples clairs et exploitables, ce livre est une porte d'entrée vers des applications agentiques qui sont aussi inspirantes que les romans de science-fiction d'Asimov.*
+
+— Ilya Meyzin, VP senior, responsable de la science des données, Dun & Bradstreet
+
+#### Apprendre LangChain
+
+Créer des Applications d'IA et LLM avec LangChain et LangGraph
+
+Mayo Oshin et Nuno Campos
+
+![](_page_4_Picture_3.jpeg)
+
+## Apprendre LangChain
+
+par Mayo Oshin et Nuno Campos
+
+Copyright © 2025 Olumayowa "Mayo" Olufemi Oshin. Tous droits réservés.
+
+Imprimé aux États-Unis d'Amérique.
+
+Publié par O'Reilly Media, Inc., 1005 Gravenstein Highway North, Sebastopol, CA 95472.
+
+Les livres O'Reilly peuvent être achetés pour un usage éducatif, commercial ou promotionnel. Des éditions en ligne sont également disponibles pour la plupart des titres (*[http://oreilly.com](http://oreilly.com/)*). Pour plus d'informations, contactez notre service des ventes aux entreprises/institutions : 800-998-9938 ou *corporate@oreilly.com*.
+
+Éditrice des acquisitions : Nicole Butterfield
+
+Éditrice de développement : Corbin Collins
+
+Éditrice de production : Clare Laylock
+
+Correcteur : nSight, Inc.
+
+Relecteur : Helena Stirling
+
+Indexeur : Judith McConville
+
+Designer intérieur : David Futato
+
+Conceptrice de couverture : Karen Montgomery
+
+Illustratrice : Kate Dullea
+
+Février 2025 : Première Édition

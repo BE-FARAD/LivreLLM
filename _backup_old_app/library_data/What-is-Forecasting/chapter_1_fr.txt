@@ -1,0 +1,23 @@
+Qu'est-ce que la Prévision ?  
+La prévision est une technique qui permet de prédire la direction des tendances futures en se basant sur l'analyse des données passées et présentes. Les entreprises utilisent la prévision pour déterminer comment allouer leurs budgets ou planifier des dépenses prévues pour une période à venir.  
+En somme, c'est un outil d'aide à la décision qui aide les entreprises à faire face à l'incertitude de l'avenir en analysant les données historiques et les tendances. C'est un outil de planification qui permet aux entreprises de préparer leurs prochaines démarches et de créer des budgets qui, espérons-le, couvriront les incertitudes éventuelles.  
+Les prévisionnistes utilisent des données issues soit de sources primaires, soit de sources secondaires pour effectuer leurs méthodes de prévision.  
+- Sources primaires : Les sources primaires fournissent des informations de première main, recueillies directement par la personne ou l'organisation qui réalise la prévision. Elles collectent généralement les données via divers questionnaires, groupes de discussion ou entretiens et, bien que toutes les informations soient difficiles à rassembler et à intégrer, la manière directe d'acquisition des données rend les sources primaires les plus fiables.  
+- Sources secondaires : Les sources secondaires fournissent des informations déjà collectées et traitées par une organisation tierce. Recevoir les données de manière organisée et structurée simplifie le processus de prévision.  
+
+Caractéristiques de la Prévision  
+Voici quelques caractéristiques associées à la réalisation d'une prévision :  
+1. Implique des événements futurs  
+Les prévisions sont établies pour anticiper les possibilités futures, leur portée, etc., ce qui les rend importantes pour la planification des produits.  
+2. Basée sur des événements passés et présents  
+Les prévisions reposent sur des points de vue, de l'intuition, des suppositions, ainsi que sur des faits réels, des chiffres et d'autres données connexes. Tous les facteurs entrant dans la constitution d'une prévision reflètent, dans une certaine mesure, ce qui s'est passé par le passé avec l'entreprise et ce qui est susceptible de se produire à l'avenir.  
+3. Utilise des techniques de prévision  
+La plupart des organisations utilisent la méthode quantitative, notamment dans les processus de planification et de budgétisation.  
+
+Méthodes de Prévision  
+Les entreprises choisissent entre deux techniques de base pour prédire ce qui peut se passer à l'avenir : les méthodes qualitatives et les méthodes quantitatives.  
+1. Méthode qualitative  
+Nous connaissons également la méthode qualitative sous le nom de méthode basée sur le jugement. La prévision qualitative offre des résultats subjectifs, car elle repose sur le jugement personnel d'experts ou de prévisionnistes. Les prévisions sont généralement biaisées parce qu'elles sont basées sur la connaissance, l'expérience de l'expert et dépendent rarement des données. Un exemple est lorsqu'une personne prévoit l'issue d'un match de football, ce qui est davantage basé sur une motivation personnelle et un intérêt.  
+2. Méthode quantitative  
+La méthode de prévision quantitative est un processus numérique, ce qui la rend cohérente et orientée vers un objectif. Elle évite de fonder les résultats sur l'opinion et l'intuition, en utilisant à la place de grandes quantités de données et de chiffres qui sont interprétés.  
+... (tronqué pour performance)

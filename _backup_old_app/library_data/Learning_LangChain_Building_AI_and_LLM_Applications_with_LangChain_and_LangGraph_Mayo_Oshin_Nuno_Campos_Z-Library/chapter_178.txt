@@ -1,0 +1,11 @@
+# vector store retrieves the summaries
+
+sub_docs = retriever.vectorstore.similarity_searc
+ "chapter on philosophy", k=2)
+```
+
+Finally, let's retrieve the relevant full context document based on a query:
+
+*Python*
+
+```

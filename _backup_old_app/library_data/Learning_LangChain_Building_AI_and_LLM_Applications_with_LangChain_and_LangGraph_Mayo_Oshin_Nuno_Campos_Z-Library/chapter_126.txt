@@ -1,0 +1,107 @@
+# Getting Specific Formats out of LLMs
+
+
+Plain text outputs are useful, but there may be use cases where you need the LLM to generate a *structured* output—that is, output in a machine-readable format, such as JSON, XML, CSV,
+
+or even in a programming language such as Python or JavaScript. This is very useful when you intend to hand that output off to some other piece of code, making an LLM play a part in your larger application.
+
+### **JSON Output**
+
+The most common format to generate with LLMs is JSON. JSON outputs can (for example) be sent over the wire to your frontend code or be saved to a database.
+
+When generating JSON, the first task is to define the schema you want the LLM to respect when producing the output. Then, you should include that schema in the prompt, along with the text you want to use as the source. Let's see an example:
+
+```
+from langchain_openai import ChatOpenAI
+from langchain_core.pydantic_v1 import BaseModel
+class AnswerWithJustification(BaseModel):
+ '''An answer to the user's question along wit
+ answer.'''
+ answer: str
+ '''The answer to the user's question'''
+```
+
+```
+ justification: str
+ '''Justification for the answer'''
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperatu
+structured_llm = llm.with_structured_output(Answe
+structured_llm.invoke("""What weighs more, a poun
+ of feathers""")
+```
+
+```
+import { ChatOpenAI } from '@langchain/openai'
+import { z } from "zod";
+const answerSchema = z
+ .object({
+ answer: z.string().describe("The answer to th
+ justification: z.string().describe(`Justifica
+ answer`),
+ })
+ .describe(`An answer to the user's question alo
+ the answer.`);
+const model = new ChatOpenAI({
+ model: "gpt-3.5-turbo",
+ temperature: 0,
+}) withStructuredOutput(answerSchema)
+```
+
+```
+}).withStructuredOutput(answerSchema)
+await model.invoke("What weighs more, a pound of
+```
+
+```
+{
+ answer: "They weigh the same",
+ justification: "Both a pound of bricks and a po
+ The weight is the same, but the volu"... 42 m
+}
+```
+
+So, first define a schema. In Python, this is easiest to do with Pydantic (a library used for validating data against schemas). In JS, this is easiest to do with Zod (an equivalent library). The method with\_structured\_output will use that schema for two things:
+
+- The schema will be converted to a JSONSchema object (a JSON format used to describe the shape [types, names, descriptions] of JSON data), which will be sent to the LLM. For each LLM, LangChain picks the best method to do this, usually function calling or prompting.
+- The schema will also be used to validate the output returned by the LLM before returning it; this ensures the output
+
+produced respects the schema you passed in exactly.
+
+## **Other Machine-Readable Formats with Output Parsers**
+
+You can also use an LLM or chat model to produce output in other formats, such as CSV or XML. This is where output parsers come in handy. *Output parsers* are classes that help you structure large language model responses. They serve two functions:
+
+#### *Providing format instructions*
+
+Output parsers can be used to inject some additional instructions in the prompt that will help guide the LLM to output text in the format it knows how to parse.
+
+#### *Validating and parsing output*
+
+The main function is to take the textual output of the LLM or chat model and render it to a more structured format, such as a list, XML, or other format. This can include removing extraneous information, correcting incomplete output, and validating the parsed values.
+
+Here's an example of how an output parser works:
+
+#### *Python*
+
+```
+from langchain_core.output_parsers import CommaSe
+parser = CommaSeparatedListOutputParser()
+items = parser.invoke("apple, banana, cherry")
+```
+
+#### *JavaScript*
+
+```
+import { CommaSeparatedListOutputParser } from '@
+const parser = new CommaSeparatedListOutputParser
+await parser.invoke("apple, banana, cherry")
+```
+
+#### *The output:*
+
+```
+['apple', 'banana', 'cherry']
+```
+
+LangChain provides a variety of output parsers for various use cases, including CSV, XML, and more. We'll see how to combine output parsers with models and prompts in the next section.
+

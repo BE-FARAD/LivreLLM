@@ -1,0 +1,7 @@
+# The rest of your code remains the same, startin
+
+prompt_text = "Summarize the following document:\
+prompt = ChatPromptTemplate.from_template(prompt_
+llm = ChatOpenAI(temperature=0, model="gpt-3.5-tu
+summarize_chain = {
+ "doc": lambda x: x.page_content} | prompt | l

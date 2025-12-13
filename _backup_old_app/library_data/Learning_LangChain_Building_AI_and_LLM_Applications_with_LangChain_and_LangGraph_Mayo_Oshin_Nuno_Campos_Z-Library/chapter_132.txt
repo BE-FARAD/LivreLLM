@@ -1,0 +1,6 @@
+# @chain decorator adds the same Runnable interfa
+
+@chain
+def chatbot(values):
+ prompt = template.invoke(values)
+ return model.invoke(prompt)

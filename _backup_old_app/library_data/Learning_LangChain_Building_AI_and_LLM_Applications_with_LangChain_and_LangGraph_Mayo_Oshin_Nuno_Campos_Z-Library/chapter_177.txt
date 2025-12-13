@@ -1,0 +1,6 @@
+# docs when needed
+
+```
+
+```
+retriever.docstore.mset(list(zip(doc_ids, chunks)

@@ -1,0 +1,3 @@
+# Add the document summaries to the vector store
+
+retriever.vectorstore.add_documents(summary_docs)

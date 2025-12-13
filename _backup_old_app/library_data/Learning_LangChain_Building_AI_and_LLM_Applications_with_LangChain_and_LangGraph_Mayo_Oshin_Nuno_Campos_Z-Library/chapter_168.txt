@@ -1,0 +1,4 @@
+# The storage layer for the parent documents
+
+store = InMemoryStore()
+id_key = "doc_id"

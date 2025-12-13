@@ -1,0 +1,3 @@
+# Execute SQL query
+
+execute_query = QuerySQLDatabaseTool(db=db)

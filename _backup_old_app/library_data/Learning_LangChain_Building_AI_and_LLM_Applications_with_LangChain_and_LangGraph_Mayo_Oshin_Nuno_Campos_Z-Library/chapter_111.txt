@@ -1,0 +1,29 @@
+# **Evaluating an Agent's End-to-End Performance**
+
+
+Although agents show a lot of promise in executing autonomous tasks and workflows, testing an agent's performance can be challenging. In previous chapters, you learned how agents use tool calling with planning and memory to generate responses. In particular, tool calling enables the model to respond to a given prompt by generating a tool to invoke and the input arguments required to execute the tool.
+
+Since agents use an LLM to decide the control flow of the application, each agent run can have significantly different outcomes. For example, different tools might be called, agents might get stuck in a loop, or the number of steps from start to finish can vary significantly.
+
+Ideally, agents should be tested at three different levels of granularity:
+
+#### *Response*
+
+The agent's final response to focus on the end-to-end performance. The inputs are a prompt and an optional list of tools, whereas the output is the final agent response.
+
+## *Single step*
+
+Any single, important step of the agent to drill into specific tool calls or decisions. In this case, the output is a tool call.
+
+#### *Trajectory*
+
+The full trajectory of the agent. In this case, the output is the list of tool calls.
+
+#### [Figure](#page-8-0) 10-15 illustrates these levels:
+
+<span id="page-8-0"></span>![](_page_8_Figure_0.jpeg)
+
+Figure 10-15. An example of an agentic app's flow
+
+Let's dive deeper into each of these three agent-testing granularities.
+

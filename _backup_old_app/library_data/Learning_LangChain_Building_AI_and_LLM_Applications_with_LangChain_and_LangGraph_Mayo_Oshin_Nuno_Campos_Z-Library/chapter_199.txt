@@ -1,0 +1,82 @@
+# Query Transformation
+
+
+One of the major problems with a basic RAG system is that it relies too heavily on the quality of a user's query to generate an accurate output. In a production setting, a user is likely to construct their query in an incomplete, ambiguous, or poorly worded manner that leads to model hallucination.
+
+*Query transformation* is a subset of strategies designed to modify the user's input to answer the first RAG problem question: How do we handle the variability in the quality of a user's input? [Figure](#page-5-0) 3-5 illustrates the range of query transformation strategies, ranging from those that make a user's input more or less abstract in order to generate an accurate LLM output. The next section begins with a middle ground strategy.
+
+<span id="page-5-0"></span>![](_page_5_Figure_0.jpeg)
+
+Figure 3-5. Various methods to transform a user's query based on the abstraction level
+
+### **Rewrite-Retrieve-Read**
+
+The Rewrite-Retrieve-Read strategy proposed by a Microsoft Research team simply prompts the LLM to rewrite the user's query before performing retrieval. To illustrate, let's return to the chain we built in the previous section, this time invoked with a poorly worded user query: **[2](#page--1-0)**
+
+```
+@chain
+def qa(input):
+ # fetch relevant documents 
+ docs = retriever.get_relevant_documents(input
+ # format prompt
+ formatted = prompt.invoke({"context": docs,
+                                             "
+ # generate answer
+ answer = llm.invoke(formatted)
+ return answer
+qa.invoke("""Today I woke up and brushed my teeth
+ news. But then I forgot the food on the cooke
+ the ancient greek history of philosophy?""")
+```
+
+```
+const qa = RunnableLambda.from(async input => {
+ // fetch relevant documents
+ const docs = await retriever.invoke(input)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return answer
+})
+  it i k (`T d I k d b h d t
+```
+
+```
+await qa.invoke(`Today I woke up and brushed my t
+ the news. But then I forgot the food on the coo
+ in the ancient greek history of philosophy?`)
+```
+
+*The output* (remember: if you rerun it, your output might be different from this):
+
+```
+Based on the given context, there is no informati
+```
+
+The model failed to answer the question because it was distracted by the irrelevant information provided in the user's query.
+
+Now let's implement the Rewrite-Retrieve-Read prompt:
+
+```
+rewrite_prompt = ChatPromptTemplate.from_template
+ query for web search engine to answer the giv
+ with '**'. Question: {x} Answer:""")
+def parse_rewriter_output(message):
+ return message.content.strip('"').strip("**")
+```
+
+```
+rewriter = rewrite_prompt | llm | parse_rewriter_
+@chain
+def qa_rrr(input):
+ # rewrite the query
+ new_query = rewriter.invoke(input)
+ # fetch relevant documents 
+ docs = retriever.get_relevant_documents(new_q
+ # format prompt
+ formatted = prompt.invoke({"context": docs,
+                                             "
+ # generate answer
+ answer = llm.invoke(formatted)
+ return answer

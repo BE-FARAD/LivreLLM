@@ -1,0 +1,27 @@
+# This does a few things:
+
+
+- It tells the graph where to start its work each time you run it.
+- This instructs the graph where it should exit (this is optional, as LangGraph will stop execution once there's no more nodes to run).
+- It compiles the graph into a runnable object, with the familiar invoke and stream methods.
+
+We can also draw a visual representation of the graph:
+
+*Python*
+
+```
+graph.get_graph().draw_mermaid_png()
+```
+
+```
+await graph.getGraph().drawMermaidPng()
+```
+
+<span id="page-15-0"></span>The graph we just made looks like [Figure](#page-15-0) 4-6.
+
+![](_page_15_Figure_4.jpeg)
+
+Figure 4-6. A simple chatbot
+
+You can run it with the familiar stream() method you've seen in earlier chapters:
+

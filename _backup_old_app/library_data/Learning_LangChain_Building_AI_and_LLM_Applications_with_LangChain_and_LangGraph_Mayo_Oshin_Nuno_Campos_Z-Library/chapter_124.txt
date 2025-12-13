@@ -1,0 +1,10 @@
+# both `template` and `model` can be reused many
+
+template = ChatPromptTemplate.from_messages([
+ ('system', '''Answer the question based on th
+ question cannot be answered using the inf
+ with "I don\'t know".'''),
+ ('human', 'Context: {context}'),
+ ('human', 'Question: {question}'),
+])
+model = ChatOpenAI()

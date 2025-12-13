@@ -1,0 +1,7 @@
+# <span id="page-13-0"></span>Chapter 7. Agents II
+
+
+[Chapter](#page--1-0) 6 introduced the *agent* architecture, the most powerful of the LLM architectures we have seen up until now. It is hard to overstate the potential of this combination of chain-ofthought prompting, tool use, and looping.
+
+This chapter discusses two extensions to the agent architecture that improve performance for some use cases:
+

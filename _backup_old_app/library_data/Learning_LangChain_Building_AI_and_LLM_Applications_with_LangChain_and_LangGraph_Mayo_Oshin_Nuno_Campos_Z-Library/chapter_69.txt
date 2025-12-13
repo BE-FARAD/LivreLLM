@@ -1,0 +1,35 @@
+# Multi-Agent Architectures
+
+
+As LLM agents grow in size, scope, or complexity, several issues can show up and impact their performance, such as the following:
+
+- The agent is given too many tools to choose from and makes poor decisions about which tool to call next [\(Chapter](#page--1-0) 6 discussed some approaches to this problem).
+- The context grows too complex for a single agent to keep track of; that is, the size of the prompts and the number of things they mention grows beyond the capability of the model you're using.
+- You want to use a specialized subsystem for a particular area, for instance, planning, research, solving math problems, and so on.
+
+To tackle these problems, you might consider breaking your application into multiple smaller, independent agents and composing them into a multi-agent system. These independent agents can be as simple as a prompt and an LLM call or as complex as a ReAct agent (introduced in [Chapter](#page--1-0) 6). [Figure](#page-15-0) 7-3 illustrates several ways to connect agents in a multi-agent system.
+
+<span id="page-15-0"></span>![](_page_15_Picture_0.jpeg)
+
+Figure 7-3. Multiple strategies for coordinating multiple agents
+
+#### Let's look at [Figure](#page-15-0) 7-3 in more detail:
+
+## *Network*
+
+Each agent can communicate with every other agent. Any agent can decide which other agent is to be executed next.
+
+#### *Supervisor*
+
+Each agent communicates with a single agent, called the *supervisor*. The supervisor agent makes decisions on which agent (or agents) should be called next. A special case of this architecture implements the supervisor agent as an LLM call with tools, as covered in [Chapter](#page--1-0) 6.
+
+#### *Hierarchical*
+
+You can define a multi-agent system with a supervisor of supervisors. This is a generalization of the supervisor architecture and allows for more complex control flows.
+
+#### *Custom multi-agent workflow*
+
+Each agent communicates with only a subset of agents. Parts of the flow are deterministic, and only select agents can decide which other agents to call next.
+
+The next section dives deeper into the supervisor architecture, which we think has a good balance of capability and ease of use.
+

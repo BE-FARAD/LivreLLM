@@ -1,0 +1,21 @@
+# **Testing an agent's final response**
+
+
+In order to assess the overall performance of an agent on a task, you can treat the agent as a black box and define success based on whether or not it completes the task.
+
+Testing for the agent's final response typically involves the following:
+
+*Inputs*
+
+User input and (optionally) predefined tools
+
+*Output*
+
+Agent's final response
+
+*Evaluator*
+
+LLM-as-a-judge
+
+To implement this in a programmatic manner, first create a dataset that includes questions and expected answers from the agent:
+

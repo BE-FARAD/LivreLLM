@@ -1,0 +1,93 @@
+# use it
+
+chatbot.invoke({"question": "Which model provider
+```
+
+import {ChatOpenAI} from '@langchain/openai'
+
+```
+import {ChatOpenAI} from '@langchain/openai'
+import {ChatPromptTemplate} from '@langchain/core
+import {RunnableLambda} from '@langchain/core/run
+// the building blocks
+const template = ChatPromptTemplate.fromMessages(
+ ['system', 'You are a helpful assistant.'],
+ ['human', '{question}'],
+])
+const model = new ChatOpenAI()
+// combine them in a function
+// RunnableLambda adds the same Runnable interfac
+const chatbot = RunnableLambda.from(async values
+ const prompt = await template.invoke(values)
+ return await model.invoke(prompt)
+})
+// use it
+await chatbot.invoke({
+ "question": "Which model providers offer LLMs?"
+})
+```
+
+#### *The output:*
+
+```
+AIMessage(content="Hugging Face's `transformers` 
+ `openai` library, and Cohere using the `coher
+```
+
+The preceding is a complete example of a chatbot, using a prompt and chat model. As you can see, it uses familiar Python syntax and supports any custom logic you might want to add in that function.
+
+On the other hand, if you want to enable streaming or async support, you'd have to modify your function to support it. For example, streaming support can be added as follows:
+
+```
+@chain
+def chatbot(values):
+ prompt = template.invoke(values)
+ for token in model.stream(prompt):
+ yield token
+for part in chatbot.stream({
+ "question": "Which model providers offer LLMs
+```
+
+```
+}):
+ print(part)
+```
+
+```
+const chatbot = RunnableLambda.from(async functio
+ const prompt = await template.invoke(values)
+ for await (const token of await model.stream(pr
+ yield token
+ }
+})
+for await (const token of await chatbot.stream({
+ "question": "Which model providers offer LLMs?"
+})) {
+ console.log(token)
+}
+```
+
+#### *The output:*
+
+```
+AIMessageChunk(content="Hugging")
+AIMessageChunk(content=" Face's")
+```
+
+```
+AIMessageChunk(content=" `transformers`")
+...
+```
+
+So, either in JS or Python, you can enable streaming for your custom function by yielding the values you want to stream and then calling it with stream .
+
+For asynchronous execution, you'd rewrite your function like this:
+
+#### *Python*
+
+```
+@chain
+async def chatbot(values):
+ prompt = await template.ainvoke(values)
+ return await model.ainvoke(prompt)
+await chatbot.ainvoke({"question": "Which model p

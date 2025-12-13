@@ -1,0 +1,225 @@
+# for tracing
+
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT="https://api.smith.langchain.c
+LANGCHAIN_API_KEY=
+```
+
+Next, we'll walk through the process of retrieving the values for each of these variables.
+
+### **Large Language Model**
+
+The LLM is responsible for generating the output based on a given query. LangChain provides access to popular LLM providers, including OpenAI, Anthropic, Google, and Cohere. In this deployment example, we'll utilize OpenAI by retrieving the API [keys](https://oreil.ly/MIpY5), as shown in [Figure](#page-7-0) 9-1. Once you've retrieved your API keys, input the value as OPENAI\_API\_KEY in your *.env* file.
+
+<span id="page-7-0"></span>![](_page_7_Figure_1.jpeg)
+
+Figure 9-1. OpenAI API keys dashboard
+
+### **Vector Store**
+
+As discussed in previous chapters, a vector store is a special database responsible for storing and managing vector representations of your data—in other words, embeddings. A vector store enables similarity search and context retrieval to help the LLM generate accurate answers based on the user's query.
+
+For our deployment, we'll use Supabase—a PostgreSQL database—as the vector store. Supabase utilizes the pgvector extension to store embeddings and query vectors for similarity search.
+
+If you haven't yet done it, create a [Supabase](https://oreil.ly/CXDsx) account. Once you've created an account, click "New project" on the dashboard page. Follow the steps and save the database password after creating it, as shown in [Figure](#page-9-0) 9-2.
+
+<span id="page-9-0"></span>![](_page_9_Picture_0.jpeg)
+
+Figure 9-2. Supabase project creation dashboard
+
+Once your Supabase project is created, navigate to the Project Settings tab and select API under Configuration. Under this new tab, you will see Project URL and Project API keys.
+
+In your *.env* file, copy and paste the Project URL as the value to SUPABASE\_URL and the service\_role secret API key as the value to SUPABASE\_SERVICE\_ROLE\_KEY .
+
+Navigate to the SQL editor in the Supabase menu and run the following SQL scripts. First, let's enable pgvector :
+
+```
+## Enable the pgvector extension to work with emb
+create extension vector;
+```
+
+Now create a table called documents to store vectors of your data:
+
+```
+## Create a table to store your documents
+create table documents (
+ id bigserial primary key,
+ content text, -- corresponds to Document.pageCo
+ metadata jsonb, -- corresponds to Document.meta
+ embedding vector(1536) -- 1536 works for OpenAI
+);
+```
+
+You should now see the documents table in the Supabase database.
+
+Now you can create a script to generate the embeddings of your data, store them, and query from the database. Open the
+
+#### Supabase SQL editor again and run the following script:
+
+```
+## Create a function to search for documents
+create function match_documents (
+ query_embedding vector(1536),
+ match_count int DEFAULT null,
+ filter jsonb DEFAULT '{}'
+) returns table (
+ id bigint,
+ content text,
+ metadata jsonb,
+ embedding jsonb,
+ similarity float
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+ return query
+ select
+ id,
+ content,
+ metadata,
+ (embedding::text)::jsonb as embedding,
+ 1 - (documents.embedding <=> query_embedding)
+ from documents
+ where metadata @> filter
+```
+
+```
+ order by documents.embedding <=> query_embeddin
+ limit match_count;
+end;
+$$;
+```
+
+The match\_documents database function takes a query\_embedding vector and compares it to embeddings in the documents table using cosine similarity. It calculates a similarity score for each document (1 - ( documents.embedding <=> query\_embedding )), then
+
+- 1. Filtered first by the metadata criteria specified in the filter argument (using JSON containment @>).
+- 2. Ordered by similarity score (highest first).
+- 3. Limited to the number of matches specified in match\_count .
+
+returns the most similar matches. The results are:
+
+Once the vector similarity function is generated, you can use Supabase as a vector store by importing the class and providing the necessary parameters. Here's an example of how it works:
+
+#### *Python*
+
+```
+import os
+```
+
+```
+from langchain_community.vectorstores import Supa
+from langchain_openai import OpenAIEmbeddings
+from supabase.client import Client, create_client
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_SERVICE_R
+supabase: Client = create_client(supabase_url, su
+embeddings = OpenAIEmbeddings()
+## Assuming you've already generated embeddings o
+vector_store = SupabaseVectorStore(
+ embedding=embeddings,
+ client=supabase,
+ table_name="documents",
+ query_name="match_documents",
+)
+## Test that similarity search is working
+query = "What is this document about?"
+matched_docs = vector_store.similarity_search(que
+print(matched_docs[0].page_content)
+```
+
+#### *JavaScript*
+
+```
+import {
+ SupabaseVectorStore
+} from "@langchain/community/vectorstores/supabas
+import { OpenAIEmbeddings } from "@langchain/open
+import { createClient } from "@supabase/supabase-
+const embeddings = new OpenAIEmbeddings();
+const supabaseClient = createClient(
+ process.env.SUPABASE_URL,
+ process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+const vectorStore = new SupabaseVectorStore(embed
+ client: supabaseClient,
+ tableName: "documents",
+ queryName: "match_documents",
+});
+// Example documents structure of your data
+const document1: Document = {
+ pageContent: "The powerhouse of the cell is the
+```
+
+```
+ metadata: { source: "https://example.com" },
+};
+const document2: Document = {
+ pageContent: "Buildings are made out of brick",
+ metadata: { source: "https://example.com" },
+};
+const documents = [document1, document2]
+//Embed and store the data in the database
+await vectorStore.addDocuments(documents, { ids:
+// Query the Vector Store
+const filter = { source: "https://example.com" };
+const similaritySearchResults = await vectorStore
+ "biology",
+ 2,
+ filter
+);
+for (const doc of similaritySearchResults) {
+ console.log(`* ${doc.pageContent} [${JSON.strin
+}
+```
+
+#### *The output:*
+
+```
+The powerhouse of the cell is the mitochondria [{
+```
+
+You can review the full logic of the Supabase vector store implementation in the Github LangChain template mentioned previously.
+
+### **Backend API**
+
+As discussed in previous chapters, LangGraph is a low-level open source framework used to build complex agentic systems powered by LLMs. LangGraph enables fine-grained control over the flow and state of your application, built-in persistence, and advanced human-in-the-loop and memory features. [Figure](#page-17-0) 9-3 illustrates LangGraph's control flow.
+
+<span id="page-17-0"></span>![](_page_17_Figure_0.jpeg)
+
+Figure 9-3. Example of LangGraph API control flow
+
+To deploy an AI application that utilizes LangGraph, we will use LangGraph Platform. LangGraph Platform is a managed service for deploying and hosting LangGraph agents at scale.
+
+As your agentic use case gains traction, uneven task distribution among agents can overload the system, leading to downtime. LangGraph Platform manages horizontally scaling task queues, servers, and a robust Postgres checkpointer to handle many concurrent users and efficiently store large states and threads. This ensures fault-tolerant scalability.
+
+LangGraph Platform is designed to support real-world interaction patterns. In addition to streaming and human-inthe-loop features, LangGraph Platform enables the following:
+
+- Double texting to handle new user inputs on ongoing graph threads
+- Asynchronous background jobs for long-running tasks
+- Cron jobs for running common tasks on a schedule
+
+LangGraph Platform also provides an integrated solution for collaborating on, deploying, and monitoring agentic AI applications. It includes [LangGraph](https://oreil.ly/2Now-) Studio—a visual playground for debugging, editing, and testing agents. LangGraph Studio also enables you to share your LangGraph agent with team members for collaborative feedback and rapid iteration, as [Figure](#page-19-0) 9-4 shows.
+
+<span id="page-19-0"></span>![](_page_19_Picture_0.jpeg)
+
+Figure 9-4. Snapshot of LangGraph Studio UI
+
+Additionally, LangGraph Platform simplifies agentic deployment by enabling one-click submissions.
+
+### **Create a LangSmith Account**
+
+LangSmith is an all-in-one developer platform that enables you to debug, collaborate, test, and monitor your LLM applications.
+
+LangGraph Platform is seamlessly integrated with LangSmith and is accessible from within the LangSmith UI.
+
+To deploy your application on LangGraph Platform, you need to create a [LangSmith](https://oreil.ly/2WVCn) account. Once you're logged in to the dashboard, navigate to the Settings page, then scroll to the API Keys section and click Create API Key. You should see a UI similar to [Figure](#page-0-0) 9-5.
+
+<span id="page-0-0"></span>![](_page_0_Picture_2.jpeg)
+
+Figure 9-5. Create LangSmith API Key UI
+
+Copy the API Key value as your LANGCHAIN\_API\_KEY in your *.env* file.
+
+Navigate to "Usage and billing" and set up your billing details. Then click the "Plans and Billings" tab and the "Upgrade to Plus" button to get instructions on transitioning to a LangSmith Plus plan, which will enable LangGraph Platform usage. If you'd prefer to use a free self-hosted deployment, you can follow the [instructions](https://oreil.ly/TBgSQ) here. Please note that this option requires management of the infrastructure, including setting up and maintaining required databases and Redis instances.
+

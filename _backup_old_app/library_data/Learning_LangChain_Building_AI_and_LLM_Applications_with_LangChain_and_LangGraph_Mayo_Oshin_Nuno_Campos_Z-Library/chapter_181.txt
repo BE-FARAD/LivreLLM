@@ -1,0 +1,17 @@
+# Summary
+
+
+In this chapter, you've learned how to prepare and preprocess your documents for your LLM application using various LangChain's modules. The document loaders enable you to extract text from your data source, the text splitters help you split your document into semantically similar chunks, and the embeddings models convert your text into vector representations of their meaning.
+
+Separately, vector stores allow you to perform CRUD operations on these embeddings alongside complex calculations to compute semantically similar chunks of text. Finally, indexing optimization strategies enable your AI app to improve the quality of embeddings and perform accurate retrieval of documents that contain semistructured data including tables.
+
+In [Chapter](#page-3-0) 3, you'll learn how to efficiently retrieve the most similar chunks of documents from your vector store based on your query, provide it as context the model can see, and then generate an accurate output.
+
+Arvind Neelakantan et al., "Text and Code Embeddings by Contrastive [Pre-Training"](https://oreil.ly/YOVmh), arXiv, January 21, 2022. **[1](#page--1-0)**
+
+Parth Sarthi et al., "RAPTOR: Recursive Abstractive Processing for [Tree-Organized](https://oreil.ly/hS4NB) Retrieval", arXiv, January 31, 2024. Paper published at ICLR 2024. **[2](#page--1-1)**
+
+**[3](#page--1-2)**
+
+Keshav Santhanam et al., "ColBERTv2: Effective and Efficient Retrieval via Lightweight Late [Interaction",](https://oreil.ly/9spW2) arXiv, December 2, 2021.
+

@@ -1,0 +1,28 @@
+# **Regression Testing**
+
+
+In traditional software development, tests are expected to pass 100% based on functional requirements. This ensures stable behavior once the test is validated. In contrast, however, AI models' output performances can vary significantly due to model *drift* (degradation due to changes in data distribution or
+
+updates to the model). As a result, testing AI applications may not always lead to a perfect score on the evaluation dataset.
+
+This has several implications. First, it's important to track results and performance of your tests over time to prevent regression of your app's performance. *Regression* testing ensures that the latest updates or changes of the LLM model of your app do not *regress* (perform worse) relative to the baseline.
+
+Second, it's crucial to compare the individual data points between two or more experimental runs to see where the model got it right or wrong.
+
+LangSmith's comparison view has native support for regression testing, allowing you to quickly see examples that have changed relative to the baseline. Runs that regressed or improved are highlighted differently in the LangSmith dashboard (see [Figure](#page-5-0) 10-14).
+
+<span id="page-5-0"></span>![](_page_5_Picture_0.jpeg)
+
+Figure 10-14. LangSmith's experiments comparison view
+
+In LangSmith's Comparing Experiments dashboard, you can do the following:
+
+- Compare multiple experiments and runs associated with a dataset. Aggregate stats of runs is useful for migrating models or prompts, which may result in performance improvements or regression on specific examples.
+- Set a baseline run and compare it against prior app versions to detect unexpected regressions. If a regression occurs, you can isolate both the app version and the specific examples that contain performance changes.
+
+Drill into data points that behaved differently between compared experiments and runs.
+
+This regression testing is crucial to ensure that your application maintains high performance over time regardless of updates and LLM changes.
+
+Now that we've covered various preproduction testing strategies, let's explore a specific use case.
+

@@ -1,0 +1,37 @@
+# LangChain
+
+```
+
+```
+⚡ Building applications with LLMs through compos
+## Quick Install
+\`\`\`bash
+pip install langchain
+\`\`\`
+As an open source project in a rapidly developing
+ open to contributions.
+`;
+const mdSplitter = RecursiveCharacterTextSplitter
+ chunkSize: 60,
+ chunkOverlap: 0,
+});
+const mdDocs = await mdSplitter.createDocuments([
+ [{"source": "https://www.langchain.com"}]);
+```
+
+### *The output:*
+
+```
+[Document(page_content='# LangChain', 
+ metadata={"source": "https://www.langchain.co
+ Document(page_content='⚡ Building applications 
+   ⚡', metadata={"source": "https://www.langcha
+```
+
+ ⚡ , metadata { source : https://www.langcha Document(page\_content='## Quick Install\n\n```ba metadata={"source": "https://www.langchain.co Document(page\_content='pip install langchain', metadata={"source": "https://www.langchain.co Document(page\_content='```', metadata={"source" Document(page\_content='As an open source project we', metadata={"source": "https://www.langcha Document(page\_content='are extremely open to con metadata={"source": "https://www.langchain.co
+
+## Notice two things:
+
+- The text is split along the natural stopping points in the Markdown document; for instance, the heading goes into one chunk, the line of text under it in a separate chunk, and so on.
+- The metadata we passed in the second argument is attached to each resulting document, which allows you to track, for instance, where the document came from and where you can go to see the original.
+

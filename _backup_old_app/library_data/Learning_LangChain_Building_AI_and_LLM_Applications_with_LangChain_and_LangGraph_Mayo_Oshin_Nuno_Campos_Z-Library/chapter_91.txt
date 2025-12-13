@@ -1,0 +1,5 @@
+# **Webhooks**
+
+
+LangGraph Platform also supports completion *webhooks*. A webhook URL is provided, which notifies your application whenever a run completes.
+

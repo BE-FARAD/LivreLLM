@@ -1,0 +1,133 @@
+# versions sharing the same source will be delete
+
+docs[0].page_content = "I just modified this docu
+index_3 = index(
+ docs,
+ record_manager,
+ vectorstore,
+ cleanup="incremental",
+ source_id_key="source",
+)
+print("Index attempt 3:", index_3)
+```
+
+#### *JavaScript*
+
+```
+/** 
+1 Ensure docker is installed and running (https
+```
+
+```
+1. Ensure docker is installed and running (https
+2. Run the following command to start the postgre
+docker run \
+ --name pgvector-container \
+ -e POSTGRES_USER=langchain \
+ -e POSTGRES_PASSWORD=langchain \
+ -e POSTGRES_DB=langchain \
+ -p 6024:5432 \
+ -d pgvector/pgvector:pg16
+3. Use the connection string below for the postgr
+*/
+import { PostgresRecordManager } from '@langchain
+import { index } from 'langchain/indexes';
+import { OpenAIEmbeddings } from '@langchain/open
+import { PGVectorStore } from '@langchain/communi
+import { v4 as uuidv4 } from 'uuid';
+const tableName = 'test_langchain';
+const connectionString =
+ 'postgresql://langchain:langchain@localhost:602
+// Load the document, split it into chunks
+const config = {
+ postgresConnectionOptions: {
+ connectionString,
+ },
+  tableName: tableName
+```
+
+```
+ tableName: tableName,
+ columns: {
+ idColumnName: 'id',
+ vectorColumnName: 'vector',
+ contentColumnName: 'content',
+ metadataColumnName: 'metadata',
+ },
+};
+const vectorStore = await PGVectorStore.initializ
+ new OpenAIEmbeddings(),
+ config
+);
+// Create a new record manager
+const recordManagerConfig = {
+ postgresConnectionOptions: {
+ connectionString,
+ },
+ tableName: 'upsertion_records',
+};
+const recordManager = new PostgresRecordManager(
+ 'test_namespace',
+ recordManagerConfig
+);
+// Create the schema if it doesn't exist
+await recordManager.createSchema();
+```
+
+```
+const docs = [
+ {
+ pageContent: 'there are cats in the pond',
+ metadata: { id: uuidv4(), source: 'cats.txt'
+ },
+ {
+ pageContent: 'ducks are also found in the pon
+ metadata: { id: uuidv4(), source: 'ducks.txt
+ },
+];
+// the first attempt will index both documents
+const index_attempt_1 = await index({
+ docsSource: docs,
+ recordManager,
+ vectorStore,
+ options: {
+ // prevent duplicate documents by id from bei
+ cleanup: 'incremental',
+ // the key in the metadata that will be used 
+ sourceIdKey: 'source',
+ },
+});
+console.log(index_attempt_1);
+// the second attempt will skip indexing because 
+// already exist
+```
+
+```
+// already exist
+const index_attempt_2 = await index({
+ docsSource: docs,
+ recordManager,
+ vectorStore,
+ options: {
+ cleanup: 'incremental',
+ sourceIdKey: 'source',
+ },
+});
+console.log(index_attempt_2);
+// If we mutate a document, the new version will 
+// versions sharing the same source will be delet
+docs[0].pageContent = 'I modified the first docum
+const index_attempt_3 = await index({
+ docsSource: docs,
+ recordManager,
+ vectorStore,
+ options: {
+ cleanup: 'incremental',
+ sourceIdKey: 'source',
+ },
+});
+console.log(index_attempt_3);
+```
+
+First, you create a record manager, which keeps track of which documents have been indexed before. Then you use the index function to synchronize your vector store with the new list of documents. In this example, we're using the incremental mode, so any documents that have the same ID as previous ones will be replaced with the new version.
+

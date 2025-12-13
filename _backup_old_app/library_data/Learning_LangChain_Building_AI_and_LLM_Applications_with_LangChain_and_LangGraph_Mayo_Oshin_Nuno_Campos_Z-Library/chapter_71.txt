@@ -1,0 +1,67 @@
+# route to one of the agents or exit based on the
+
+builder.add_conditional_edges("supervisor", lambd
+builder.add_edge("researcher", "supervisor")
+builder.add_edge("coder", "supervisor")
+supervisor = builder.compile()
+```
+
+#### *JavaScript*
+
+```
+import {
+ StateGraph,
+ Annotation,
+ MessagesAnnotation,
+ START,
+ END,
+} from "@langchain/langgraph";
+import { ChatOpenAI } from "@langchain/openai";
+```
+
+```
+const model = new ChatOpenAI({
+ model: "gpt-4o",
+});
+const StateAnnotation = Annotation.Root({
+ ...MessagesAnnotation.spec,
+ next: Annotation(),
+});
+const researcher = async (state) => {
+ const response = await model.invoke(...);
+ return { messages: [response] };
+};
+const coder = async (state) => {
+ const response = await model.invoke(...);
+ return { messages: [response] };
+};
+const graph = new StateGraph(StateAnnotation)
+ .addNode("supervisor", supervisor)
+ .addNode("researcher", researcher)
+ .addNode("coder", coder)
+ .addEdge(START, "supervisor")
+ // route to one of the agents or exit based on 
+ .addConditionalEdges("supervisor", async (state
+ state.next === 'FINISH' ? END : state.next)
+ .addEdge("researcher", "supervisor")
+```
+
+```
+ .addEdge("coder", "supervisor")
+ .compile();
+```
+
+A few things to notice: In this example, both subagents (researcher and coder) can see each other's work, as all progress is recorded in the messages list. This isn't the only way to organize this. Each of the subagents could be more complex. For instance, a subagent could be its own graph that maintains internal state and only outputs a summary of the work it did.
+
+After each agent executes, we route back to the supervisor node, which decides if there is more work to be done and which agent to delegate that to if so. This routing isn't a hard requirement for this architecture; we could have each subagent make a decision as to whether its output should be returned directly to the user. To do that, we'd replace the hard edge between, say, researcher and supervisor, with a conditional edge (which would read some state key updated by researcher).
+
+## Summary
+
+This chapter covered two important extensions to the agent architecture: reflection and multi-agent architectures. The chapter also looked at how to work with subgraphs in
+
+LangGraph, which are a key building block for multi-agent systems.
+
+These extensions add more power to the LLM agent architecture, but they shouldn't be the first thing you reach for when creating a new agent. The best place to start is usually the straightforward architecture we discussed in [Chapter](#page--1-0) 6.
+
+[Chapter](#page-5-0) 8 returns to the trade-off between reliability and agency, which is the key design decision when building LLM apps today. This is especially important when using the agent or multi-agent architectures, as their power comes at the expense of reliability if left unchecked. After diving deeper into why this trade-off exists, [Chapter](#page-5-0) 8 will cover the most important techniques at your disposal to navigate that decision, and ultimately improve your LLM applications and agents.
+

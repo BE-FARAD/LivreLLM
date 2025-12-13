@@ -1,0 +1,5 @@
+# Understanding the LangGraph Platform API
+
+
+Before deploying your AI application on LangGraph Platform, it's important to understand how each component of the LangGraph API works. These components can generally be split into data models and features.
+

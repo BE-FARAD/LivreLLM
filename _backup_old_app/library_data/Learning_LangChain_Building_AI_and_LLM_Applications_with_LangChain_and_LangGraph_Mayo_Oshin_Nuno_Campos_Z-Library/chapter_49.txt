@@ -1,0 +1,64 @@
+# *The output:*
+
+
+```
+{
+ "first_model": {
+ "messages": AIMessage(
+ content="",
+ tool_calls=[
+ {
+ "name": "duckduckgo_search",
+ "args": {
+ "query": "How old was the
+                 States when he died?"
+```
+
+```
+ States when he died?"
+ },
+ "id": "9ed4328dcdea4904b1b544
+ "type": "tool_call",
+ }
+ ],
+ )
+ }
+}
+{
+ "tools": {
+ "messages": [
+ ToolMessage(
+ content="Calvin Coolidge (born Ju
+ U.S.—died January 5, 1933, No
+ the 30th president of the Uni
+ acceded to the presidency aft
+ Warren G. Harding, just as th
+ to light....",
+ name="duckduckgo_search",
+ tool_call_id="9ed4328dcdea4904b1b
+ )
+ ]
+ }
+}
+{
+ "model": {
+ "messages": AIMessage(
+       content="Calvin Coolidge the 30th pr
+```
+
+```
+ content= Calvin Coolidge, the 30th pr
+ was born on July 4, 1872, and die
+ calculate his age at the time of 
+ birth year from his death year. \
+ Birth year\nAge at death = 1933 -
+ years\n\nCalvin Coolidge was 61 y
+ )
+ }
+}
+```
+
+This time, we skipped the initial LLM call. We first went to first\_model node, which directly returned a tool call for the search tool. From there we went to the previous flow—that is, we executed the search tool and finally went back to the model node to generate the final answer.
+
+Next let's go over what you can do when you have many tools you want to make available to the LLM.
+

@@ -1,0 +1,62 @@
+# *Python*
+
+
+```
+from typing import Annotated, TypedDict
+from langgraph.graph import StateGraph, START, EN
+from langgraph.graph.message import add_messages
+class State(TypedDict):
+ # Messages have the type "list". The `add_mes
+ # function in the annotation defines how this
+ # be updated (in this case, it appends new me
+ # list, rather than replacing the previous me
+       messages: Annotated[list, add_messages]
+```
+
+```
+builder = StateGraph(State)
+```
+
+```
+import {
+ StateGraph,
+ StateType,
+ Annotation,
+ messagesStateReducer,
+ START, END
+} from '@langchain/langgraph'
+const State = {
+ /**
+ * The State defines three things:
+ * 1. The structure of the graph's state (which 
+ * read/write)
+ * 2. The default values for the state's channel
+ * 3. The reducers for the state's channels. Red
+ * determine how to apply updates to the state. 
+ * appended to the messages array.
+ */
+ messages: Annotation({
+ reducer: messagesStateReducer,
+ default: () => []
+ })
+```
+
+```
+ }),
+}
+const builder = new StateGraph(State)
+```
+
+#### **NOTE**
+
+The first thing you do when you define a graph is define the state of the graph. The *state* consists of the shape, or schema, of the graph state, as well as reducer functions that specify how to apply updates to the state. In this example, the state is a dictionary with a single key: messages . The messages key is annotated with the add\_messages reducer function, which tells LangGraph to append new messages to the existing list, rather than overwrite it. State keys without an annotation will be overwritten by each update, storing the most recent value. You can write your own reducer functions, which are simply functions that receive as arguments—argument 1 is the current state, and argument 2 is the next value being written to the state and should return the next state, that is, the result of merging the current state with the new value. The simplest example is a function that appends the next value to a list and returns that list.
+
+## So now our graph knows two things:
+
+- Every node we define will receive the current State as input and return a value that updates that state.
+- messages will be *appended* to the current list, rather than directly overwritten. This is communicated via the prebuilt [add\\_messages](https://oreil.ly/sK-Ry) function in the Annotated syntax in the
+
+Python example or the reducer function for the JavaScript example.
+
+Next, add the chatbot node. Nodes represent units of work. They are typically just functions:
+

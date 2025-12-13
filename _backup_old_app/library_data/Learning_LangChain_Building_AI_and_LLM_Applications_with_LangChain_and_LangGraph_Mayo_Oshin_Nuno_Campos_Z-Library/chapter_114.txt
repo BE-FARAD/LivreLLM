@@ -1,0 +1,87 @@
+# Create a dataset
+
+examples = [
+ ("Which country's customers spent the most? A
+ """The country whose customers spent the 
+ expenditure of $523.06"""),
+ ("What was the most purchased track of 2013?"
+ "The most purchased track of 2013 was Hot
+ ("How many albums does the artist Led Zeppeli
+```
+
+```
+ "Led Zeppelin has 14 albums"),
+ ("What is the total price for the album "Big 
+ "The total price for the album 'Big Ones
+ ("Which sales agent made the most in sales in
+ "Steve Johnson made the most sales in 200
+]
+dataset_name = "SQL Agent Response"
+if not client.has_dataset(dataset_name=dataset_na
+ dataset = client.create_dataset(dataset_name=
+ inputs, outputs = zip(
+ *[({"input": text}, {"output": label}) fo
+ )
+ client.create_examples(inputs=inputs, outputs
+## chain
+def predict_sql_agent_answer(example: dict):
+ """Use this for answer evaluation"""
+ msg = {"messages": ("user", example["input"])
+ messages = graph.invoke(msg, config)
+ return {"response": messages['messages'][-1]
+```
+
+## *JavaScript*
+
+```
+import { Client } from 'langsmith';
+```
+
+```
+const client = new Client();
+// Create a dataset
+const examples = [
+ ["Which country's customers spent the most? And
+ `The country whose customers spent the most i
+ expenditure of $523.06`],
+ ["What was the most purchased track of 2013?",
+ "The most purchased track of 2013 was Hot Gir
+ ["How many albums does the artist Led Zeppelin 
+ "Led Zeppelin has 14 albums"],
+ ["What is the total price for the album 'Big On
+ "The total price for the album 'Big Ones' is 
+ ["Which sales agent made the most in sales in 2
+ "Steve Johnson made the most sales in 2009"],
+];
+const datasetName = "SQL Agent Response";
+async function createDataset() {
+ const hasDataset = await client.hasDataset({ da
+ if (!hasDataset) {
+ const dataset = await client.createDataset(da
+ const inputs = examples.map(([text]) => ({ in
+ const outputs = examples.map(([, label]) => (
+ await client.createExamples({ inputs, outputs
+ }
+```
+
+```
+ }
+}
+createDataset();
+// Chain function
+async function predictSqlAgentAnswer(example) {
+ // Use this for answer evaluation
+ const msg = { messages: [{ role: "user", conten
+ const output = await graph.invoke(msg, config);
+ return { response: output.messages[output.messa
+}
+```
+
+Next, as discussed earlier, we can utilize the LLM to compare the generated answer with the reference answer:
+
+#### *Python*
+
+```
+from langchain import hub
+from langchain_openai import ChatOpenAI
+from langsmith.evaluation import evaluate

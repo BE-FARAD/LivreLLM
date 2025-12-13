@@ -1,0 +1,80 @@
+# Grade prompt
+
+grade_prompt_answer_accuracy = hub.pull("langchai
+def answer_evaluator(run, example) -> dict:
+    """
+```
+
+```
+ A simple evaluator for RAG answer accuracy
+ """
+ # Get question, ground truth answer, RAG chai
+ input_question = example.inputs["input"]
+ reference = example.outputs["output"]
+ prediction = run.outputs["response"]
+ # LLM grader
+ llm = ChatOpenAI(model="gpt-4o", temperature=
+ # Structured prompt
+ answer_grader = grade_prompt_answer_accuracy
+ # Run evaluator
+ score = answer_grader.invoke({"question": inp
+ "correct_answer
+                              "student_answer
+ score = score["Score"]
+ return {"key": "answer_v_reference_score", "s
+## Run evaluation
+experiment_results = evaluate(
+ predict_sql_agent_answer,
+ data=dataset_name,
+   evaluators=[answer evaluator]
+```
+
+```
+ evaluators=[answer_evaluator],
+ num_repetitions=3,
+)
+```
+
+#### *JavaScript*
+
+```
+import { pull } from "langchain/hub";
+import { ChatOpenAI } from "langchain_openai";
+import { evaluate } from "langsmith/evaluation";
+async function answerEvaluator(run, example) {
+ /**
+ * A simple evaluator for RAG answer accuracy
+ */
+ // Get question, ground truth answer, RAG chain
+ const inputQuestion = example.inputs["input"];
+ const reference = example.outputs["output"];
+ const prediction = run.outputs["response"];
+ // LLM grader
+ const llm = new ChatOpenAI({ model: "gpt-4o", t
+ // Grade prompt 
+ const gradePromptAnswerAccuracy = pull(
+ "langchain-ai/rag-answer-vs-reference"
+ )
+```
+
+```
+ );
+ // Structured prompt
+ const answerGrader = gradePromptAnswerAccuracy
+ // Run evaluator
+ const scoreResult = await answerGrader.invoke({
+ question: inputQuestion,
+ correct_answer: reference,
+ student_answer: prediction
+ });
+ const score = scoreResult["Score"];
+ return { key: "answer_v_reference_score", score
+}
+// Run evaluation
+const experimentResults = evaluate(predictSqlAgen
+ data: datasetName,
+ evaluators: [answerEvaluator],
+ numRepetitions: 3,
+});
+```
+

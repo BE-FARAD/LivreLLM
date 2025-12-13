@@ -1,0 +1,444 @@
+@startuml PDF Converter - Diagramme de Classes
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam classBackgroundColor #E8F5E9
+skinparam classBorderColor #388E3C
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageBorderColor #9E9E9E
+
+title Diagramme de Classes - Application Lecture Interactive de Livres Techniques
+
+' ===== PACKAGE INPUT =====
+package "Input" #F3E5F5 {
+    class FileWatcher {
+        - inputDirectory: String = "01-input"
+        - qdrantClient: QdrantClient
+        --
+        + scanOnStartup(): List<File>
+        + scanOnUserClick(): List<File>
+        + checkFileExists(file: File): bool
+        + computeHash(file: File): String
+        + validatePDF(file: File): bool
+        + getNewFiles(): List<File>
+    }
+}
+
+' ===== PACKAGE CONVERSION =====
+package "Conversion" #E3F2FD {
+    class MarkerConverter {
+        - markerConfig: MarkerConfig
+        --
+        + convert(pdfFile: File): MarkdownDocument
+        + extractImages(pdfFile: File): List<Image>
+        + extractTables(pdfFile: File): List<Table>
+        + extractMathFormulas(pdfFile: File): List<LaTeXFormula>
+        + preserveStructure(): void
+    }
+
+    class MarkdownDocument {
+        - content: String
+        - language: String
+        - bookName: String
+        - chapters: List<Chapter>
+        - metadata: Metadata
+        - filePath: String
+        --
+        + getContent(): String
+        + getLanguage(): String
+        + getChapters(): List<Chapter>
+        + getChapter(number: int): Chapter
+        + detectLanguage(): String
+    }
+
+    class Chapter {
+        - number: int
+        - title: String
+        - content: String
+        - sections: List<Section>
+        - images: List<Image>
+        - formulas: List<LaTeXFormula>
+        --
+        + getParagraphs(): List<Paragraph>
+        + getImages(): List<Image>
+        + getFormulas(): List<LaTeXFormula>
+    }
+
+    class Paragraph {
+        - number: int
+        - content: String
+        - associatedImages: List<Image>
+        - associatedFormulas: List<LaTeXFormula>
+        --
+        + getContent(): String
+        + getAssociatedMedia(): List<Media>
+    }
+}
+
+' ===== PACKAGE STORAGE =====
+package "Storage" #FFF3E0 {
+    class ImageManager {
+        - baseDirectory: String = "images"
+        --
+        + saveImage(image: Image, bookName: String, chapter: int, index: int): String
+        + getImagePath(bookName: String, chapter: int, index: int): String
+        + loadImage(path: String): Image
+        + generateImageName(bookName: String, chapter: int, index: int): String
+        ' Format: {bookName}_ch{XX}_img{XXX}.png
+    }
+
+    class AudioManager {
+        - baseDirectory: String = "audio"
+        - ttsService: TTSService
+        --
+        + generateAudio(text: String, bookName: String, chapter: int, para: int): String
+        + getAudioPath(bookName: String, chapter: int, para: int): String
+        + loadAudio(path: String): AudioFile
+        + audioExists(bookName: String, chapter: int, para: int): bool
+        + generateChapterAudio(chapter: Chapter): List<AudioFile>
+        ' Format: {bookName}_ch{XX}_para{XXX}.mp3
+    }
+
+    class TTSService {
+        - apiKey: String
+        - provider: String = "openai_realtime"
+        - voice: String
+        - language: String = "fr"
+        - format: String = "mp3"
+        - quality: String = "standard"
+        --
+        + textToSpeech(text: String): AudioFile
+        + setVoice(voice: String): void
+        + getAvailableVoices(): List<Voice>
+        + handleMathFormula(formula: String): String
+        + handleCodeBlock(code: String): String
+    }
+}
+
+' ===== PACKAGE VECTORIZATION =====
+package "Vectorization" #FFECB3 {
+    class TextChunker {
+        - chunkSize: int
+        - chunkOverlap: int
+        - strategy: String = "by_section"
+        --
+        + splitByChapter(document: MarkdownDocument): List<Chunk>
+        + splitBySection(chapter: Chapter): List<Chunk>
+        + splitByParagraph(chapter: Chapter): List<Chunk>
+        + preserveContext(): void
+        ' Méthode Claude contexte
+    }
+
+    class EmbeddingService {
+        - model: String = "text-embedding-3-small"
+        - dimension: int = 1536
+        - provider: String = "openai"
+        --
+        + embed(text: String): Vector
+        + embedBatch(texts: List<String>): List<Vector>
+        + setModel(model: String): void
+        + useSmallModel(): void
+        + useLargeModel(): void
+        ' small: 1536 dim, large: 3072 dim
+    }
+
+    class QdrantClient {
+        - host: String
+        - port: int
+        - collectionName: String
+        --
+        + connect(): void
+        + createCollection(name: String): void
+        + upsert(vectors: List<Vector>, metadata: List<Metadata>): void
+        + search(query: Vector, topK: int): List<SearchResult>
+        + checkDocumentExists(hash: String): bool
+        + storeBookMetadata(book: BookMetadata): void
+    }
+
+    class VectorStore {
+        - qdrantClient: QdrantClient
+        - embeddingService: EmbeddingService
+        - chunker: TextChunker
+        --
+        + indexDocument(document: MarkdownDocument): void
+        + indexChapter(chapter: Chapter): void
+        + query(text: String, topK: int): List<SearchResult>
+        + getContext(query: String): String
+    }
+}
+
+' ===== PACKAGE TRANSLATION =====
+package "Translation" #E8F5E9 {
+    class TranslationService {
+        - llmClient: LLMClient
+        - sourceLanguage: String
+        - targetLanguage: String = "fr"
+        --
+        + translate(document: MarkdownDocument): MarkdownDocument
+        + translateChapter(chapter: Chapter): Chapter
+        + detectLanguage(text: String): String
+        + preserveCodeBlocks(): void
+        + preserveMathFormulas(): void
+        + preserveImageReferences(): void
+    }
+
+    class DocumentManager {
+        - outputDirectory: String = "02-output"
+        --
+        + saveMarkdown(doc: MarkdownDocument, lang: String): String
+        + saveVersion(doc: MarkdownDocument, lang: String, version: String): String
+        + loadMarkdown(bookName: String, lang: String): MarkdownDocument
+        + listBooks(): List<BookInfo>
+        + getBookVersions(bookName: String): List<String>
+        ' Structure: 02-output/{bookName}/{lang}/{bookName}.md
+    }
+}
+
+' ===== PACKAGE LLM =====
+package "LLM" #FFEBEE {
+    class LLMClient {
+        - apiKey: String
+        - model: String = "gpt-4o-mini"
+        - temperature: float = 0.0
+        - maxTokens: int
+        - provider: String = "openai"
+        --
+        + chat(messages: List<Message>): String
+        + complete(prompt: String): String
+        + streamChat(messages: List<Message>): Stream
+        + summarize(text: String): String
+        + translate(text: String, targetLang: String): String
+        + setProvider(provider: String): void
+        + useOllama(model: String): void
+    }
+
+    class RAGEngine {
+        - vectorStore: VectorStore
+        - llmClient: LLMClient
+        - promptTemplate: String
+        --
+        + query(question: String, context: String): String
+        + buildPrompt(question: String, context: String): String
+        + retrieveContext(question: String, topK: int): String
+    }
+
+    class DistillationService {
+        - llmClient: LLMClient
+        --
+        + distillFormula(formula: LaTeXFormula): String
+        + distillCodeBlock(code: CodeBlock): String
+        + generateAnalogy(concept: String): String
+        + explainInSimpleTerms(text: String): String
+        + createAudioFriendlyText(content: String): String
+    }
+}
+
+' ===== PACKAGE READING SESSION =====
+package "ReadingSession" #E1F5FE {
+    class ReadingSessionManager {
+        - llmClient: LLMClient
+        - ragEngine: RAGEngine
+        - audioManager: AudioManager
+        - currentBook: MarkdownDocument
+        - currentChapter: Chapter
+        - currentParagraph: int
+        - conversationHistory: List<Message>
+        --
+        + startSession(book: MarkdownDocument, chapter: int): void
+        + generateChapterSummary(chapter: Chapter): String
+        + readParagraph(paragraphNum: int): void
+        + playAudio(paragraphNum: int): void
+        + pauseReading(): void
+        + resumeReading(): void
+        + askQuestion(question: String): String
+        + getConversationHistory(): List<Message>
+    }
+
+    class MemoryCardGenerator {
+        - llmClient: LLMClient
+        --
+        + generateCard(chapter: Chapter, conversation: List<Message>): MemoryCard
+        + extractKeyPoints(chapter: Chapter): List<String>
+        + extractImportantFormulas(chapter: Chapter): List<LaTeXFormula>
+        + summarizeQA(conversation: List<Message>): String
+    }
+
+    class MemoryCard {
+        - bookName: String
+        - chapterNumber: int
+        - chapterTitle: String
+        - summary: String
+        - keyPoints: List<String>
+        - importantFormulas: List<LaTeXFormula>
+        - questionsAnswers: List<QA>
+        - createdAt: DateTime
+        --
+        + toMarkdown(): String
+        + save(path: String): void
+    }
+}
+
+' ===== PACKAGE USER SESSION =====
+package "UserSession" #F3E5F5 {
+    class User {
+        - id: String
+        - username: String
+        - preferences: UserPreferences
+        --
+        + getId(): String
+        + getPreferences(): UserPreferences
+    }
+
+    class UserPreferences {
+        - preferredLanguage: String = "fr"
+        - audioEnabled: bool = true
+        - voicePreference: String
+        - theme: String = "dark"
+        - embeddingModel: String
+        --
+        + getLanguage(): String
+        + isAudioEnabled(): bool
+        + getTheme(): String
+        + getEmbeddingModel(): String
+    }
+
+    class SessionPersistence {
+        - storageBackend: String = "json"
+        - sessionsDirectory: String = "sessions"
+        --
+        + saveSession(userId: String, session: ReadingState): void
+        + loadSession(userId: String): ReadingState
+        + updateProgress(userId: String, bookName: String, chapter: int, paragraph: int): void
+        + getReadingHistory(userId: String): List<ReadingState>
+    }
+
+    class ReadingState {
+        - userId: String
+        - bookName: String
+        - currentChapter: int
+        - currentParagraph: int
+        - audioPosition: float
+        - conversationHistory: List<Message>
+        - lastUpdated: DateTime
+        --
+        + toJSON(): String
+        + fromJSON(json: String): ReadingState
+    }
+
+    class AppSettings {
+        - settingsFile: String = "settings.json"
+        --
+        + getTheme(): String
+        + setTheme(theme: String): void
+        + getVoice(): String
+        + setVoice(voice: String): void
+        + getEmbeddingModel(): String
+        + setEmbeddingModel(model: String): void
+        + getLLMProvider(): String
+        + setLLMProvider(provider: String): void
+        + save(): void
+        + load(): void
+    }
+}
+
+' ===== PACKAGE ORCHESTRATION =====
+package "Orchestration" #F5F5F5 {
+    class Pipeline {
+        - fileWatcher: FileWatcher
+        - markerConverter: MarkerConverter
+        - imageManager: ImageManager
+        - audioManager: AudioManager
+        - vectorStore: VectorStore
+        - translationService: TranslationService
+        - documentManager: DocumentManager
+        --
+        + processNewBook(file: File): void
+        + start(): void
+        + stop(): void
+        + getStatus(): PipelineStatus
+    }
+
+    class ApplicationController {
+        - pipeline: Pipeline
+        - readingSessionManager: ReadingSessionManager
+        - sessionPersistence: SessionPersistence
+        - currentUser: User
+        --
+        + login(userId: String): void
+        + logout(): void
+        + scanForNewBooks(): void
+        + selectBook(bookName: String): void
+        + selectChapter(chapterNum: int): void
+        + startReading(): void
+        + pauseReading(): void
+        + askQuestion(question: String): String
+        + endChapter(): MemoryCard
+        + resumePreviousSession(): void
+    }
+}
+
+' ===== RELATIONS =====
+
+' Pipeline relations
+Pipeline --> FileWatcher
+Pipeline --> MarkerConverter
+Pipeline --> ImageManager
+Pipeline --> AudioManager
+Pipeline --> VectorStore
+Pipeline --> TranslationService
+Pipeline --> DocumentManager
+
+' Conversion flow
+MarkerConverter ..> MarkdownDocument : crée
+MarkdownDocument *-- Chapter : contient
+Chapter *-- Paragraph : contient
+Chapter o-- "0..*" Image : référence
+Paragraph o-- "0..*" Image : associée
+
+' Storage
+ImageManager ..> Image : gère
+AudioManager --> TTSService : utilise
+AudioManager ..> Chapter : génère audio pour
+
+' Vectorization
+VectorStore --> QdrantClient
+VectorStore --> EmbeddingService
+VectorStore --> TextChunker
+MarkdownDocument ..> VectorStore : indexé dans
+
+' Translation
+TranslationService --> LLMClient
+TranslationService ..> MarkdownDocument : traduit
+
+' Reading Session
+ReadingSessionManager --> LLMClient
+ReadingSessionManager --> RAGEngine
+ReadingSessionManager --> AudioManager
+ReadingSessionManager ..> MemoryCardGenerator : utilise
+MemoryCardGenerator --> LLMClient
+MemoryCardGenerator ..> MemoryCard : génère
+
+' User Session
+SessionPersistence --> ReadingState : persiste
+ReadingState --> User : appartient à
+User --> UserPreferences : a
+
+' Application Controller
+ApplicationController --> Pipeline
+ApplicationController --> ReadingSessionManager
+ApplicationController --> SessionPersistence
+
+' RAG
+RAGEngine --> VectorStore
+RAGEngine --> LLMClient
+
+' Distillation
+DistillationService --> LLMClient
+TTSService ..> DistillationService : utilise pour formules/code
+AudioManager --> DistillationService
+
+' Settings
+ApplicationController --> AppSettings
+User --> AppSettings : configure
+
+@enduml

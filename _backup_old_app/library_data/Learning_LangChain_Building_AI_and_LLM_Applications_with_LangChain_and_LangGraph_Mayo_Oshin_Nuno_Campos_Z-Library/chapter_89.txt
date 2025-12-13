@@ -1,0 +1,35 @@
+# **Features**
+
+
+The LangGraph Platform API also offers several features to support complex agent architectures, including the following:
+
+- Streaming
+- Human-in-the-loop
+- Double texting
+- Stateless runs
+- Webhooks
+
+## **Streaming**
+
+Streaming is critical for ensuring that LLM applications feel responsive to end users. When creating a streaming run, the streaming mode determines what data is streamed back to the API client. The LangGraph Platform API supports five streaming modes:
+
+#### *Values*
+
+Stream the full state of the graph after each super-step is executed.
+
+#### *Messages*
+
+Stream complete messages (at the end of node execution) as well as tokens for any messages generated inside a node. This mode is primarily meant for powering chat applications. This is only an option if your graph contains a messages key.
+
+#### *Updates*
+
+Stream updates to the state of the graph after each node is executed.
+
+#### *Events*
+
+Stream all events (including the state of the graph) that occur during graph execution. This can be used to do token-by-token streaming for LLMs.
+
+#### *Debug*
+
+Stream debug events throughout graph execution.
+

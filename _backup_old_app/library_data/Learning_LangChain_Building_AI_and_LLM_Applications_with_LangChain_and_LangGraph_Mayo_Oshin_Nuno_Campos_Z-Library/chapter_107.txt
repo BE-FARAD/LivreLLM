@@ -1,0 +1,5 @@
+# LLM with function call
+
+llm = ChatOpenAI(model="gpt-3.5-turbo"
+                                    , temperatu
+structured_llm_grader = llm.with_structured_outpu

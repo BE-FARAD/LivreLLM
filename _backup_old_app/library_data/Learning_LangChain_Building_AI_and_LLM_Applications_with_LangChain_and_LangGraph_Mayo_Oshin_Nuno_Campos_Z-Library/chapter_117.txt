@@ -1,0 +1,356 @@
+# *Evaluator*
+
+
+Binary score for correct tool selection and heuristic assessment of the tool input's accuracy.
+
+The following example checks a specific tool call using a custom evaluator:
+
+#### *Python*
+
+from langsmith.schemas import Example, Run
+
+```
+def predict_assistant(example: dict):
+ """Invoke assistant for single tool call eval
+ msg = [ ("user", example["input"]) ]
+ result = assistant_runnable.invoke({"messages
+ return {"response": result}
+def check_specific_tool_call(root_run: Run, examp
+ """
+ Check if the first tool call in the response 
+ """
+ # Expected tool call
+ expected_tool_call = 'sql_db_list_tables'
+ # Run
+ response = root_run.outputs["response"]
+ # Get tool call
+ try:
+ tool_call = getattr(response, 'tool_calls
+ except (IndexError, KeyError):
+ tool_call = None
+ score = 1 if tool_call == expected_tool_call
+ return {"score": score, "key": "single_tool_c
+experiment_results = evaluate(
+```
+
+```
+ predict_assistant,
+ data=dataset_name,
+ evaluators=[check_specific_tool_call],
+ num_repetitions=3,
+ metadata={"version": metadata},
+)
+```
+
+## *JavaScript*
+
+```
+import {evaluate} from 'langsmith/evaluation';
+// Predict Assistant
+function predictAssistant(example) {
+ /**
+ * Invoke assistant for single tool call eval
+ */
+ const msg = [{ role: "user", content: example
+ const result = assistantRunnable.invoke({ mes
+ return { response: result };
+}
+// Check Specific Tool Call
+function checkSpecificToolCall(rootRun, example)
+ /**
+ * Check if the first tool call in the respon
+ * tool call.
+```
+
+```
+ */
+ // Expected tool call
+ const expectedToolCall = "sql_db_list_tables"
+ // Run
+ const response = rootRun.outputs.response;
+ // Get tool call
+ let toolCall;
+ try {
+ toolCall = response.tool_calls?.[0]?.name
+ } catch (error) {
+ toolCall = null;
+ }
+ const score = toolCall === expectedToolCall ?
+ return { score, key: "single_tool_call" };
+}
+// Experiment Results
+const experimentResults = evaluate(predictAssista
+ data: datasetName,
+ evaluators: [checkSpecificToolCall],
+ numRepetitions: 3,
+});
+```
+
+The preceding code block implements these distinct components:
+
+- Invoke the assistant, assistant\_runnable , with a prompt and check if the resulting tool call is as expected.
+- Utilize a specialized agent where the tools are hardcoded rather than passed with the dataset input.
+- Specify the reference tool call for the step that we are evaluating for expected\_tool\_call .
+
+### **Testing an agent's trajectory**
+
+It's important to look back on the steps an agent took in order to assess whether or not the trajectory lined up with expectations of the agent—that is, the number of steps or sequence of steps taken.
+
+Testing an agent's trajectory involves the following:
+
+#### *Inputs*
+
+User input and (optionally) predefined tools.
+
+#### *Output*
+
+Expected sequence of tool calls or a list of tool calls in any order.
+
+### *Evaluator*
+
+Function over the steps taken. To test the outputs, you can look at an exact match binary score or metrics that focus on the number of incorrect steps. You'd need to evaluate the full agent's trajectory against a reference trajectory and then compile as a set of messages to pass into the LLM-as-a-judge.
+
+The following example assesses the trajectory of tool calls using custom evaluators:
+
+### *Python*
+
+```
+def predict_sql_agent_messages(example: dict):
+ """Use this for answer evaluation"""
+ msg = {"messages": ("user", example["input"])
+ messages = graph.invoke(msg, config)
+ return {"response": messages}
+def find_tool_calls(messages):
+ """
+ Find all tool calls in the messages returned
+ """
+ tool_calls = [
+ tc['name']
+```
+
+f i [' '] f i
+
+```
+ for m in messages['messages'] for tc in g
+ ]
+ return tool_calls
+def contains_all_tool_calls_any_order(
+ root_run: Run, example: Example
+) -> dict:
+ """
+ Check if all expected tools are called in any
+ """
+ expected = [
+ 'sql_db_list_tables',
+ 'sql_db_schema',
+ 'sql_db_query_checker',
+ 'sql_db_query',
+ 'check_result'
+ ]
+ messages = root_run.outputs["response"]
+ tool_calls = find_tool_calls(messages)
+ # Optionally, log the tool calls -
+ #print("Here are my tool calls:")
+ #print(tool_calls)
+ if set(expected) <= set(tool_calls):
+ score = 1
+ else:
+ score = 0
+ return {"score": int(score), "key": "multi_to
+```
+
+d f i ll l ll i d (
+
+```
+def contains_all_tool_calls_in_order(root_run: Ru
+ """
+ Check if all expected tools are called in exa
+ """
+ messages = root_run.outputs["response"]
+ tool_calls = find_tool_calls(messages)
+ # Optionally, log the tool calls -
+ #print("Here are my tool calls:")
+ #print(tool_calls)
+ it = iter(tool_calls)
+ expected = [
+ 'sql_db_list_tables',
+ 'sql_db_schema',
+ 'sql_db_query_checker',
+ 'sql_db_query',
+ 'check_result'
+ ]
+ if all(elem in it for elem in expected):
+ score = 1
+ else:
+ score = 0
+ return {"score": int(score), "key": "multi_to
+def contains_all_tool_calls_in_order_exact_match(
+ root_run: Run, example: Example
+) -> dict:
+ """
+ Check if all expected tools are called in exa
+       ddi i l l ll
+```
+
+```
+ additional tool calls.
+ """
+ expected = [
+ 'sql_db_list_tables',
+ 'sql_db_schema',
+ 'sql_db_query_checker',
+ 'sql_db_query',
+ 'check_result'
+ ]
+ messages = root_run.outputs["response"]
+ tool_calls = find_tool_calls(messages)
+ # Optionally, log the tool calls -
+ #print("Here are my tool calls:")
+ #print(tool_calls)
+ if tool_calls == expected:
+ score = 1
+ else:
+ score = 0
+ return {"score": int(score), "key": "multi_to
+experiment_results = evaluate(
+ predict_sql_agent_messages,
+ data=dataset_name,
+ evaluators=[
+ contains_all_tool_calls_any_order,
+ contains_all_tool_calls_in_order,
+ contains_all_tool_calls_in_order_exact_ma
+```
+
+]
+
+```
+ ],
+ num_repetitions=3,
+)
+```
+
+### *JavaScript*
+
+```
+import {evaluate} from 'langsmith/evaluation';
+// Predict SQL Agent Messages
+function predictSqlAgentMessages(example) {
+ /**
+ * Use this for answer evaluation
+ */
+ const msg = { messages: [{ role: "user", conten
+ // Replace with your graph and config
+ const messages = graph.invoke(msg, config);
+ return { response: messages };
+}
+// Find Tool Calls
+function findToolCalls({messages}) {
+ /**
+ * Find all tool calls in the messages returned
+ */
+ return messages.flatMap(m => m.tool_calls?.map(
+}
+```
+
+```
+// Contains All Tool Calls (Any Order)
+function containsAllToolCallsAnyOrder(rootRun, ex
+ /**
+ * Check if all expected tools are called in an
+ */
+ const expected = [
+ "sql_db_list_tables",
+ "sql_db_schema",
+ "sql_db_query_checker",
+ "sql_db_query",
+ "check_result"
+ ];
+ const messages = rootRun.outputs.response;
+ const toolCalls = findToolCalls(messages);
+ const score = expected.every(tool => toolCalls
+ return { score, key: "multi_tool_call_any_order
+}
+// Contains All Tool Calls (In Order)
+function containsAllToolCallsInOrder(rootRun, exa
+ /**
+ * Check if all expected tools are called in ex
+ */
+ const messages = rootRun.outputs.response;
+ const toolCalls = findToolCalls(messages);
+ const expected = [
+```
+
+```
+ "sql_db_list_tables",
+ "sql_db_schema",
+ "sql_db_query_checker",
+ "sql_db_query",
+ "check_result"
+ ];
+ const score = expected.every(tool => {
+ let found = false;
+ for (let call of toolCalls) {
+ if (call === tool) {
+ found = true;
+ break;
+ }
+ }
+ return found;
+ }) ? 1 : 0;
+ return { score, key: "multi_tool_call_in_order"
+}
+// Contains All Tool Calls (Exact Order, Exact Ma
+function containsAllToolCallsInOrderExactMatch(ro
+ /**
+ * Check if all expected tools are called in ex
+ * additional tool calls.
+ */
+ const expected = [
+```
+
+```
+ "sql_db_list_tables",
+ "sql_db_schema",
+ "sql_db_query_checker",
+ "sql_db_query",
+ "check_result"
+ ];
+ const messages = rootRun.outputs.response;
+ const toolCalls = findToolCalls(messages);
+ const score = JSON.stringify(toolCalls) === JSO
+ ? 1
+ : 0;
+ return { score, key: "multi_tool_call_in_exact_
+}
+// Experiment Results
+const experimentResults = evaluate(predictSqlAgen
+ data: datasetName,
+ evaluators: [
+ containsAllToolCallsAnyOrder,
+ containsAllToolCallsInOrder,
+ containsAllToolCallsInOrderExactMatch
+ ],
+ numRepetitions: 3,
+});
+```
+
+This implementation example includes the following:
+
+- Invoking a precompiled LangGraph agent graph.invoke with a prompt
+- Utilizing a specialized agent where the tools are hardcoded rather than passed with the dataset input
+- Extracting of the list of tools called using the function find\_tool\_calls
+- Checking if all expected tools are called in any order using the function contains\_all\_tool\_calls\_any\_order or called in order using contains\_all\_tool\_calls\_in\_order
+- Checking whether all expected tools are called in the exact order using
+
+```
+contains_all_tool_calls_in_order_exact_match
+```
+
+All three of these agent evaluation methods can be observed and debugged in LangSmith's experimentation UI (see [Figure](#page-10-0) 10-16).
+
+<span id="page-10-0"></span>![](_page_10_Figure_0.jpeg)
+
+Figure 10-16. Example of an agent evaluation test in the LangSmith UI
+
+In general, these tests are a solid starting point to help mitigate an agent's cost and unreliability due to LLM invocations and variability in tool calling.
+

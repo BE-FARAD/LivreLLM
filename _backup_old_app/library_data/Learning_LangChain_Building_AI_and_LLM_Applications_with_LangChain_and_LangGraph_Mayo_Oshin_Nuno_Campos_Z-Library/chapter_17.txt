@@ -1,0 +1,62 @@
+# Route question to prompt
+
+@chain
+def prompt_router(query):
+ # Embed question
+ query_embedding = embeddings.embed_query(quer
+ # Compute similarity
+ similarity = cosine_similarity([query_embeddi
+ # Pick the prompt most similar to the input q
+ most_similar = prompt_templates[similarity.ar
+ return PromptTemplate.from_template(most_simi
+semantic_router = (
+ prompt_router
+ | ChatOpenAI()
+ | StrOutputParser()
+)
+print(semantic_router.invoke("What's a black hole
+```
+
+#### *JavaScript*
+
+```
+import {ChatOpenAI, OpenAIEmbeddings} from '@lang
+import {PromptTemplate} from '@langchain/core/pro
+import {RunnableLambda} from '@langchain/core/run
+const physicsTemplate = `You are a very smart phy
+ at answering questions about physics in a conci
+ manner. When you don't know the answer to a que
+ don't know.
+Here is a question:
+{query}`
+const mathTemplate = `You are a very good mathema
+ answering math questions. You are so good becau
+ hard problems into their component parts, answe
+ then put them together to answer the broader qu
+Here is a question:
+{query}`
+const embeddings = new OpenAIEmbeddings()
+const promptTemplates = [physicsTemplate, mathTem
+const promptEmbeddings = await embeddings.embedDo
+const promptRouter = RunnableLambda.from(query =>
+ // Embed question
+ const queryEmbedding = await embeddings.embedQu
+```
+
+import {cosineSimilarity} from @langchain/core/u
+
+```
+ // Compute similarity
+ const similarities = cosineSimilarity([queryEmb
+ // Pick the prompt most similar to the input qu
+ const mostSimilar = similarities[0] > similarit
+ ? promptTemplates[0]
+ : promptTemplates[1]
+ return PromptTemplate.fromTemplate(mostSimilar)
+})
+const semanticRouter = promptRouter.pipe(new Chat
+await semanticRouter.invoke("What's a black hole"
+```
+
+Now that you've seen how to route a user's query to the relevant data source, let's discuss the third major question when building a robust RAG system: "How do we transform natural language to the query language of the target data source?"
+

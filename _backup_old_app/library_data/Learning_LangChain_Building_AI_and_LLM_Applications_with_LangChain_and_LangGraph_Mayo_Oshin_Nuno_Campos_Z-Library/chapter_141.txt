@@ -1,0 +1,23 @@
+# pip install pypdf
+
+from langchain_community.document_loaders import
+```
+
+```
+loader = PyPDFLoader("./test.pdf")
+pages = loader.load()
+```
+
+```
+// install the pdf parsing library: npm install p
+import { PDFLoader } from "langchain/document_loa
+const loader = new PDFLoader("./test.pdf");
+const docs = await loader.load();
+```
+
+The text has been extracted from the PDF document and stored in the Document class. But there's a problem. The loaded document is over 100,000 characters long, so it won't fit into the context window of the vast majority of LLMs or embedding models. In order to overcome this limitation, we need to split the Document into manageable chunks of text that we can later convert into embeddings and semantically search, bringing us to the second step (retrieving).
+
+#### **TIP**
+
+LLMs and embedding models are designed with a hard limit on the size of input and output tokens they can handle. This limit is usually called *context window*, and usually applies to the combination of input and output; that is, if the context window is 100 (we'll talk about units in a second), and your input measures 90, the output can be at most of length 10. Context windows are usually measured in number of tokens, for instance 8,192 tokens. Tokens, as mentioned in the [Preface](#page--1-0), are a representation of text as numbers, with each token usually covering between three and four characters of English text.
+

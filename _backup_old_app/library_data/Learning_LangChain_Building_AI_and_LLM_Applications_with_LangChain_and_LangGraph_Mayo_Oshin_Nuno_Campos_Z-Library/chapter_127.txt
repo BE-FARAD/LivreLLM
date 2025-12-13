@@ -1,0 +1,25 @@
+# Assembling the Many Pieces of an LLM Application
+
+
+The key components you've learned about so far are essential building blocks of the LangChain framework. Which brings us to the critical question: How do you combine them effectively to build your LLM application?
+
+## **Using the Runnable Interface**
+
+As you may have noticed, all the code examples used so far utilize a similar interface and the invoke() method to generate outputs from the model (or prompt template, or output parser). All components have the following:
+
+- There is a common interface with these methods:
+  - invoke : transforms a single input into an output
+  - batch : efficiently transforms multiple inputs into multiple outputs
+  - stream : streams output from a single input as it's produced
+- There are built-in utilities for retries, fallbacks, schemas, and runtime configurability.
+
+In Python, each of the three methods have asyncio equivalents.
+
+As such, all components behave the same way, and the interface learned for one of them applies to all:
+
+#### *Python*
+
+```
+from langchain_openai.llms import ChatOpenAI
+model = ChatOpenAI()
+completion = model.invoke('Hi there!')

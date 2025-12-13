@@ -1,0 +1,134 @@
+# Building a Chatbot Memory System
+
+
+There are two core design decisions behind any robust memory system:
+
+- How state is stored
+- How state is queried
+
+A simple way to build a chatbot memory system that incorporates effective solutions to these design decisions is to store and reuse the history of all chat interactions between the user and the model. The state of this memory system can be:
+
+- Stored as a list of messages (refer to [Chapter](#page--1-4) 1 to learn more about messages)
+- Updated by appending recent messages after each turn
+- Appended into the prompt by inserting the messages into the prompt
+
+[Figure](#page-19-0) 4-2 illustrates this simple memory system.
+
+<span id="page-19-0"></span>![](_page_19_Figure_4.jpeg)
+
+Figure 4-2. A simple memory system utilizing chat history in prompts to generate model answers
+
+Here's a code example that illustrates a simple version of this memory system using LangChain:
+
+```
+from langchain_core.prompts import ChatPromptTemp
+from langchain_openai import ChatOpenAI
+prompt = ChatPromptTemplate from messages([
+```
+
+```
+prompt = ChatPromptTemplate.from_messages([
+ ("system", """You are a helpful assistant. An
+ of your ability."""),
+ ("placeholder",
+                 "{messages}"),
+])
+model = ChatOpenAI()
+chain = prompt | model
+chain.invoke({
+ "messages": [
+ ("human","""Translate this sentence from 
+ programming."""),
+ ("ai", "J'adore programmer."),
+ ("human", "What did you just say?"),
+ ],
+})
+```
+
+```
+import {ChatPromptTemplate} from '@langchain/core
+import {ChatOpenAI} from '@langchain/openai'
+const prompt = ChatPromptTemplate.fromMessages([
+```
+
+```
+ ["system", `You are a helpful assistant. Answer
+ of your ability.`],
+ ["placeholder", "{messages}"],
+])
+const model = new ChatOpenAI()
+const chain = prompt.pipe(model)
+await chain.invoke({
+ "messages": [
+ ["human",`Translate this sentence from Englis
+ programming.`],
+ ["ai", "J'adore programmer."],
+ ["human", "What did you just say?"],
+ ],
+})
+```
+
+## *The output:*
+
+```
+I said, "J'adore programmer," which means "I love
+```
+
+Note how the incorporation of the previous conversation in the chain enabled the model to answer the follow-up question in a context-aware manner.
+
+While this is simple and it works, when taking your application to production, you'll face some more challenges related to managing memory at scale, such as:
+
+- You'll need to update the memory after every interaction, atomically (i.e., don't record only the question or only the answer in the case of failure).
+- You'll want to store these memories in durable storage, such as a relational database.
+- You'll want to control how many and which messages are stored for later, and how many of these are used for new interactions.
+- You'll want to inspect and modify this state (for now, just a list of messages) outside a call to an LLM.
+
+We'll now introduce some better tooling, which will help with this and all later chapters.
+
+Introducing LangGraph
+
+For the remainder of this chapter and the following chapters, we'll start to make use of [LangGraph,](https://oreil.ly/TKCb6) an open source library authored by LangChain. LangGraph was designed to enable developers to implement multiactor, multistep, stateful cognitive architectures, called *graphs*. That's a lot of words packed into a short sentence; let's take them one at a time. [Figure](#page-3-0) 4-3 illustrates the multiactor aspect.
+
+<span id="page-3-0"></span>![](_page_3_Figure_1.jpeg)
+
+Figure 4-3. From single-actor applications to multiactor applications
+
+A team of specialists can build something together that none of them could build alone. The same is true of LLM applications: an LLM prompt (great for answer generation and task planning and many more things) is much more powerful when paired up with a search engine (best at finding current facts), or even when paired with different LLM prompts. We have seen developers build some amazing applications, like [Perplexity](https://oreil.ly/bVlu7) or Arc [Search](https://oreil.ly/NPOlF), when they combine those two building blocks (and others) in novel ways.
+
+And just as a human team needs more coordination than one person working by themselves, an application with multiple actors needs a coordination layer to do these things:
+
+- Define the actors involved (the nodes in a graph) and how they hand off work to each other (the edges in that graph).
+- Schedule execution of each actor at the appropriate time—in parallel if needed—with deterministic results.
+
+[Figure](#page-5-0) 4-4 illustrates the multistep dimension.
+
+<span id="page-5-0"></span>![](_page_5_Figure_0.jpeg)
+
+Figure 4-4. From multiactor to multistep applications
+
+As each actor hands off work to another (for example, an LLM prompt asking a search tool for the results of a given search query), we need to make sense of the back-and-forth between multiple actors. We need to know what order it happens in,
+
+how many times each actor is called, and so on. To do this, we can model the interaction between the actors as happening across multiple discrete steps in time. When one actor hands off work to another actor, it results in the scheduling of the next step of the computation, and so on, until no more actors hand off work to others, and the final result is reached.
+
+[Figure](#page-6-0) 4-5 illustrates the stateful aspect.
+
+<span id="page-6-0"></span>![](_page_6_Figure_2.jpeg)
+
+Figure 4-5. From multistep to stateful applications
+
+Communication across steps requires tracking some state otherwise, when you call the LLM actor the second time, you'd get the same result as the first time. It is very helpful to pull this state out of each of the actors and have all actors collaborate on updating a single central state. With a single central state, we can:
+
+- Snapshot and store the central state during or after each computation.
+- Pause and resume execution, which makes it easy to recover from errors.
+- Implement human-in-the-loop controls (more on this in [Chapter](#page--1-0) 8).
+
+Each *graph* is then made up of the following:
+
+#### *State*
+
+The data received from outside the application, modified and produced by the application while it's running.
+
+### *Nodes*
+
+Each step to be taken. Nodes are simply Python/JS functions, which receive the current state as input and can return an update to that state (that is, they can add to it and modify or remove existing data).
+

@@ -1,0 +1,35 @@
+@startuml PDF to Markdown Converter
+
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #E3F2FD
+skinparam activityBorderColor #1976D2
+skinparam activityDiamondBackgroundColor #FFF3E0
+skinparam activityDiamondBorderColor #F57C00
+
+title Diagramme d'Activité - Conversion PDF vers Markdown
+
+start
+
+:Surveiller le répertoire\n**01-input**;
+
+if (Fichier PDF détecté ?) then (oui)
+    :Récupérer le fichier PDF;
+
+    :Lire le contenu du PDF;
+
+    :Extraire le texte du PDF;
+
+    :Convertir le texte\nen format Markdown;
+
+    :Sauvegarder le fichier\n**.md**;
+
+    :Déplacer/Archiver le PDF\noriginal;
+
+else (non)
+    :Attendre...;
+endif
+
+stop
+
+@enduml

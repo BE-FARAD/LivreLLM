@@ -1,0 +1,94 @@
+# LangChain et Pourquoi C'est Important
+
+LangChain a été l'une des premières bibliothèques open source à fournir des éléments de base pour LLM et la création de prompts, ainsi que des outils pour les combiner de manière fiable en applications plus grandes. Au moment de l'écriture, LangChain a accumulé plus de 28 millions de [téléchargements](https://oreil.ly/8OKbf) mensuels, 99 000 étoiles sur [GitHub](https://oreil.ly/bF5pc), et la plus grande communauté de développeurs en IA générative (plus de [72 000](https://oreil.ly/PNWL3) membres). Elle a permis aux ingénieurs logiciels sans formation en ML d'exploiter la puissance des LLMs pour créer une variété d'applications, allant des chatbots IA aux agents IA capables de raisonner et de prendre des actions de manière responsable.
+
+LangChain s'appuie sur l'idée soulignée dans la section précédente : les techniques de création de prompts sont les plus utiles lorsqu'elles sont utilisées ensemble. Pour faciliter cela, LangChain fournit des *abstractions* simples pour chaque technique majeure de création de prompts. Par abstraction, nous entendons des fonctions et classes Python et JavaScript qui encapsulent les idées de ces techniques dans des enveloppes faciles à utiliser. Ces
+
+abstractions sont conçues pour bien s'accorder entre elles et pour être combinées en une application LLM plus grande.
+
+Tout d'abord, LangChain offre des intégrations avec les principaux fournisseurs de LLM, à la fois commerciaux ([OpenAI](https://oreil.ly/TTLXA), [Anthropic](https://oreil.ly/O4UXw), [Google,](https://oreil.ly/12g3Z) et plus) et open source ([Llama,](https://oreil.ly/5WAVi) [Gemma,](https://oreil.ly/-40Ne) et d'autres). Ces intégrations partagent une interface commune, ce qui facilite grandement l'essai de nouveaux LLMs dès leur annonce et vous évite d'être verrouillé avec un seul fournisseur. Nous les utiliserons dans le [Chapitre](#page--1-1) 1.
+
+LangChain propose également des abstractions de modèles de prompts, qui vous permettent de réutiliser des prompts plusieurs fois, en séparant le texte statique du prompt des espaces réservés qui seront différents à chaque fois que vous l'envoyez au LLM pour obtenir une réponse générée. Nous en parlerons également dans le [Chapitre](#page--1-1) 1. Les prompts LangChain peuvent également être stockés dans le LangChain Hub pour être partagés avec des collègues.
+
+LangChain contient de nombreuses intégrations avec des services tiers (tels que Google Sheets, Wolfram Alpha, Zapier, pour n'en nommer que quelques-uns) exposés sous forme d'*outils*, qui est une interface standard pour les fonctions à utiliser dans la technique d'appel d'outils.
+
+Pour le RAG, LangChain propose des intégrations avec les principaux *modèles d'embedding* (modèles linguistiques conçus pour fournir une représentation numérique, l'*embedding*, du sens d'une phrase, d'un paragraphe, etc.), les *magasins de vecteurs* (bases de données dédiées au stockage d'embeddings) et les *index de vecteurs* (bases de données régulières avec des capacités de stockage de vecteurs). Vous en apprendrez beaucoup plus sur ces sujets dans les Chapitres [2](#page--1-1) et [3](#page--1-1).
+
+Pour le CoT, LangChain (via la bibliothèque LangGraph) propose des abstractions d'*agents* qui combinent le raisonnement en chaîne de pensées et l'appel d'outils, popularisé pour la première fois par le [papier ReAct.](https://oreil.ly/27BIC) Cela permet de créer des applications LLM qui font ce qui suit :
+
+1. Raisonnez sur les étapes à suivre.
+2. Traduisez ces étapes en appels d'outils externes.
+3. Recevez les résultats de ces appels d'outils.
+4. Répétez jusqu'à ce que la tâche soit accomplie.
+
+Nous couvrons ces sujets dans les Chapitres [5](#page--1-1) à [8.](#page--1-1)
+
+Pour les cas d'utilisation de chatbots, il devient utile de suivre les interactions précédentes et de les utiliser lors de la génération de la réponse à une interaction future. C'est ce qu'on appelle la *mémoire*, et le [Chapitre](#page--1-1) 4 aborde son usage dans LangChain.
+
+Enfin, LangChain fournit les outils pour composer ces éléments de base en applications cohérentes. Les Chapitres [1](#page--1-1) à [6](#page--1-1) en parlent davantage.
+
+En plus de cette bibliothèque, LangChain propose [LangSmith—](https://oreil.ly/geRgx)une plateforme pour aider à déboguer, tester, déployer et surveiller les workflows IA —et LangGraph Platform—une plateforme pour déployer et faire évoluer les agents LangGraph. Nous abordons ces sujets dans les Chapitres [9](#page--1-1) et [10](#page--1-1).
+
+## À quoi s'attendre de ce livre
+
+Avec ce livre, nous espérons transmettre l'excitation et les possibilités d'ajouter les LLMs à votre boîte à outils d'ingénierie logicielle.
+
+Nous nous sommes lancés dans la programmation parce que nous aimons construire des choses, arriver à la fin d'un projet, regarder le produit final et réaliser qu'il y a quelque chose de nouveau, et que nous l'avons construit. La programmation avec les LLMs est si excitante pour nous parce qu'elle élargit l'ensemble des choses que nous pouvons construire, elle rend les choses autrefois difficiles faciles (par exemple, extraire des données pertinentes d'un texte long) et les choses autrefois impossibles possibles — essayez de construire un assistant automatisé il y a un an et vous vous retrouvez avec l'enfer de *l'arbre téléphonique* que nous connaissons tous et aimons lorsque nous appelons les numéros du service clientèle.
+
+Maintenant, avec les LLMs et LangChain, vous pouvez réellement construire des assistants agréables (ou une myriade d'autres applications) qui parlent avec vous et comprennent vos intentions à un degré très raisonnable. La différence est saisissante ! Si cela vous semble excitant (comme pour nous), alors vous êtes au bon endroit.
+
+Dans cette Préface, nous vous avons donné un aperçu de ce qui fait fonctionner les LLMs et pourquoi cela vous donne des super pouvoirs de création d'objets. Avoir ces très grands modèles ML qui comprennent le langage et peuvent produire des réponses écrites en anglais conversationnel (ou dans une autre langue) vous donne un outil de génération de langage *programmable* (via l'ingénierie des prompts), polyvalent. À la fin de ce livre, nous espérons que vous verrez à quel point cela peut être puissant.
+
+Nous commencerons par un chatbot IA personnalisé, en grande partie grâce à des instructions en anglais simple. Cela seul devrait être une révélation : vous pouvez maintenant "programmer" une partie du comportement de votre application sans code.
+
+Vient ensuite la capacité suivante : donner à votre chatbot accès à vos propres documents, ce qui le transforme d'un assistant générique à celui qui est informé sur tout domaine de connaissance humaine pour lequel vous pouvez trouver une bibliothèque de textes écrits. Cela permettra à votre chatbot de répondre à des questions ou de résumer des documents que vous avez écrits, par exemple.
+
+Après cela, nous ferons en sorte que le chatbot se souvienne de vos conversations passées. Cela l'améliorera de deux manières : il sera beaucoup plus naturel d'avoir une conversation avec un chatbot qui se souvient de ce dont vous avez parlé précédemment, et au fil du temps, le chatbot pourra être personnalisé selon les préférences de chacun de ses utilisateurs individuellement.
+
+Ensuite, nous utiliserons des techniques de chaîne de pensées et d'appel d'outils pour donner au chatbot la capacité de planifier et d'agir en fonction de ces plans, de manière itérative. Cela lui permettra de travailler sur des demandes plus compliquées, comme rédiger un rapport de recherche sur un sujet de votre choix.
+
+Au fur et à mesure que vous utiliserez votre chatbot pour des tâches plus compliquées, vous sentirez le besoin de le doter des outils nécessaires pour collaborer avec vous. Cela inclut à la fois la possibilité pour vous d'interrompre ou d'autoriser des actions avant qu'elles ne soient prises, ainsi que la capacité du chatbot à demander plus d'informations ou des clarifications avant d'agir.
+
+Enfin, nous vous montrerons comment déployer votre chatbot en production et discuterons des aspects à considérer avant et après avoir franchi cette étape, notamment la latence, la fiabilité et la sécurité. Ensuite, nous vous montrerons comment surveiller votre chatbot en production et continuer à l'améliorer au fur et à mesure de son utilisation.
+
+En chemin, nous vous enseignerons les tenants et aboutissants de chacune de ces techniques, afin qu'à la fin du livre, vous ayez vraiment ajouté un nouvel outil (ou deux) à votre boîte à outils d'ingénieur logiciel.
+
+## Conventions utilisées dans ce livre
+
+Les conventions typographiques suivantes sont utilisées dans ce livre :
+
+#### *Italique*
+
+Indique les nouveaux termes, les URLs, les adresses e-mail, les noms de fichiers et les extensions de fichiers.
+
+#### *Largeur constante*
+
+Utilisé pour les listings de programmes, ainsi que dans les paragraphes pour faire référence à des éléments de programme tels que les noms de variables ou de fonctions, les bases de données, les types de données, les variables d'environnement, les déclarations et les mots-clés.
+
+```python
+ # Initialiser un dictionnaire pour contenir le score fusionné
+ # Les documents seront indexés par leur contenu
+ fused_scores = {}
+ documents = {}
+ # Itérer à travers chaque liste de documents classés
+ for docs in results:
+ # Itérer à travers chaque document dans la liste
+ # avec son rang (position dans la liste)
+ for rank, doc in enumerate(docs):
+ # Utiliser le contenu du document comme clé
+ doc_str = doc.page_content
+ # Si le document n'a pas encore été vu
+ # - initialiser le score à 0
+ # - le sauvegarder pour plus tard
+ if doc_str not in fused_scores:
+ fused_scores[doc_str] = 0
+ documents[doc_str] = doc
+ # Mettre à jour le score du document en utilisant
+ # 1 / (rang + k)
+ fused_scores[doc_str] += 1 / (rank +
+ # Trier les documents en fonction de leur score fusionné
+ # pour obtenir les résultats reclassés finaux
+ reranked_doc_strs = sorted(
+ fused_scores, key=lambda d: fused_scores[
+ )
+```

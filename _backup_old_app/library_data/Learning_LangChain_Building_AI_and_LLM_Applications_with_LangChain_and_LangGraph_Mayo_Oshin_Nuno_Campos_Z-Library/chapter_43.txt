@@ -1,0 +1,36 @@
+# Architecture #3: Router
+
+
+This next architecture moves up the autonomy ladder by assigning to LLMs the next of the responsibilities we outlined before: deciding the next step to take. That is, whereas the chain architecture always executes a static sequence of steps (however many), the router architecture is characterized by using an LLM to choose between certain predefined steps.
+
+Let's use the example of a RAG application with access to multiple indexes of documents from different domains (refer to [Chapter](#page--1-1) 2 for more on indexing). Usually you can extract better performance from LLMs by avoiding the inclusion of irrelevant information in the prompt. Therefore, in building this application, we should try to pick the right index to use for each query and use only that one. The key development in this architecture is to use an LLM to make this decision, effectively using an LLM to evaluate each incoming query and decide which index it should use for that *particular* query.
+
+#### **NOTE**
+
+Before the advent of LLMs, the usual way of solving this problem would be to build a classifier model using ML techniques and a dataset mapping example user queries to the right index. This could prove quite challenging, as it requires the following:
+
+- Assembling that dataset by hand
+- Generating enough *features* (quantitative attributes) from each user query to enable training a classifier for the task
+
+LLMs, given their encoding of human language, can effectively serve as this classifier with zero, or very few, examples or additional training.
+
+First, let's describe the flow in words:
+
+1. An LLM call to pick which of the available indexes to use, given the user-supplied query, and the developer-supplied description of the indexes
+
+- 2. A retrieval step that queries the chosen index for the most relevant documents for the user query
+- 3. Another LLM call to generate an answer, given the usersupplied query and the list of relevant documents fetched from the index
+
+And now let's implement it with LangGraph:
+
+*Python*
+
+```
+from typing import Annotated, Literal, TypedDict
+from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage,
+from langchain_core.vectorstores.in_memory import
+from langchain_openai import ChatOpenAI, OpenAIEm
+from langgraph.graph import END, START, StateGrap
+from langgraph.graph.message import add_messages
+embeddings = OpenAIEmbeddings()

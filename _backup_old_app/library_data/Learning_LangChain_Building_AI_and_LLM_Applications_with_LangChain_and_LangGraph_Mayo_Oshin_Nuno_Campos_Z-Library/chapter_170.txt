@@ -1,0 +1,7 @@
+# documents in our document store:
+
+retriever = MultiVectorRetriever(
+ vectorstore=vectorstore,
+ docstore=store,
+ id_key=id_key,
+)

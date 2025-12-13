@@ -1,0 +1,140 @@
+# run
+
+qa_rrr.invoke("""Today I woke up and brushed my t
+ the news. But then I forgot the food on the c
+ figures in the ancient greek history of philo
+```
+
+```
+const rewritePrompt = ChatPromptTemplate.fromTemp
+ query for web search engine to answer the given
+ with '**'. Question: {question} Answer:`)
+const rewriter = rewritePrompt pipe(llm) pipe(mes
+```
+
+```
+const rewriter = rewritePrompt.pipe(llm).pipe(mes
+ return message.content.replaceAll('"'
+                                       ,
+                                         '').repl
+})
+const qa = RunnableLambda.from(async input => {
+ const newQuery = await rewriter.invoke({questio
+ // fetch relevant documents
+ const docs = await retriever.invoke(newQuery)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return answer
+})
+await qa.invoke(`Today I woke up and brushed my t
+ the news. But then I forgot the food on the coo
+ figures in the ancient greek history of philoso
+```
+
+#### *The output:*
+
+```
+Based on the given context, some key figures in t
+philosophy include: Themistocles (an Athenian sta
+```
+
+Notice that we have had an LLM rewrite the user's initial distracted query into a much clearer one, and it is that more focused query that is passed to the retriever to fetch the most relevant documents. Note: this technique can be used with any retrieval method, be that a vector store such as we have here or, for instance, a web search tool. The downside of this approach is that it introduces additional latency into your chain, because now we need to perform two LLM calls in sequence.
+
+## **Multi-Query Retrieval**
+
+A user's single query can be insufficient to capture the full scope of information required to answer the query comprehensively. The multi-query retrieval strategy resolves this problem by instructing an LLM to generate multiple queries based on a user's initial query, executing a parallel retrieval of each query from the data source and then inserting the retrieved results as prompt context to generate a final model output. [Figure](#page-11-0) 3-6 illustrates.
+
+<span id="page-11-0"></span>![](_page_11_Figure_0.jpeg)
+
+Figure 3-6. Demonstration of the multi-query retrieval strategy
+
+This strategy is particularly useful for use cases where a single question may rely on multiple perspectives to provide a comprehensive answer.
+
+Here's a code example of multi-query retrieval in action:
+
+```
+from langchain.prompts import ChatPromptTemplate
+perspectives_prompt = ChatPromptTemplate.from_tem
+ model assistant. Your task is to generate fiv
+ given user question to retrieve relevant docu
+ By generating multiple perspectives on the us
+ help the user overcome some of the limitation
+   similarity search Provide these alternative
+```
+
+```
+ similarity search. Provide these alternative 
+ newlines. Original question: {question}""")
+def parse_queries_output(message):
+ return message.content.split('\n')
+query_gen = perspectives_prompt | llm | parse_que
+```
+
+```
+const perspectivesPrompt = ChatPromptTemplate.fro
+ language model assistant. Your task is to gener
+ of the given user question to retrieve relevant
+ database. By generating multiple perspectives o
+ goal is to help the user overcome some of the l
+ distance-based similarity search. Provide these
+ separated by newlines. Original question: {ques
+const queryGen = perspectivesPrompt.pipe(llm).pip
+ return message.content.split('\n')
+})
+```
+
+Note that the prompt template is designed to generate variations of questions based on the user's initial query. Next we take the list of generated queries, retrieve the most relevant docs for each of them in parallel, and then combine to get the unique union of all the retrieved relevant documents:
+
+### *Python*
+
+```
+def get_unique_union(document_lists):
+ # Flatten list of lists, and dedupe them
+ deduped_docs = {
+ doc.page_content: doc
+ for sublist in document_lists for doc in
+ }
+ # return a flat list of unique docs
+ return list(deduped_docs.values())
+retrieval_chain = query_gen | retriever.batch | g
+```
+
+```
+const retrievalChain = queryGen
+ .pipe(retriever.batch.bind(retriever))
+ .pipe(documentLists => {
+ const dedupedDocs = {}
+ documentLists.flat().forEach(doc => {
+```
+
+```
+ dedupedDocs[doc.pageContent] = doc
+ })
+ return Object.values(dedupedDocs)
+ })
+```
+
+Because we're retrieving documents from the same retriever with multiple (related) queries, it's likely at least some of them are repeated. Before using them as context to answer the question, we need to deduplicate them, to end up with a single instance of each. Here we dedupe docs by using their content (a string) as the key in a dictionary (or object in JS), because a dictionary can only contain one entry for each key. After we've iterated through all docs, we simply get all the dictionary values, which is now free of duplicates.
+
+Notice our use as well of .batch , which runs all generated queries in parallel and returns a list of the results—in this case, a list of lists of documents, which we then flatten and dedupe as described earlier.
+
+This final step is to construct a prompt, including the user's question and combined retrieved relevant documents, and a model interface to generate the prediction:
+
+```
+prompt = ChatPromptTemplate.from_template("""Answ
+ on this context:
+{context}
+Question: {question}
+""")
+@chain
+def multi_query_qa(input):
+ # fetch relevant documents 
+ docs = retrieval_chain.invoke(input)
+ # format prompt
+ formatted = prompt.invoke({"context": docs,
+                                              "
+ # generate answer
+ answer = llm.invoke(formatted)
+ return answer

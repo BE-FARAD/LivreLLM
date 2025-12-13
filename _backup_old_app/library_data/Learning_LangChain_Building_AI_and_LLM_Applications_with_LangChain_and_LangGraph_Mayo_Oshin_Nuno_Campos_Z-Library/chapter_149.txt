@@ -1,0 +1,27 @@
+# Storing Embeddings in a Vector Store
+
+
+Earlier in this chapter, we discussed the cosine similarity calculation to measure the similarity between vectors in a vector space. A vector store is a database designed to store vectors and perform complex calculations, like cosine similarity, efficiently and quickly.
+
+Unlike traditional databases that specialize in storing structured data (such as JSON documents or data conforming to the schema of a relational database), vector stores handle unstructured data, including text and images. Like traditional databases, vector stores are capable of performing create, read, update, delete (CRUD), and search operations.
+
+Vector stores unlock a wide variety of use cases, including scalable applications that utilize AI to answer questions about large documents, as illustrated in [Figure](#page-9-0) 2-4.
+
+<span id="page-9-0"></span>![](_page_9_Figure_3.jpeg)
+
+Figure 2-4. Loading, embedding, storing, and retrieving relevant docs from a vector store
+
+[Figure](#page-9-0) 2-4 illustrates how document embeddings are inserted into the vector store and how later, when a query is sent, similar embeddings are retrieved from the vector store.
+
+Currently, there is an abundance of vector store providers to choose from, each specializing in different capabilities. Your selection should depend on the critical requirements of your
+
+application, including multitenancy, metadata filtering capabilities, performance, cost, and scalability.
+
+Although vector stores are niche databases built to manage vector data, there are a few disadvantages working with them:
+
+- Most vector stores are relatively new and may not stand the test of time.
+- Managing and optimizing vector stores can present a relatively steep learning curve.
+- Managing a separate database adds complexity to your application and may drain valuable resources.
+
+Fortunately, vector store capabilities have recently been extended to PostgreSQL (a popular open source relational database) via the pgvector extension. This enables you to use the same database you're already familiar with and to power both your transactional tables (for instance your users table) as well as your vector search tables.
+

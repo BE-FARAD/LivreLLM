@@ -1,0 +1,6 @@
+# **Working with Vector Stores**
+
+
+Picking up where we left off in the previous section on embeddings, now let's see an example of loading, splitting, embedding, and storing a document in PGVector:
+
+```

@@ -1,0 +1,84 @@
+# run
+
+multi_query_qa.invoke("""Who are some key figures
+ of philosophy?""")
+```
+
+```
+const prompt = ChatPromptTemplate.fromTemplate(`A
+```
+
+```
+ question based on this context:
+{context}
+Question: {question}
+`)
+const multiQueryQa = RunnableLambda.from(async in
+ // fetch relevant documents
+ const docs = await retrievalChain.invoke(input)
+ // format prompt
+ const formatted = await prompt.invoke({context
+ // generate answer
+ const answer = await llm.invoke(formatted)
+ return answer
+})
+await multiQueryQa.invoke(`Who are some key figur
+ history of philosophy?`)
+```
+
+Notice how this isn't that different from our previous QA chains, as all the new logic for multi-query retrieval is contained in retrieval\_chain . This is key to making good use of these techniques—implementing each technique as a standalone chain (in this case, retrieval\_chain ), which makes it easy to adopt them and even to combine them.
+
+### **RAG-Fusion**
+
+The RAG-Fusion strategy shares similarities with the multiquery retrieval strategy, except we will apply a final reranking step to all the retrieved documents. This reranking step makes use of the *reciprocal rank fusion* (RRF) algorithm, which involves combining the ranks of different search results to produce a single, unified ranking. By combining ranks from different queries, we pull the most relevant documents to the top of the final list. RRF is well-suited for combining results from queries that might have different scales or distributions of scores. **[3](#page--1-1)**
+
+Let's demonstrate RAG-Fusion in code. First, we craft a prompt similar to the multi-query retrieval strategy to generate a list of queries based on the user query:
+
+```
+from langchain.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+prompt_rag_fusion = ChatPromptTemplate.from_templ
+ assistant that generates multiple search quer
+ query. \n
+   Generate multiple search queries related to:
+```
+
+```
+ Generate multiple search queries related to: 
+ Output (4 queries):""")
+def parse_queries_output(message):
+ return message.content.split('\n')
+llm = ChatOpenAI(temperature=0)
+query_gen = prompt_rag_fusion | llm | parse_queri
+```
+
+```
+import {ChatPromptTemplate} from '@langchain/core
+import {ChatOpenAI} from '@langchain/openai';
+import {RunnableLambda} from '@langchain/core/run
+const perspectivesPrompt = ChatPromptTemplate.fro
+ assistant that generates multiple search querie
+ query. \n
+ Generate multiple search queries related to: {q
+ Output (4 queries):`)
+const queryGen = perspectivesPrompt.pipe(llm).pip
+```
+
+```
+ return message.content.split('\n')
+})
+```
+
+Once we've generated our queries, we fetch relevant documents for each query and pass them into a function to *rerank* (that is, *reorder* according to relevancy) the final list of relevant documents.
+
+The function reciprocal\_rank\_fusion takes a list of the search results of each query, so a list of lists of documents, where each inner list of documents is sorted by their relevance to that query. The RRF algorithm then calculates a new score for each document based on its ranks (or positions) in the different lists and sorts them to create a final reranked list.
+
+After calculating the fused scores, the function sorts the documents in descending order of these scores to get the final reranked list, which is then returned:
+
+```
+def reciprocal_rank_fusion(results: list[list], k
+ """reciprocal rank fusion on multiple lists o
+ and an optional parameter k used in the RR
+ """
+```
+

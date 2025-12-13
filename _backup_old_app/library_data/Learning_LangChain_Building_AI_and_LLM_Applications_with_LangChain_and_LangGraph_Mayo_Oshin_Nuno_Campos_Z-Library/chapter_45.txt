@@ -1,0 +1,21 @@
+# useful to generate natural language outputs
+
+model_high_temp = ChatOpenAI(temperature=0.7)
+class State(TypedDict):
+```
+
+```
+( yp )
+ # to track conversation history
+ messages: Annotated[list, add_messages]
+ # input
+ user_query: str
+ # output
+ domain: Literal["records", "insurance"]
+ documents: list[Document]
+ answer: str
+class Input(TypedDict):
+ user_query: str
+class Output(TypedDict):
+ documents: list[Document]
+ answer: str

@@ -1,0 +1,119 @@
+# **Environment variables**
+
+
+Provide the properties and values in your *.env* here. For sensitive values, like your OPENAI\_API\_KEY , make sure to tick the Secret box before inputting the value.
+
+Once you've completed the fields, click the button to submit the deployment and wait for a few seconds for the build to complete. You should see a new revision associated with the deployment.
+
+Since LangGraph Platform is integrated within LangSmith, you can gain deeper visibility into your app and track and monitor usage, errors, performance, and costs in production too. [Figure](#page-18-0) 9-7 shows a visual Trace Count summary chart showing successful, pending, and error traces over a given time period. You can also view all monitoring info for your server by clicking the "All charts" button.
+
+<span id="page-18-0"></span>![](_page_18_Figure_2.jpeg)
+
+Figure 9-7. Deployment revisions and trace count on dashboard
+
+To view the build and deployment logs, select the desired revision from the Revisions tab, then choose the Deploy tab to view the full deployment logs history. You can also adjust the date and time range.
+
+To create a new deployment, click the New Revision button in the navigation bar. Fill out the necessary fields, including the LangGraph API config file path, git reference, and environment variables, as done previously.
+
+Finally, you can access the API documentation by clicking the API docs link, which should display a similar page to the UI shown in [Figure](#page--1-0) 9-8.
+
+![](_page_0_Figure_0.jpeg)
+
+Figure 9-8. LangGraph API documentation
+
+### **Launch LangGraph Studio**
+
+LangGraph Studio provides a specialized agent IDE for visualizing, interacting with, and debugging complex agentic applications. It enables developers to modify an agent result (or the logic underlying a specific node) halfway through the agent's trajectory. This creates an iterative process by letting you interact with and manipulate the state at that point in time.
+
+Once you've deployed your AI application, click the LangGraph Studio button at the top righthand corner of the deployment dashboard, as you can see in [Figure](#page-1-0) 9-9.
+
+<span id="page-1-0"></span>![](_page_1_Picture_1.jpeg)
+
+Figure 9-9. LangGraph deployment UI
+
+After clicking the button, you should see the LangGraph Studio UI (for example, see [Figure](#page-2-0) 9-10).
+
+<span id="page-2-0"></span>![](_page_2_Picture_0.jpeg)
+
+Figure 9-10. LangGraph Studio UI
+
+To invoke a graph and start a new run, follow these steps:
+
+- 1. Select a graph from the drop-down menu in the top left corner of the lefthand pane. The graph in [Figure](#page-2-0) 9-10 is called *agent*.
+- 2. In the Input section, click the "+ Message" icon and input a *human* message, but the input will vary depending on your application state definitions.
+
+- 3. Click Submit to invoke the selected graph.
+- 4. View the output of the invocation in the right-hand pane.
+
+The output of your invoked graph should look like [Figure](#page-3-0) 9-11.
+
+<span id="page-3-0"></span>![](_page_3_Picture_3.jpeg)
+
+Figure 9-11. LangGraph Studio invocation output
+
+In addition to invocation, LangGraph Studio enables you to change run configurations, create and edit threads, interrupt your graphs, edit graph code, and enable human-in-the-loop intervention. You can read the full [guide](https://oreil.ly/xUU37) to learn more.
+
+#### **NOTE**
+
+LangGraph Studio is also available as a desktop application (for Apple silicon), which enables you to test your AI application locally.
+
+If you've followed the installation guide in the GitHub template and successfully deployed your AI application, it's now live for production use. But before you share to external users or use the backend API in existing applications, it's important to be aware of key security considerations.
+
+### Security
+
+Although AI applications are powerful, they are vulnerable to several security risks that may lead to data corruption or loss, unauthorized access to confidential information, and compromised performance. These risks may carry adverse legal, reputational, and financial consequences.
+
+To mitigate these risks, it's recommended to follow general application security best practices, including the following:
+
+### *Limit permissions*
+
+Scope permissions specific to the application's need. Granting broad or excessive permissions can introduce significant security vulnerabilities. To avoid such vulnerabilities, consider using read-only credentials, disallowing access to sensitive resources, and using sandboxing techniques (such as running inside a container).
+
+### *Anticipate potential misuse*
+
+Always assume that any system access or credentials may be used in any way allowed by the permissions they are assigned. For example, if a pair of database credentials allows deleting data, it's safest to assume that any LLM able to use those credentials may in fact delete data.
+
+### *Defense in depth*
+
+It's often best to combine multiple layered security approaches rather than rely on any single layer of defense to ensure security. For example, use both read-only permissions and sandboxing to ensure that LLMs are only able to access data that is explicitly meant for them to use.
+
+Here are three example scenarios implementing these mitigation strategies:
+
+### *File access*
+
+A user may ask an agent with access to the file system to delete files that should not be deleted or read the content of files that contain sensitive information. To mitigate this risk, limit the agent to only use a specific directory and only allow it to read or write files that are safe to read or write. Consider further sandboxing the agent by running it in a container.
+
+### *API access*
+
+A user may ask an agent with write access to an external API to write malicious data to the API or delete data from that API. To mitigate, give the agent read-only API keys, or limit it to only use endpoints that are already resistant to such misuse.
+
+### *Database access*
+
+A user may ask an agent with access to a database to drop a table or mutate the schema. To mitigate, scope the credentials to only the tables that the agent needs to access and consider issuing read-only credentials.
+
+In addition to the preceding security measures, you can take further steps to mitigate abuse of your AI application. Due to the dependency of external LLM API providers (such as OpenAI), there is a direct cost associated with running your
+
+application. To prevent abuse of your API and exponential costs, you can implement the following:
+
+#### *Account creation verification*
+
+This typically includes a form of authentication login, such as email or phone number verification.
+
+### *Rate limiting*
+
+Implement a rate-limiting mechanism in the middleware of the application to prevent users from making too many requests in a short period of time. This should check the number of requests a user has made in the last X minutes and "timeout" or "ban" the user if the abuse is severe.
+
+### *Implement prompt injection guardrails*
+
+*Prompt injection* occurs when a malicious user injects a prompt in an attempt to trick the LLM to act in unintended ways. This usually includes extracting confidential data or generating unrelated outputs. To mitigate this, you should ensure the LLM has proper permission scoping and that the application's prompts are specific and strict to the desired outcomes.
+
+## Summary
+
+Throughout this chapter, you've learned the best practices for deploying your AI application and enabling users to interact with it. We explored recommended services to handle various key components of the application in production, including the LLM, vector store, and backend API.
+
+We also discussed using LangGraph Platform as a managed service for deploying and hosting LangGraph agents at scale in conjunction with LangGraph Studio—to visualize, interact with, and debug your application.
+
+Finally, we briefly explored various security best practices to mitigate data breach risks often associated with AI applications.
+
+In [Chapter](#page-9-0) 10, you'll learn how to effectively evaluate, monitor, benchmark, and improve the performance of your AI application.
+

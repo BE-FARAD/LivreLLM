@@ -1,0 +1,5 @@
+# **Development type**
+
+
+Select Production from the dropdown. This will enable a production deployment that can serve up to 500 requests/second and is provisioned with highly available storage and automatic backups.
+

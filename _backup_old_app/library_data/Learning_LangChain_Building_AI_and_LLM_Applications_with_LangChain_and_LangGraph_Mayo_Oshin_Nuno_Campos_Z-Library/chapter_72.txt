@@ -1,0 +1,302 @@
+# <span id="page-5-0"></span>Chapter 8. Patterns to Make the Most of LLMs
+
+
+LLMs today have some major limitations, but that doesn't mean your dream LLM app is impossible to build. The experience that you design for users of your application needs to work around, and ideally with, the limitations.
+
+[Chapter](#page--1-0) 5 touched on the key trade-off we face when building LLM apps: the trade-off between *agency* (the LLM's capacity to act autonomously) and *reliability* (the degree to which we can trust its outputs). Intuitively, any LLM application will be more useful to us if it takes more actions without our involvement, but if we let agency go too far, the application will inevitably do things we wish it hadn't.
+
+[Figure](#page-6-0) 8-1 illustrates this trade-off.
+
+<span id="page-6-0"></span>![](_page_6_Figure_0.jpeg)
+
+Figure 8-1. The agency-reliability trade-off
+
+To borrow a concept from other fields, we can visualize the trade-off as a *frontier*—all points on the frontier's curved line are optimal LLM architectures for some application, marking different choices between agency and reliability. (Refer to [Chapter](#page--1-0) 5 for an overview of different LLM application architectures.) As an example, notice how the chain architecture has relatively low agency but higher reliability, **[1](#page--1-1)**
+
+whereas the Agent architecture has higher agency at the expense of lower reliability.
+
+Let's briefly touch on a number of additional (but still important) objectives that you might want your LLM application to have. Each LLM app will be designed for a different mix of one or more of these objectives:
+
+*Latency*
+
+Minimize time to get final answer
+
+*Autonomy*
+
+Minimize interruptions for human input
+
+*Variance*
+
+Minimize variation between invocations
+
+This is not meant as an exhaustive list of all possible objectives, but rather as illustrative of the trade-offs you face when building your application. Each objective is somewhat at odds with all the others (for instance, the easiest path to higher reliability requires either higher latency or lower autonomy). Each objective would nullify the others if given full weight (for instance, the minimal latency app is the one that does nothing at all). [Figure](#page-8-0) 8-2 illustrates this concept.
+
+<span id="page-8-0"></span>![](_page_8_Figure_0.jpeg)
+
+Figure 8-2. Shifting the frontier, or more agency, for the same reliability
+
+What we really want as application developers is to shift the frontier outward. For the same level of reliability, we'd like to achieve higher agency; and for the same level of agency, we'd like to achieve higher reliability. This chapter covers a number of techniques you can use to achieve this:
+
+*Streaming/intermediate output*
+
+Higher latency is easier to accept if there is some communication of progress/intermediate output throughout.
+
+#### *Structured output*
+
+Requiring an LLM to produce output in a predefined format makes it more likely that it will conform to expectations.
+
+#### *Human in the loop*
+
+Higher-agency architectures benefit from human intervention while they're running: interrupting, approving, forking, or undoing.
+
+#### *Double texting modes*
+
+The longer an LLM app takes to answer, the more likely it is that the user might send it new input before the previous one has finished being processed.
+
+## Structured Output
+
+It is often crucial to have LLMs return structured output, either because a downstream use of that output expects a things in a specific *schema* (a definition of the names and types of the
+
+various fields in a piece of structured output) or purely to reduce variance to what would otherwise be completely freeform text output.
+
+There are a few different strategies you can use for this with different LLMs:
+
+#### *Prompting*
+
+This is when you ask the LLM (very nicely) to return output in the desired format (for instance, JSON, XML, or CSV). Prompting's big advantage is that it works to some extent with any LLM; the downside is that it acts more as a suggestion to the LLM and not as a guarantee that the output will come out in this format.
+
+#### *Tool calling*
+
+This is available for LLMs that have been fine-tuned to pick from a list of possible output schemas, and to produce something that conforms to the chosen one. This usually involves writing, for each of the possible output schemas: a name to identify it, a description to help the LLM decide when it is the appropriate choice, and a schema for the desired output format (usually in JSONSchema notation).
+
+#### *JSON mode*
+
+This is a mode available in some LLMs (such as recent OpenAI models) that enforces the LLM to output a valid JSON document.
+
+Different models may support different variants of these, with slightly different parameters. To make it easy to get LLMs to return structured output, LangChain models implement a common interface, a method called
+
+.with\_structured\_output . By invoking this method—and passing in a JSON schema or a Pydantic (in Python) or Zod (in JS) model—the model will add whatever model parameters and output parsers are necessary to produce and return the structured output. When a particular model implements more than one of the preceding strategies, you can configure which method to use.
+
+Let's create a schema to use:
+
+*Python*
+
+```
+from pydantic import BaseModel, Field
+class Joke(BaseModel):
+```
+
+```
+c ass Jo e( ase ode )
+ setup: str = Field(description="The setup of 
+ punchline: str = Field(description="The punch
+```
+
+#### *JavaScript*
+
+```
+import { z } from "zod";
+const joke = z.object({
+ setup: z.string().describe("The setup of the jo
+ punchline: z.string().describe("The punchline t
+});
+```
+
+Notice how we take care to add a description to each field. This is key because—together with the name of the field—this is the information the LLM will use to decide what part of the output should go in each field. We could also have defined a schema in raw JSONSchema notation, which would look like this:
+
+```
+{'properties': {'setup': {'description': 'The set
+ 'title': 'Setup',
+ 'type': 'string'},
+ 'punchline': {'description': 'The punchline to t
+    'title': 'Punchline'
+```
+
+```
+ 'title': 'Punchline',
+ 'type': 'string'}},
+ 'required': ['setup', 'punchline'],
+ 'title': 'Joke',
+ 'type': 'object'}
+```
+
+And now let's get an LLM to generate output that conforms to this schema:
+
+#### *Python*
+
+```
+from langchain_openai import ChatOpenAI
+model = ChatOpenAI(model="gpt-3.5-turbo", tempera
+model = model.with_structured_output(Joke)
+model.invoke("Tell me a joke about cats")
+```
+
+#### *JavaScript*
+
+```
+import { ChatOpenAI } from "@langchain/openai";
+let model = new ChatOpenAI({
+ model: "gpt-3.5-turbo",
+```
+
+```
+ temperature: 0
+});
+model = model.withStructuredOutput(joke);
+await structuredLlm.invoke("Tell me a joke about
+```
+
+#### *An example of output*
+
+```
+{
+ setup: "Why don't cats play poker in the wild
+ punchline: "Too many cheetahs."
+}
+```
+
+#### A couple of things to notice:
+
+- We create the instance of the model as usual, specifying the model name to use and other parameters.
+- Low temperature is usually a good fit for structured output, as it reduces the chance the LLM will produce invalid output that doesn't conform to the schema.
+- Afterward, we attach the schema to the model, which returns a new object, which will produce output that matches the schema provided. When you pass in a Pydantic or Zod object
+
+for schema, this will be used for validation as well; that is, if the LLM produces output that doesn't conform, a validation error will be returned to you instead of the failed output.
+
+Finally, we invoke the model with our (free-form) input, and receive back output that matches the structure we desired.
+
+This pattern of using structured output can be very useful both as a standalone tool and as a part of a larger application; for instance, refer back to [Chapter](#page--1-0) 5, where we make use of this capability to implement the routing step of the router architecture.
+
+### **Intermediate Output**
+
+The more complex your LLM architecture becomes, the more likely it will take longer to execute. If you think back to the architecture diagrams in Chapters [5](#page--1-0) and [6,](#page--1-0) every time you see multiple steps (or nodes) connected in sequence or in a loop, that is an indication that the time it takes for a full invocation is increasing.
+
+This increase in latency—if not addressed—can be a blocker to user adoption of LLM applications, with most users expecting computer applications to produce some output within seconds. There are several strategies to make the higher latency more
+
+palatable, but they all fall under the umbrella of *streaming output*, that is, receiving output from the application while it is still running.
+
+For this section, we'll use the last architecture described in ["Dealing](#page--1-2) with Many Tools". Refer back to [Chapter](#page--1-0) 6 for the full code snippet.
+
+To generate intermediate output with LangGraph, all you have to do is to invoke the graph with the stream method, which will yield the output of each node as soon as each finishes. Let's see what that looks like:
+
+#### *Python*
+
+```
+input = {
+ "messages": [
+ HumanMessage("""How old was the 30th pres
+ when he died?""")
+ ]
+}
+for c in graph.stream(input, stream_mode='updates
+ print(c)
+```
+
+#### *JavaScript*
+
+```
+const input = {
+ messages: [
+ new HumanMessage(`How old was the 30th presid
+ he died?`)
+ ]
+}
+const output = await graph.stream(input, streamMo
+for await (const c of output) {
+ console.log(c)
+}
+```
+
+#### *The output:*
+
+```
+{
+ "select_tools": {
+ "selected_tools": ['duckduckgo_search', 
+ }
+}
+{
+ "model": {
+ "messages": AIMessage(
+ content="",
+ tool_calls=[
+ {
+ "name": "duckduckgo_search",
+```
+
+```
+ "args": {
+ "query": "30th president 
+ },
+ "id": "9ed4328dcdea4904b1b544
+ "type": "tool_call",
+ }
+ ],
+ )
+ }
+}
+{
+ "tools": {
+ "messages": [
+ ToolMessage(
+ content="Calvin Coolidge (born Ju
+ U.S.—died January 5, 1933, No
+ the 30th president of the Uni
+ acceded to the presidency aft
+ Warren G. Harding, just as th
+ to light....",
+ name="duckduckgo_search",
+ tool_call_id="9ed4328dcdea4904b1b
+ )
+ ]
+ }
+}
+{
+ "model": {
+```
+
+```
+ "messages": AIMessage(
+ content="Calvin Coolidge, the 30th pr
+ was born on July 4, 1872, and die
+ calculate his age at the time of 
+ birth year from his death year. \
+ Birth year\nAge at death = 1933 -
+ years\n\nCalvin Coolidge was 61 y
+ )
+ }
+}
+```
+
+Notice how each output entry is a dictionary with the name of the node that emitted as the key and the output of that node as the value. This gives you two key pieces of information:
+
+- Where the application currently is; that is, if you think back to the architecture diagrams shown in previous chapters, where in that diagram are we currently?
+- Each update to the shared state of the application, which together build up to the final output of the graph.
+
+In addition, LangGraph supports more stream modes:
+
+- updates . This is the default mode, described above.
+- values . This mode yields the current state of the graph every time it changes, that is after each set of nodes finishes
+
+#### **TIP**
+
+This element signifies a tip or suggestion.
+
+#### **NOTE**
+
+This element signifies a general note.
+
+## Using Code Examples
+
+Supplemental material (code examples, exercises, etc.) is available for download at *https://oreil.ly/supp-[LearningLangChain](https://oreil.ly/supp-LearningLangChain)*.
+
+If you have a technical question or a problem using the code examples, please send email to *[support@oreilly.com](mailto:support@oreilly.com)*.
+
+This book is here to help you get your job done. In general, if example code is offered with this book, you may use it in your programs and documentation. You do not need to contact us for permission unless you're reproducing a significant portion of the code. For example, writing a program that uses several chunks of code from this book does not require permission. Selling or distributing examples from O'Reilly books does require permission. Answering a question by citing this book
+
+and quoting example code does not require permission. Incorporating a significant amount of example code from this book into your product's documentation does require permission.
+
+We appreciate, but generally do not require, attribution. An attribution usually includes the title, author, publisher, and ISBN. For example: "*Learning LangChain* by Mayo Oshin and Nuno Campos (O'Reilly). Copyright 2025 Olumayowa "Mayo" Olufemi Oshin, 978-1-098-16728-8."
+
+If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at *[permissions@oreilly.com](mailto:permissions@oreilly.com)*.
+

@@ -1,0 +1,36 @@
+# **Human-in-the-loop**
+
+
+If left to run autonomously, a complex agent can take unintended actions, leading to catastrophic application outcomes. To prevent this, human intervention is recommended, especially at checkpoints where application logic involves invoking certain tools or accessing specific documents. LangGraph Platform enables you to insert this human-in-the-loop behavior to ensure your graph doesn't have undesired outcomes.
+
+## **Double texting**
+
+Graph execution may take longer than expected, and often users may send one message and then, before the graph has finished running, send a second message. This is known as *double texting*. For example, a user might notice a typo in their original request and edit the prompt and resend it. In such scenarios, it's important to prevent your graphs from behaving in unexpected ways and ensure a smooth user experience. LangGraph Platform provides four different solutions to handle double texting:
+
+#### *Reject*
+
+This rejects any follow-up runs and does not allow double texting.
+
+#### *Enqueue*
+
+This option continues the first run until it completes the whole run, then sends the new input as a separate run.
+
+#### *Interrupt*
+
+This option interrupts the current execution but saves all the work done up until that point. It then inserts the user input and continues from there. If you enable this option, your graph should be able to handle weird edge cases that may arise.
+
+#### *Rollback*
+
+This option rolls back all work done up until that point. It then sends the user input in—as if it just followed the original run input.
+
+## **Stateless runs**
+
+All runs use the built-in checkpointer to store checkpoints for runs. However, it can often be useful to just kick off a run without worrying about explicitly creating a thread and keeping those checkpointers around. *Stateless* runs allow you to do this by exposing an endpoint that does these things:
+
+- Takes in user input
+- Creates a thread
+- Runs the agent, but skips all checkpointing steps
+- Cleans up the thread afterwards
+
+Stateless runs are retried while keeping memory intact. However, in the case of stateless background runs, if the task worker dies halfway, the entire run will be retried from scratch.
+
