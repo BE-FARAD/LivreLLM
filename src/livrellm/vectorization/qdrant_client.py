@@ -1,8 +1,7 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from uuid import uuid4
 from qdrant_client import QdrantClient as QClient
 from qdrant_client.http import models
-from config.settings import settings
 
 class QdrantClient:
     """Wrapper around Qdrant QClient for the project."""

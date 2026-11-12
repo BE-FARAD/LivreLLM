@@ -1,6 +1,6 @@
-import os
 from pathlib import Path
-from PIL import Image
+from typing import Optional
+
 from config.settings import settings
 
 class ImageManager:

@@ -9,8 +9,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.translation.document_manager import DocumentManager
-from src.reading.reading_session_manager import ReadingSessionManager
+from livrellm.translation.document_manager import DocumentManager
+from livrellm.reading.reading_session_manager import ReadingSessionManager
 from config.settings import settings
 
 

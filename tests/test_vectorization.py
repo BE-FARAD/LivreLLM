@@ -1,7 +1,6 @@
-import pytest
-from src.vectorization.text_chunker import TextChunker
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter
+from livrellm.vectorization.text_chunker import TextChunker
+from livrellm.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.chapter import Chapter
 
 def test_chunking_logic():
     # Setup doc

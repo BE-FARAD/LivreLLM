@@ -1,6 +1,4 @@
-import pytest
-from pathlib import Path
-from src.input.file_watcher import FileWatcher
+from livrellm.input.file_watcher import FileWatcher
 
 def test_scan_directory(tmp_path):
     # Setup
@@ -45,6 +43,6 @@ def test_validate_pdf(tmp_path):
     
     watcher = FileWatcher(input_directory=d)
     
-    assert watcher.validate_pdf(valid) == True
-    assert watcher.validate_pdf(invalid_ext) == False
-    assert watcher.validate_pdf(empty) == False
+    assert watcher.validate_pdf(valid)
+    assert not watcher.validate_pdf(invalid_ext)
+    assert not watcher.validate_pdf(empty)

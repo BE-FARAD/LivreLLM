@@ -156,10 +156,10 @@ def main():
     print(f"   ✅ JSON mis à jour: {json_path.name}")
     print(f"   ✅ Contenu total: {total_content:,} caractères")
     
-    print(f"\n💡 PROCHAINES ÉTAPES:")
-    print(f"   1. Relancer la validation: python scripts/validate_transformateur.py")
-    print(f"   2. Générer les audios: python scripts/generate_all_audios.py")
-    print(f"\n✅ Redécoupage terminé!\n")
+    print("\n💡 PROCHAINES ÉTAPES:")
+    print("   1. Relancer la validation: python scripts/validate_transformateur.py")
+    print("   2. Générer les audios: python scripts/generate_all_audios.py")
+    print("\n✅ Redécoupage terminé!\n")
     
     return True
 

@@ -12,10 +12,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter, Paragraph
-from src.translation.document_manager import DocumentManager
-from src.reading.reading_session_manager import ReadingSessionManager
+from livrellm.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.chapter import Chapter, Paragraph
+from livrellm.translation.document_manager import DocumentManager
+from livrellm.reading.reading_session_manager import ReadingSessionManager
 from config.settings import settings
 
 
@@ -191,7 +191,7 @@ def import_book(md_file: Path, book_name: str, parser_func) -> MarkdownDocument:
     
     # Save
     dm = DocumentManager()
-    print(f"\n💾 Sauvegarde...")
+    print("\n💾 Sauvegarde...")
     dm.save_document(doc)
     
     # Copy images
@@ -273,7 +273,7 @@ def generate_all_audios(doc: MarkdownDocument):
                 print(f"   ❌ Exception Chapitre {chapter.number}: {e}")
                 fail_count += 1
     
-    print(f"\n📊 Résumé:")
+    print("\n📊 Résumé:")
     print(f"   ✅ Réussis: {success_count}")
     print(f"   ❌ Échecs: {fail_count}")
     print(f"   📁 Dossier audio: {settings.AUDIO_DIR / doc.book_name}")

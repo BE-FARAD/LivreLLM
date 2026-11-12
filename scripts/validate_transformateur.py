@@ -10,7 +10,7 @@ import json
 # Ajouter le répertoire parent au path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.hooks.validators import (
+from livrellm.hooks.validators import (
     FrenchMarkdownValidator,
     ChapterStructureValidator,
     AudioFileValidator,
@@ -44,7 +44,7 @@ def main():
         audio_files = list(audio_dir.glob("*.mp3"))
         print(f"   Fichiers audio: {len(audio_files)}")
     else:
-        print(f"   Existe: ❌")
+        print("   Existe: ❌")
     
     print("\n" + "-"*80 + "\n")
     
@@ -104,14 +104,14 @@ def main():
         if result.details:
             if result.passed:
                 audio_files = result.details.get('audio_files', [])
-                print(f"   Fichiers audio:")
+                print("   Fichiers audio:")
                 for audio in audio_files[:5]:
                     print(f"   - Ch{audio['chapter_number']}: {audio['audio_file']}")
                 if len(audio_files) > 5:
                     print(f"   ... et {len(audio_files) - 5} de plus")
             else:
                 missing = result.details.get('missing_audio', [])
-                print(f"   Chapitres manquants:")
+                print("   Chapitres manquants:")
                 for miss in missing[:5]:
                     print(f"   - Ch{miss['chapter_number']}: {miss['chapter_title']}")
     else:
@@ -137,7 +137,7 @@ def main():
                 
                 audio_files = result.details.get('audio_files', [])
                 if audio_files:
-                    print(f"\n   Détails des fichiers:")
+                    print("\n   Détails des fichiers:")
                     for audio in audio_files[:5]:
                         size = audio.get('file_size_mb', 0)
                         print(f"   - Ch{audio['chapter_number']}: {audio['audio_file']} ({size} MB)")
@@ -145,7 +145,7 @@ def main():
                         print(f"   ... et {len(audio_files) - 5} de plus")
             else:
                 errors = result.details.get('validation_errors', [])
-                print(f"\n   Erreurs de validation:")
+                print("\n   Erreurs de validation:")
                 for err in errors[:5]:
                     print(f"   - Ch{err['chapter_number']}: {err['error']}")
     else:

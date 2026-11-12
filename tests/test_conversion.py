@@ -1,7 +1,5 @@
-import pytest
-from pathlib import Path
-from src.conversion.marker_converter import MarkerConverter
-from src.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.marker_converter import MarkerConverter
+from livrellm.conversion.markdown_document import MarkdownDocument
 
 def test_marker_converter_structure(tmp_path):
     # Mocking subprocess to avoid real heavy conversion in unit test

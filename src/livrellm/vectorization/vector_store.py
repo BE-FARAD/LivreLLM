@@ -2,7 +2,7 @@ from typing import List
 from .qdrant_client import QdrantClient
 from .embedding_service import EmbeddingService
 from .text_chunker import TextChunker
-from src.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.markdown_document import MarkdownDocument
 
 class VectorStore:
     """Facade for Vector Database operations."""

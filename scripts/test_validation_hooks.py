@@ -10,7 +10,7 @@ import sys
 # Ajouter le répertoire parent au path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.hooks.validators import (
+from livrellm.hooks.validators import (
     FrenchMarkdownValidator,
     ChapterStructureValidator,
     AudioFileValidator,
