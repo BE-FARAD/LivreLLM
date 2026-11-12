@@ -1,7 +1,6 @@
-from typing import Optional, List, Dict
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter
-from src.storage.audio_manager import AudioManager
+from typing import List, Dict
+from livrellm.conversion.chapter import Chapter
+from livrellm.storage.audio_manager import AudioManager
 
 class ReadingSessionManager:
     """Manages the logic of a reading session."""

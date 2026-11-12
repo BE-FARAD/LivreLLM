@@ -5,9 +5,9 @@ import shutil
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.conversion.marker_converter import MarkerConverter
-from src.conversion.markdown_document import MarkdownDocument
-from src.translation.document_manager import DocumentManager
+from livrellm.conversion.marker_converter import MarkerConverter
+from livrellm.conversion.markdown_document import MarkdownDocument
+from livrellm.translation.document_manager import DocumentManager
 from config.settings import settings
 
 def import_french_book():

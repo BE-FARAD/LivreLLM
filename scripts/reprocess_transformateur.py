@@ -7,8 +7,6 @@ et générer les audios pour les nouveaux chapitres
 from pathlib import Path
 import sys
 import json
-import re
-import hashlib
 
 # Ajouter le répertoire parent au path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -87,11 +85,11 @@ def main():
     print("\n📊 RÉSUMÉ:")
     print(f"   - Markdown avec chapitres: {md_with_chapters.name}")
     print(f"   - Chapitres dans le JSON: {len(book_data.get('chapters', []))}")
-    print(f"\n💡 PROCHAINES ÉTAPES:")
-    print(f"   1. Relancer l'import avec le nouveau markdown chapitré")
-    print(f"   2. Générer les audios avec: python scripts/generate_all_audios.py")
-    print(f"   3. Valider avec: python scripts/validate_transformateur.py")
-    print(f"\n✅ Redécoupage préliminaire terminé!\n")
+    print("\n💡 PROCHAINES ÉTAPES:")
+    print("   1. Relancer l'import avec le nouveau markdown chapitré")
+    print("   2. Générer les audios avec: python scripts/generate_all_audios.py")
+    print("   3. Valider avec: python scripts/validate_transformateur.py")
+    print("\n✅ Redécoupage préliminaire terminé!\n")
     
     return True
 

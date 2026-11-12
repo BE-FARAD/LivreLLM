@@ -11,7 +11,7 @@ import json
 # Ajouter le répertoire parent au path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.hooks.validators import validate_book_pipeline
+from livrellm.hooks.validators import validate_book_pipeline
 from config.settings import settings
 
 
@@ -123,7 +123,7 @@ def main():
                 json_dir=settings.OUTPUT_DIR / "Transformateur_de_Courant"
             )
         else:
-            print(f"⚠️  Fichier 'Transformateur de courant.md' non trouvé")
+            print("⚠️  Fichier 'Transformateur de courant.md' non trouvé")
     
     print("\n✨ Démonstration terminée!\n")
 

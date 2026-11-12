@@ -8,7 +8,6 @@ from pathlib import Path
 import sys
 import json
 import shutil
-import re
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config.settings import settings
@@ -65,7 +64,7 @@ def map_existing_audio_to_all_chapters(json_path: Path):
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(book_data, f, ensure_ascii=False, indent=2)
     
-    print(f"✅ JSON mis à jour:")
+    print("✅ JSON mis à jour:")
     print(f"   - Chapitres avec audio: {chapters_with_audio}/{len(book_data['chapters'])}")
     print(f"   - Audios distribués: {audio_index}/{len(all_para_audios)}\n")
     
@@ -141,11 +140,11 @@ def main():
     print(f"\n   TOTAL: {total_paras} paragraphes")
     print(f"   Avec audio: {total_with_audio}/{total_paras} ({100*total_with_audio//total_paras}%)")
     
-    print(f"\n💡 PROCHAINES ÉTAPES:")
-    print(f"   1. Rafraîchir l'application web (F5)")
-    print(f"   2. Tester la lecture audio d'un chapitre")
+    print("\n💡 PROCHAINES ÉTAPES:")
+    print("   1. Rafraîchir l'application web (F5)")
+    print("   2. Tester la lecture audio d'un chapitre")
     
-    print(f"\n✅ Correction des audios terminée!\n")
+    print("\n✅ Correction des audios terminée!\n")
     
     return True
 

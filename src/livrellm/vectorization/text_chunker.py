@@ -1,5 +1,5 @@
 from typing import List
-from src.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.markdown_document import MarkdownDocument
 
 class TextChunker:
     """Splits document content into chunks."""

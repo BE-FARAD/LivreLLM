@@ -1,9 +1,8 @@
-import os
 import re
 from pathlib import Path
 from typing import List
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter, Paragraph
+from livrellm.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.chapter import Chapter, Paragraph
 from config.settings import settings
 
 # Since marker is a CLI tool usually, we invoke it or import it if possible.
@@ -48,14 +47,15 @@ class MarkerConverter:
             # Removed capture_output=True to see progress in logs
             subprocess.run(cmd, check=True, cwd=self.output_dir)
         except subprocess.CalledProcessError as e:
-            print(f"Marker Error.")
-            raise e
-            print(f"Marker Error: {e.stderr.decode()}")
-            raise e
-        
-        # Read the output markdown
-        md_file = book_output_dir / f"{book_name}.md"
-        # Sometimes marker outputs as 'pdf_name.md' or inside a subfolder. 
+            # Les deux lignes qui suivaient le premier `raise` etaient
+            # inatteignables : le message detaille n'a jamais ete affiche
+            # (C48, phase 0). On garde le detail, et on leve **une** fois.
+            detail = e.stderr.decode(errors="replace") if e.stderr else "(pas de sortie d'erreur)"
+            print(f"Marker Error: {detail}")
+            raise
+
+        # Read the output markdown.
+        # Sometimes marker outputs as 'pdf_name.md' or inside a subfolder.
         # Marker usually creates output_dir/pdf_name/pdf_name.md
         possible_md = book_output_dir / pdf_path.stem / f"{pdf_path.stem}.md"
         

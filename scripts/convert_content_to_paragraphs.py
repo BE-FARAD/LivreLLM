@@ -127,7 +127,7 @@ def process_book_json(json_path: Path):
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(book_data, f, ensure_ascii=False, indent=2)
     
-    print(f"✅ JSON mis à jour:")
+    print("✅ JSON mis à jour:")
     print(f"   - Chapitres traités: {chapters_updated}")
     print(f"   - Total paragraphes: {total_paragraphs}\n")
     
@@ -165,12 +165,12 @@ def main():
     
     print(f"\n   TOTAL: {total_paras} paragraphes ({total_audio} avec audio)")
     
-    print(f"\n💡 PROCHAINES ÉTAPES:")
-    print(f"   1. Rafraîchir l'application web (F5)")
-    print(f"   2. Vérifier que le texte s'affiche")
-    print(f"   3. Générer les audios manquants si nécessaire")
+    print("\n💡 PROCHAINES ÉTAPES:")
+    print("   1. Rafraîchir l'application web (F5)")
+    print("   2. Vérifier que le texte s'affiche")
+    print("   3. Générer les audios manquants si nécessaire")
     
-    print(f"\n✅ Conversion terminée!\n")
+    print("\n✅ Conversion terminée!\n")
     
     return True
 

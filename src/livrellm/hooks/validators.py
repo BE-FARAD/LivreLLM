@@ -5,7 +5,7 @@ Each validator checks a specific aspect of the book processing.
 
 import re
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 import json
 

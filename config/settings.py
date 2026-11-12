@@ -7,14 +7,23 @@ env_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
 class Settings:
-    # LLM
-    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")
+    # LLM — le defaut est **local** depuis la phase 0 de C48 (decision 4 d'AF) :
+    # aucun contenu de norme, de Techniques de l'Ingenieur ou de piece client ne
+    # part vers un service externe. Un fournisseur distant se nomme
+    # explicitement, poste par poste, dans le `.env` : il ne s'obtient jamais en
+    # ne reglant rien.
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
     OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
     OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
 
-    # TTS
+    # TTS — la synthese vocale n'a pas d'equivalent local dans ce depot
+    # aujourd'hui : `src/livrellm/storage/tts_service.py` appelle OpenAI, et
+    # rien d'autre. Le defaut reste donc `openai`, **et c'est une limite a
+    # connaitre** : un texte lu a voix haute part vers un service externe. Le
+    # chemin local reste a ecrire ; tant qu'il n'existe pas, on ne fait pas
+    # semblant qu'il existe en ecrivant un defaut qui ne marcherait pas.
     TTS_PROVIDER = os.getenv("TTS_PROVIDER", "openai")
     TTS_VOICE = os.getenv("TTS_VOICE", "alloy")
     TTS_FORMAT = os.getenv("TTS_FORMAT", "mp3")

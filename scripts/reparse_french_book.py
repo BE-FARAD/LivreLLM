@@ -6,9 +6,9 @@ import shutil
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter, Paragraph
-from src.translation.document_manager import DocumentManager
+from livrellm.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.chapter import Chapter, Paragraph
+from livrellm.translation.document_manager import DocumentManager
 from config.settings import settings
 
 def parse_real_chapters(text: str) -> list[Chapter]:

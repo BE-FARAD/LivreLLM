@@ -2,15 +2,13 @@
 import json
 import sys
 import os
-import time
 from pathlib import Path
-from typing import List, Dict
 import hashlib
 
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.storage.audio_manager import AudioManager
+from livrellm.storage.audio_manager import AudioManager
 from config.settings import settings
 
 def regenerate_audio():
@@ -58,7 +56,8 @@ def regenerate_audio():
                 # Update JSON with new filenames
                 for i, p in enumerate(paragraphs):
                     text = p['content']
-                    if not text.strip(): continue
+                    if not text.strip():
+                        continue
                     
                     text_hash = hashlib.md5(text.encode()).hexdigest()[:8]
                     filename = f"{book_name}_ch{chapter_num:02d}_para{i+1:03d}_{text_hash}.mp3"
@@ -70,7 +69,7 @@ def regenerate_audio():
             print(f"   ❌ Erreur critique Chapitre {chapter_num}: {e}")
 
     # Save updated JSON
-    print(f"\n💾 Sauvegarde du JSON mis à jour...")
+    print("\n💾 Sauvegarde du JSON mis à jour...")
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(book_data, f, indent=2, ensure_ascii=False)
         

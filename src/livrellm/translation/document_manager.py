@@ -1,8 +1,7 @@
 from pathlib import Path
 from typing import List, Optional
 import json
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter
+from livrellm.conversion.markdown_document import MarkdownDocument
 from config.settings import settings
 
 class DocumentManager:

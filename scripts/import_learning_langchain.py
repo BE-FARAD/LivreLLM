@@ -6,9 +6,9 @@ import shutil
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.conversion.markdown_document import MarkdownDocument
-from src.conversion.chapter import Chapter, Paragraph
-from src.translation.document_manager import DocumentManager
+from livrellm.conversion.markdown_document import MarkdownDocument
+from livrellm.conversion.chapter import Chapter, Paragraph
+from livrellm.translation.document_manager import DocumentManager
 from config.settings import settings
 
 
@@ -23,7 +23,14 @@ def parse_chapters_langchain(text: str) -> list[Chapter]:
     # Pattern with optional HTML span - accept both # and ## headers
     # Also handles HTML spans like: # <span id="..."></span>Chapitre X. Title
     pattern = re.compile(r'^#{1,2}\s+(?:\<span[^\>]*\>\</span\>)?\*?\*?Chapitre\s+(\d+)[\.\:]?\s*(.*)$', re.IGNORECASE)
-    
+
+    # Un seul motif aujourd'hui, mais les deux boucles plus bas parcourent une
+    # liste : elles etaient ecrites pour `patterns`, qui n'a jamais ete defini.
+    # Ce script levait donc `NameError` des la premiere ligne lue — il n'a
+    # jamais pu tourner (C48, phase 0). On donne a la liste le motif qui
+    # existe, plutot que d'inventer ceux qui manquaient peut-etre.
+    patterns = [pattern]
+
     for line in lines:
         match = None
         chapter_num = None
@@ -122,7 +129,10 @@ def import_learning_langchain():
     
     print("🧠 Analyse des chapitres...")
     book_name = "Apprendre_LangChain"
-    chapters = parse_chapters_smart(content, book_name)
+    # `parse_chapters_smart` n'a jamais existe dans ce fichier : la seule
+    # fonction d'analyse qu'il definit est `parse_chapters_langchain`, et elle
+    # ne prend que le texte. Second `NameError` du meme script (C48, phase 0).
+    chapters = parse_chapters_langchain(content)
     print(f"✅ {len(chapters)} chapitres détectés.")
     
     # Show chapter titles

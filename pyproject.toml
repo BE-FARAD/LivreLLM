@@ -1,36 +1,113 @@
+# LivreLLM — consigne C48 d'AF (2026-11-12), phase 0 : cadrage et nettoyage.
+#
+# Ce que cette phase change, et pourquoi.
+#
+# 1. **Le paquet s'appelle `livrellm`.** Il s'appelait `src`, c'est-a-dire le
+#    nom du dossier : `from src.conversion...`. Un paquet nomme `src` ne
+#    s'importe que depuis la racine du depot, donc LivreLLM ne pouvait pas
+#    devenir « une bibliotheque Python importable », ce que la decision 1 de
+#    C48 lui demande d'etre. Le code a demenage dans `src/livrellm/`, les
+#    imports ont suivi, et le paquet se construit vraiment.
+#
+# 2. **Un seul cadre d'application.** C48 decision 1 : LivreLLM devient une
+#    bibliotheque plus une vue de l'interface de l'outil (`src/reprise/ihm`),
+#    pas une application a part. Streamlit (`app/`) et Flask (`web_app/`) sont
+#    donc **retires du chemin principal** — et **ranges, jamais supprimes** :
+#    ils dorment sous `_range/2026-11-12_c48/`, avec leur LISEZ-MOI.
+#
+# 3. **Les dependances declarees sont celles que le code importe.** Quatre
+#    etaient declarees et importees **par rien**, ni par le chemin principal ni
+#    par le cadre range : `pydub`, `httpx`, `langdetect` et `markdown`. Elles
+#    sortent. `streamlit` et `flask` sortent avec le cadre qu'elles servaient.
+#    Une dependance que nul n'importe est une dependance que personne ne sait
+#    pourquoi on tient — et qui pese sur chaque installation neuve.
+#    `tests/test_phase0_cadrage.py` **oppose** la liste au code, dans les deux
+#    sens : un import non declare et une dependance non importee echouent tous
+#    les deux.
+#
+# 4. **Environnement epingle**, comme le depot outil-reprise-conception depuis
+#    C11 : `.python-version` porte le correctif **exact**, et `[tool.uv]` porte
+#    `python-preference = "only-managed"`. Ce poste porte plus d'un interprete
+#    3.12 et le PATH n'est pas une garantie.
+#
+# 5. **`marker-pdf` est fige a l'egal sur 1.10.2**, la version que C48 nomme,
+#    la ou `>=0.2.0` laissait la resolution choisir. Un convertisseur qui change
+#    de version change la pagination de sa sortie, donc les reperes de citation
+#    deja ecrits. `torch` vient de l'index **CUDA 12.8** : ce poste porte une
+#    RTX 5070, et une roue CPU convertirait les scans sur le processeur sans que
+#    rien ne le dise. La **mesure** du GPU reellement employe est le travail de
+#    la phase 1 ; ce fichier ne fait que poser l'index.
+
 [project]
-name = "book-reader"
-version = "0.1.0"
-description = "Application de lecture interactive de livres techniques"
-requires-python = ">=3.12"
+name = "livrellm"
+version = "0.2.0"
+description = "Lecture et interrogation sourcee de documents techniques — bibliotheque de l'outil de reprise de conception"
+requires-python = "==3.12.*"
+
 dependencies = [
-    "streamlit>=1.28.0",
+    # Lecture de la configuration d'un poste (config/settings.py).
     "python-dotenv>=1.0.0",
-    "marker-pdf>=0.2.0",
+    # Conversion des PDF scannes et des formules. `marker_converter.py`
+    # l'appelle en ligne de commande (`marker_single`), pas par son API :
+    # l'API de marker bouge souvent, la ligne de commande moins.
+    "marker-pdf==1.10.2",
+    # Les deux clients de chat. Le defaut est **local** (Ollama) depuis cette
+    # phase, decision 4 de C48 ; `openai` reste declare parce qu'un fournisseur
+    # distant reste joignable **sur demande explicite**, jamais par defaut, et
+    # parce que le service de synthese vocale l'importe.
+    "ollama>=0.4",
     "openai>=1.0.0",
-    "ollama>=0.1.0",
+    # Base de vecteurs et encodage des morceaux.
     "qdrant-client>=1.6.0",
     "fastembed>=0.2.0",
-    "pydub>=0.25.0",
     "pydantic>=2.0.0",
-    "httpx>=0.25.0",
-    "langdetect>=1.0.9",
-    "flask>=3.1.2",
-    "markdown>=3.10",
+    # `torch` n'est importe par **aucun** module de ce depot : c'est `marker`
+    # qui l'exige. Il est quand meme ecrit ici, et seulement pour cela :
+    # `[tool.uv.sources]` ne s'applique qu'aux dependances **directes**, et tant
+    # que `torch` n'arrivait que par `marker` il etait resolu depuis PyPI —
+    # c'est-a-dire, sur Windows, la roue **sans CUDA**. Les scans se seraient
+    # convertis sur le processeur sans que rien ne le dise. Le declarer est ce
+    # qui donne a l'index CUDA 12.8 prise sur lui.
+    "torch>=2.9",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "pytest>=7.0.0",
-    "ruff>=0.1.0",
+    "pytest>=8.3",
+    "ruff>=0.7",
 ]
 
+# --- Epinglage de l'environnement (C11 du depot outil, applique ici par C48) ---
+#
+# `uv.lock` fixe les dependances, pas l'interprete ni l'outil qui resout. Les
+# deux lignes ci-dessous ferment ces deux trous : seul un Python gere par `uv`
+# est accepte, et seule une plage connue d'`uv` peut resoudre ce projet. Un
+# poste hors plage est refuse par `uv` lui-meme, avant qu'un test ne tourne.
 [tool.uv]
-dev-dependencies = [
-    "pytest>=7.0.0",
-    "ruff>=0.1.0",
-]
+python-preference = "only-managed"
+required-version = ">=0.13.6,<0.14"
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu128" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Ce qui dort sous `_range/` a ete range tel qu'il etait : il n'est ni lint ni
+# teste, et son etat du jour ou il a ete range est ce qu'on veut relire.
+extend-exclude = ["_range"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/livrellm"]
